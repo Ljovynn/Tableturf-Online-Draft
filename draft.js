@@ -16,27 +16,43 @@ class Card{
     }
 }
 
-        /*cards = cards.map(card=>{
-            const title = card.attributes.title;
-            const mass = card.attributes.mass;
-            const image = card.attributes.image.url;
-            return{title, id, mass, image};
-        })*/
+class DraftCard{
+    documentImg;
+    card;
+    inDraft = true;
+    owner = 0;
+    constructor(id){
+        let tempCard = allCards[id - 1];
+        let title = tempCard.title;
+        let size = tempCard.size;
+        let image = tempCard.image;
+        this.card = new Card(id, title, size, image);
+    }
+}
 
 class DraftManager{
     amountOfDifferentCards = 209;
     size;
+    
+    draftCardList = [];
+    draftCards  = [];
+
+    player1Deck = [];
+    player2Deck = [];
+
+    player1DeckSizeText = document.getElementById("player1DeckSize");
+    player2DeckSizeText = document.getElementById("player2DeckSize");
+
     minSpecials;
-    currentSpecials;
-    draftCardList;
+    currentSpecials = 0;
     unusedSpecials = this.CreateSortedSpecialAttackList();
-    draftCards;
+
+    currentPlayer = 1;
+    turnsUntilSwitchSide = 1;
+
     constructor(size, minSpecials){
         this.size = size;
-        this.currentSpecials = 0;
         this.minSpecials = minSpecials;
-        this.draftCardList = [];
-        this.draftCards = [];
         this.GetCardsJson();
     }
 
@@ -54,15 +70,17 @@ class DraftManager{
         }
 
         //fortsätter med metoden här för annars funkar inte asyncg
+        
         this.GenerateDraft();
 
-        this.CreateCards();
+        for (let i = 0; i < this.draftCardList.length; i++){
+            this.draftCards[i] = new DraftCard(this.draftCardList[i]);
+        }
 
         this.draftCards = this.SortBySize(this.draftCards);
 
-        console.log(this.draftCards);
+        this.DisplayDraftCards();
 
-        this.DisplayDraftBox();
     }
 
     GenerateDraft(){
@@ -134,62 +152,48 @@ class DraftManager{
     }
 
     SortBySize(array){
-        /*array.sort(function(a, b) {
-            return parseFloat(a.size) - parseFloat(b.size);
-        });*/
-        
-        array.sort((a, b) => a.size - b.size || a.id - b.id);
+        array.sort((a, b) => a.card.size - b.card.size || a.card.id - b.card.id);
 
         return array;
     }
 
-    DisplayDraftBox(){
-        var ul = document.createElement('ul');
-        ul.setAttribute('id','draftBoxList');
-        
-        currentTurnMessage.innerHTML = "hål";
+    DisplayDraftCards(){
         for (let i = 0; i < this.draftCards.length; i++){
             var img = document.createElement('img');
             document.getElementById('draftFigures').appendChild(img);
-                //img.setAttribute('class','draftBoxCard');
-                
-                //console.log(this.draftCards[i]);
-                img.src = this.draftCards[i].image;
-                //console.log(img.src);
+            img.src = this.draftCards[i].card.image;
+            img.addEventListener('click', DraftClick);
+            img.addEventListener('click',(evt) => DraftClick(i));
 
-                img.addEventListener('click', this.DraftClick(this.draftCards[i]));
-                //img.setAttribute("url", this.draftCards[i].attributes.image);
-                //li.innerHTML=li.innerHTML + element;
+            this.draftCards[i].documentImg = img;
         }
     }
 
-    CreateCards(){
-        for (let i = 0; i < this.draftCardList.length; i++){
-            let tempCard = allCards[this.draftCardList[i] - 1];
-            let title = tempCard.title;
-            let size = tempCard.size;
-            let image = tempCard.image;
-            this.draftCards[i] = new Card(this.draftCardList[i], title, size, image);
+    pickCard(draftCard){
+        if (this.currentPlayer == 1){
+            let deckId = "player1Deck"
+            this.AddCardToPlayer(this.player1Deck, this.player1DeckSizeText, draftCard.card, deckId)
+        } else{
+            let deckId = "player2Deck"
+            this.AddCardToPlayer(this.player2Deck, this.player2DeckSizeText, draftCard.card, deckId)
         }
     }
 
-    DraftClick(id){
-
+    AddCardToPlayer(playerDeck, deckSizeText, card, ){
+        const id = card.id;
+        const title = card.attributes.title;
+        const size = card.attributes.size;
+        const image = card.attributes.image.url;
+        newCard = new Card(id, title, size, image);
+        playerDeck.push(card);
+        deckSizeText += newCard.size;
     }
 }
-/*
-class DraftCard{
-    card;
-    inDraft = true;
-    owner = 1;
-    constructor(id){
-        let tempCard = allCards[id - 1];
-        let title = tempCard.title;
-        let size = tempCard.size;
-        let image = tempCard.image;
-        this.card = new Card(id, title, size, image);
-    }
-}*/
+
+function DraftClick(index){
+    //window.alert(evt.currentTarget.src);
+    currentTurnMessage.innerHTML = index;
+}
 
 function BeginSetup() {
     beginningPopup.classList.add("hidePopup");
