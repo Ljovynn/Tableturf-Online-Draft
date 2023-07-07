@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Draft</title>
+        <style>
+            header{
+                text-align: center;
+            }
+            body{
+                height: 100%;
+                width: 100%;
+            }
+
+            .draftBox{
+                padding: 5px;
+                background-color: rgb(208, 208, 208);
+                margin: 0 auto;
+                display:flex;
+                flex-direction:column;
+                /*flex-direction: row;*/
+                width: 850px;
+                height: 800px;
+            }
+
+            .draftFigures{
+                margin: 5 5 5 5;
+                width: 95%;
+            }
+
+            .draftFigures img{
+                /*background: black;*/
+                height: 181px;
+                width: 130px;
+            }
+
+            .draftFiguresOverlay{
+                pointer-events:none;
+            }
+
+            ul{
+                padding: 20px 20px 20px 20px;
+            }
+
+            .beginningPopup{
+                background-color: rgb(241, 241, 241);
+                width: 70px;
+                height: 60px;
+                text-align: center;
+                border-radius: 6px;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+                padding: 0px 20px 30px;
+                position: absolute;
+            }
+
+            .hidePopup{
+                visibility: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <p id="currentTurnMessage">Player 1's turn</p>
+        </header>
+        <div class= "draftBox" id = "draftBox">
+            <div class="draftFigures" id="draftFigures">
+            </div>
+            <!----
+            <ul>
+                <img src="images/cards/1.png"></li>
+                <li class="draftBoxCar">esfse</li>
+                <li class="draftBoxCar">e</li>
+            </ul>-->
+        </div>
+        <div class= "beginningPopup" id= "beginningPopup">
+            <p><button id= "player1Ready">Ready</button></p>
+        </div>
+    </body>
+    <script src="draft.js"></script>
+    </script>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tableturf Online Draft</title>
+        <style>
+            @font-face { font-family: Splatoon1; src: url("Splatoon1.otf"); } 
+            header {
+                text-align: center;
+                padding: 30px;
+                font-family:Splatoon2;
+            }
+            body {
+                background: rgb(255, 255, 255);
+                font-family:Arial, Helvetica, sans-serif;
+                text-align: center;
+            }
+            .popup {
+                width: 400px;
+                height: 700px;
+                background: rgb(241, 241, 241);
+                position: absolute;
+                border-radius: 6px;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+                padding: 0px 20px 30px;
+                visibility: hidden;
+            }
+            .openPopup{
+                visibility: visible;
+            }
+            h3 {
+                color: rgb(149, 149, 253);
+            }
+
+            div {
+                padding: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Tableturf Online Draft</h1>
+        </header>
+        <div class="popup" id="popup">
+            <div>
+                <h3>Draft settings</h2>
+            </div>
+            <div>
+                <label for="draftSize">Number of cards in draft (30-100):</label>
+                <input type="number" id="draftSize" name="draftSize" min="30" max="100" value="50">  
+            </div>
+            <div>
+                <label for="Player1Name">Player 1 name:</label>
+                <input type="text" id="player1" name="Player 1 " value="Player 1"><br><br>
+                <label for="Player2Name">Player 2 name:</label>
+                <input type="text" id="player2" name="Player 2" value="Player 2">
+            </div>
+            <div>
+                <label for="maps">Map:</label>
+                <select name="selectMaps" id="maps">
+                <option value="Main Street">Main Street</option>
+                <option value="Thunder Point">Thunder Point</option>
+                <option value="X Marks the Garden">X Marks the Garden</option>
+                <option value="Square Squared">Square Squared</option>
+                <option value="Lakefront Property">Lakefront Property</option>
+                <option value="Double Gemini">Double Gemini</option>
+                <option value="River Drift">River Drift</option>
+                <option value="Box Seats">Box Seats</option>
+                </select>
+            </div>
+            <div>
+                <label for="312Size">Minimum number of special attack cards:</label>
+                <input type="number" id="312Size" name="312Size" min="0" max="17" value="3">  
+            </div>
+            <p><button id="closeSettings">Close</button></p>
+        </div>
+        <div>
+            <div>
+                <h3>How to use</h3>
+                <p>- Choose draft settings</p>
+                <p>- Click on "Generate draft"</p>
+                <p>- Open the link, and give it to your opponent <br/><br/></p>
+                <p><button id="settings">Draft settings</button></p>
+            </div>
+            <div>
+                <p><button id="generateDraft">Generate Draft</button></p>
+                <div>
+                    <h3>Draft link</h3>
+                    <input id="link" type="text" class="text-line">
+                    <div>
+                        <button id="copyDraft">Copy</button>
+                        <button id="openDraft">Open</button>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h3>About</h3>
+                <p>Tableturf Online Draft is a tool for drafting cards in tableturf! 
+                    <br/>It will generate a random list of cards from which both players will take turns picking cards for their own decks.
+                <br/>When the draft is finished, create your decks ingame and start playing!</p>
+            </div>
+            <div>
+                <p>Created by Ljovynn</p>
+            </div>
+        </div>
+        <script src="index.js"></script>
+    </script>
+    </body>
+</html>
