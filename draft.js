@@ -24,7 +24,7 @@ class DraftCard{
     constructor(id){
         let tempCard = allCards[id - 1];
         let title = tempCard.title;
-        let size = tempCard.size;
+        let size = +tempCard.size;
         let image = tempCard.image;
         this.card = new Card(id, title, size, image);
     }
@@ -40,8 +40,9 @@ class DraftManager{
     player1Deck = [];
     player2Deck = [];
 
-    player1DeckSizeText = document.getElementById("player1DeckSize");
-    player2DeckSizeText = document.getElementById("player2DeckSize");
+    player1DeckSize = 0;
+    player2DeckSize = 0;
+    //player2DeckSizeText = document.getElementById("player2DeckSize");
 
     minSpecials;
     currentSpecials = 0;
@@ -49,6 +50,7 @@ class DraftManager{
 
     currentPlayer = 1;
     turnsUntilSwitchSide = 1;
+    draftFinished = false;
 
     constructor(size, minSpecials){
         this.size = size;
@@ -162,40 +164,67 @@ class DraftManager{
             var img = document.createElement('img');
             document.getElementById('draftFigures').appendChild(img);
             img.src = this.draftCards[i].card.image;
-            img.addEventListener('click', DraftClick);
             img.addEventListener('click',(evt) => DraftClick(i));
 
             this.draftCards[i].documentImg = img;
         }
     }
 
-    pickCard(draftCard){
+    PickCard(draftCard){
+        draftCard.inDraft = false;
+        draftCard.documentImg.setAttribute('class', 'lockedCard');
+        this.turnsUntilSwitchSide--;
         if (this.currentPlayer == 1){
-            let deckId = "player1Deck"
-            this.AddCardToPlayer(this.player1Deck, this.player1DeckSizeText, draftCard.card, deckId)
+            draftCard.owner = 1;
+            let deckId = "deck1Figures";
+            this.AddCardToPlayer(this.player1Deck, draftCard.card, deckId);
+            this.player1DeckSize += draftCard.card.size;
+            console.log(this.player1DeckSize)
+            document.getElementById("player1DeckSize").innerHTML = "Size: " + this.player1DeckSize;
+            
         } else{
-            let deckId = "player2Deck"
-            this.AddCardToPlayer(this.player2Deck, this.player2DeckSizeText, draftCard.card, deckId)
+            draftCard.owner = 2;
+            let deckId = "deck2Figures";
+            this.AddCardToPlayer(this.player2Deck, draftCard.card, deckId);
+            this.player2DeckSize += draftCard.card.size;
+            document.getElementById("player2DeckSize").innerHTML = "Size: " + this.player2DeckSize;
+        }
+        if (this.turnsUntilSwitchSide == 0){
+            if (this.currentPlayer == 1){
+                this.currentPlayer = 2;
+                currentTurnMessage.innerHTML = "Player 2's turn to choose";
+            } else{
+                this.currentPlayer = 1;
+                currentTurnMessage.innerHTML = "Player 1's turn to choose";
+            }
+            this.turnsUntilSwitchSide = 2;
+        } else if (this.player2Deck.length == 15){
+            this.draftFinished = true;
         }
     }
 
-    AddCardToPlayer(playerDeck, deckSizeText, card, ){
+    AddCardToPlayer(playerDeck, card, deckId){
         const id = card.id;
-        const title = card.attributes.title;
-        const size = card.attributes.size;
-        const image = card.attributes.image.url;
-        newCard = new Card(id, title, size, image);
-        playerDeck.push(card);
-        deckSizeText += newCard.size;
+        const title = card.title;
+        const size = card.size;
+        const image = card.image;
+        let newCard = new Card(id, title, size, image);
+        playerDeck.push(newCard);
+        var img = document.createElement('img');
+            document.getElementById(deckId).appendChild(img);
+            img.src = image;
     }
 }
 
-function DraftClick(index){
+function DraftClick(i){
     //window.alert(evt.currentTarget.src);
-    currentTurnMessage.innerHTML = index;
+    console.log(i);
+    if (draftManager.draftCards[i].inDraft && !draftManager.draftFinished){
+        draftManager.PickCard(draftManager.draftCards[i]);
+    }
 }
 
 function BeginSetup() {
     beginningPopup.classList.add("hidePopup");
-    this.draftManager = new DraftManager(50, 2);
+    draftManager = new DraftManager(50, 2);
 }
