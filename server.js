@@ -1,6 +1,6 @@
 import express from 'express'
 
-import {GetDrafts, GetDraft, GetPlayersInDraft, GetPlayer, GetDeckCards, GetDraftCards, CreateDraft, CreatePlayer, CreateDraftCard, CreateDeckCard, UpdateDraft, PlayerReady} from './database.js'
+import {GetDrafts, GetDraft, GetPlayersInDraft, GetPlayer, GetDeckCards, GetDraftCards, CreateDraft, CreatePlayer, CreateDraftCards, CreateDeckCard, UpdateDraft, PlayerReady} from './database.js'
 
 import dotenv from 'dotenv'
 dotenv.config()
@@ -13,15 +13,6 @@ app.set("view engine", "ejs")
 app.use(express.urlencoded({extended: true}))
 app.use(express.json())
 app.use(express.static ("public"))
-
-class Card{
-    id;
-    size;
-    constructor(id, size){
-        this.id = id;
-        this.size = size;
-    }
-}
 
 app.get("/draft/:id", async (req, res) => {
     const id = req.params.id
@@ -44,29 +35,20 @@ app.post("/GenerateNewDraft", async (req, res) => {
 
     Shuffle(draftList);
 
-    console.log(draftList + " before shenaningans");
+    console.log(draftList + " before shenanigans");
 
     draftList = GetDraftFromShuffledList(draftList, draftSize, minSpecials);
 
-    console.log(draftList + " after shenaningans");
+    console.log(draftList + " after shenanigans");
 
-    //Konvertera till kortklass
-    for (let i = 0; i < draftList.length; i++){
-        let size = +allCards[draftList[i] - 1].size;
-        draftCardList[i] = new Card(draftList[i].toString(), size);
-        console.log(draftCardList[i]);
-    }
+    //lägger in utan sort på databas
 
-    draftCardList = SortBySize(draftCardList);
+    await CreateDraftCards(result, draftList);
+    /*for (let i = 0; i < draftList.length; i++){
 
-    //lägger in draft i databas, optimera sen?
-    console.log ("ydso");
-    console.log (draftCardList.length);
-    for (let i = 0; i < draftCardList.length; i++){
-        await CreateDraftCard(result, draftCardList[i].id);
-        console.log("create card " + draftCardList[i].id);
-    }
-
+        await CreateDraftCard(result, draftList[i]);
+        console.log("create card " + draftList[i]);
+    }*/
 
     res.status(201).send(result)
 })
@@ -132,12 +114,6 @@ function GetDraftFromShuffledList(fullList, draftSize, minSpecials){
     return draftList;
 }
 
-function SortBySize(array){
-    array.sort((a, b) => a.size - b.size || a.id - b.id);
-
-    return array;
-}
-
 app.post("/CreateDraft", async (req, res) => {
     const data = req.body
     const result = await CreateDraft()
@@ -149,12 +125,12 @@ app.post("/CreatePlayer", async (req, res) => {
     const result = await CreatePlayer(data.draft_id, data.playerName)
     res.status(201).send(result)
 })
-
+/*
 app.post("/CreateDraftCard", async (req, res) => {
     const data = req.body
     await CreateDraftCard(data.draft_id, data.card_id)
     res.status(201).send(data.card_id)
-})
+})*/
 
 //ha med draft_id
 app.post("/CreateDeckCard", async (req, res) => {
@@ -190,20 +166,7 @@ app.post("/CreateDeckCard", async (req, res) => {
     res.status(201).send(data.card_id)
 })
 
-async function GetJsonData(){
-    console.log("fetching json cards");
-    const response = await fetch ( process.env.URL + '/cards.json');
-    const jsonData = await response.json();
-    for (let i = 0; i < jsonData.length; i++){
-        let card = jsonData[i];
-        const id = card.id;
-        const size = card.attributes.size;
-        allCards[i] = new Card(id, +size);
-    }
-}
-
 const port = 8080;
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
-    GetJsonData();
 });

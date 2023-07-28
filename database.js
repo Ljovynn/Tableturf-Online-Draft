@@ -54,6 +54,14 @@ export async function CreateDraftCard(draft_id, card_id){
     await pool.query(`INSERT INTO draft_cards (draft_id, card_id) VALUES (?, ?)`, [draft_id, card_id])
 }
 
+export async function CreateDraftCards(draft_id, cards){
+    var data = [];
+    for (let i = 0; i < cards.length; i++){
+        data[i] = [draft_id, cards[i]];
+    }
+    await pool.query(`INSERT INTO draft_cards (draft_id, card_id) VALUES ?`, [data.map(card => [card[0], card[1]])]);
+}
+
 export async function CreateDeckCard(player_id, pick_order, card_id){
     await pool.query(`INSERT INTO deck_cards (player_id, pick_order, card_id) VALUES (?, ?, ?)`, [player_id, pick_order, card_id])
 }
