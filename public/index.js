@@ -7,6 +7,8 @@ let linkBox = document.getElementById("link");
 let copyBtn = document.getElementById("copyDraft");
 let openBtn = document.getElementById("openDraft");
 
+let LangForm = document.getElementById("languages");
+
 let player1NameDoc = document.getElementById("player1");
 let player2NameDoc = document.getElementById("player2");
 let draftSizeDoc = document.getElementById("draftSize");
@@ -14,6 +16,10 @@ let minSpecialsDoc = document.getElementById("312Size");
 let generateDraftBtn = document.getElementById("generateDraft");
 
 let popup = document.getElementById("popup");
+
+/*var storedLang = localStorage['language'] || 'en';
+document.documentElement.setAttribute('lang', storedLang);
+console.log(storedLang);*/
 
 generateDraftBtn.addEventListener("click", () => {
     generateDraftBtn.disabled = true;
@@ -61,3 +67,13 @@ function OpenSettingsPopup(){
 function CloseSettingsPopup(){
     popup.classList.remove("openPopup");
 }
+
+/*function ChangeLang(){
+    let value = LangForm.value;
+    console.log(value);
+    localStorage['language'] = value; // only strings
+}
+
+function setLang(value){
+    document.documentElement.setAttribute('lang', value);
+}*/
