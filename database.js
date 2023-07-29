@@ -21,18 +21,23 @@ export async function GetDraft(id){
 }
 
 export async function GetPlayersInDraft(draftId){
-    const [rows] = await pool.query(`SELECT * FROM players WHERE draft_id = ? ORDER BY id`, [draftId])
+    const [rows] = await pool.query(`SELECT * FROM players WHERE draft_id = ? ORDER BY in_draft_id`, [draftId])
     return rows;
 }
 
 export async function GetPlayer(playerId){
     const [rows] = await pool.query(`SELECT * FROM players WHERE id = ?`, [playerId])
-    return rows;
+    return rows[0];
 }
 
 export async function GetDeckCards(playerId){
-    const [rows] = await pool.query(`SELECT * FROM deck_cards WHERE player_id = ?`, [playerId])
+    const [rows] = await pool.query(`SELECT * FROM deck_cards WHERE player_id = ? ORDER BY pick_order`, [playerId])
     return rows;
+}
+
+export async function GetDeckCount(playerId){
+    const [count] = await pool.query(`SELECT COUNT(*) AS deckCount FROM deck_cards WHERE player_id = ?`, [playerId])
+    return count[0].deckCount;
 }
 
 export async function GetDraftCards(draftId){
@@ -45,9 +50,12 @@ export async function CreateDraft(){
     return JSON.stringify(result[0].insertId);
 }
 
-export async function CreatePlayer(draft_id, player_name){
-    const result = await pool.query(`INSERT INTO players (draft_id, player_name) VALUES (?, ?)`, [draft_id, player_name])
-    return JSON.stringify(result[0].insertId);
+export async function CreatePlayer(draft_id, in_draft_id, player_name){
+    await pool.query(`INSERT INTO players (draft_id, in_draft_id, player_name) VALUES (?, ?, ?)`, [draft_id, in_draft_id, player_name])
+}
+
+export async function CreatePlayers(draft_id, playerNames){
+    await pool.query(`INSERT INTO players (draft_id, in_draft_id, player_name) VALUES (?, 1, ?), (?, 2, ?)`, [draft_id, playerNames[0], draft_id, playerNames[1]]);
 }
 
 export async function CreateDraftCard(draft_id, card_id){
@@ -66,6 +74,11 @@ export async function CreateDeckCard(player_id, pick_order, card_id){
     await pool.query(`INSERT INTO deck_cards (player_id, pick_order, card_id) VALUES (?, ?, ?)`, [player_id, pick_order, card_id])
 }
 
+export async function StartDraft(draft_id){
+    await pool.query(`UPDATE drafts SET draft_phase = 1, player_turn = 1, picks_until_change_turn = 1, last_update = NOW() WHERE id = ?`,
+    [draft_id])
+}
+
 export async function UpdateDraft(draft_id, draft_phase, player_turn, picks_until_change_turn){
     await pool.query(`UPDATE drafts SET draft_phase = ?, player_turn = ?, picks_until_change_turn = ?, last_update = NOW() WHERE id = ?`,
     [draft_phase, player_turn, picks_until_change_turn, draft_id])
@@ -76,5 +89,7 @@ export async function PlayerReady (player_id){
 }
 
 //await UpdateDraft(27, 1, 2, 2)
-//const result = await CreateDraft()
-//console.log(result + " databaseresult!")
+const result = await GetDeckCount(1);
+const result2 = JSON.stringify(result);
+console.log(result2 + " json")
+console.log(result + " databaseresult!")

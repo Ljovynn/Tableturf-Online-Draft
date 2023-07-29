@@ -1,6 +1,8 @@
 document.getElementById("settings").onclick = OpenSettingsPopup;
 document.getElementById("closeSettings").onclick = CloseSettingsPopup;
 
+const site = "http://localhost:8080"
+
 let linkBox = document.getElementById("link");
 let copyBtn = document.getElementById("copyDraft");
 let openBtn = document.getElementById("openDraft");
@@ -36,7 +38,7 @@ generateDraftBtn.addEventListener("click", () => {
 
     console.log(this.responseText);
     var data = JSON.parse(this.responseText);
-    linkBox.innerText = "https://tableturfdraft.com/draft/" + data;
+    linkBox.innerText = site + "/draft?id=" + data;
     console.log(data);
 
     copyBtn.disabled = false;
@@ -46,8 +48,6 @@ generateDraftBtn.addEventListener("click", () => {
 
 copyBtn.addEventListener("click", () => {
     navigator.clipboard.writeText(linkBox.innerText);
-
-    alert("Copied!");
 });
 
 openBtn.addEventListener("click", () => {

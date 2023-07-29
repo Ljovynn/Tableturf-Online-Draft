@@ -1,7 +1,66 @@
-document.getElementById("player1Ready").onclick = BeginSetup;
+const url = window.location.href;
+const searchParams = new URL(url).searchParams;
+const entries = new URLSearchParams(searchParams).entries();
+const entriesArray = Array.from(entries)
+
+const draftId = entriesArray[0][1];
+
+let beginningPopup = document.getElementById("beginningPopup");
+let readyPopup = document.getElementById("readyPopup");
+
+let draftFiguresBox = document.getElementById("draftFigures");
+let player1DeckBox = document.getElementById("deck1Figures");
+let player2DeckBox = document.getElementById("deck2Figures");
+
+let player1Button = document.getElementById("player1Button");
+let player2Button = document.getElementById("player2Button");
+let spectatorButton = document.getElementById("spectatorButton");
+
+let player1ReadyButton = document.getElementById("player1Ready");
+let player2ReadyButton = document.getElementById("player2Ready");
+let player1ReadyImage = document.getElementById("player1Check");
+let player2ReadyImage = document.getElementById("player2Check");
+
 let currentTurnMessage = document.getElementById("currentTurnMessage");
-let draftManager;
+
+let player1DeckSizeBox = document.getElementById("player1DeckSize");
+let player2DeckSizeBox = document.getElementById("player2DeckSize");
+
 let allCards = [];
+
+const amountOfDifferentCards = 209;
+let size;
+    
+let draftCards  = [];
+
+let player1Deck;
+let player2Deck;
+
+let player1Ready;
+let player2Ready;
+
+let userRole = 0;
+
+let player1Id;
+let player2Id;
+let playerId;
+
+let player1Name;
+let player2Name;
+//player2DeckSizeText = document.getElementById("player2DeckSize");
+
+let currentPlayer = 1;
+let picksUntilChangeTurn = 1;
+let draftPhase = 0;
+
+let draftData;
+
+player1Button.addEventListener('click',(evt) => PlayerClick(1));
+player2Button.addEventListener('click',(evt) => PlayerClick(2));
+spectatorButton.addEventListener('click',(evt) => PlayerClick(0));
+
+player1ReadyButton.addEventListener('click',(evt) => ReadyClick(1));
+player2ReadyButton.addEventListener('click',(evt) => ReadyClick(2));
 
 class Card{
     id;
@@ -20,7 +79,6 @@ class DraftCard{
     documentImg;
     card;
     inDraft = true;
-    owner = 0;
     pickOrder;
     constructor(id){
         let tempCard = allCards[id - 1];
@@ -43,254 +101,390 @@ class PlayerDeck{
     }
 }
 
-class DraftManager{
-    amountOfDifferentCards = 209;
-    size;
-    
-    draftCardList = [];
-    draftCards  = [];
+const socket = io('http://localhost:8080');
+socket.emit('join', draftId.toString());
+console.log("joining room " + draftId.toString());
 
+socket.on('player ready', data =>{
+    console.log("player1id: "+ player1Id +  " data: " + data)
+    if (player1Id == data){
+        player1Ready = true;
+        player1ReadyImage.src = "images/UI/Checkmark.png";
+    } else if (player2Id == data){
+        player2Ready = true;
+        player2ReadyImage.src = "images/UI/Checkmark.png";
+    }
+    CheckIfBothPlayersReady();
+});
+
+/*socket.on('start draft', data =>{
+    console.log("data: " + data);
+    if (+data == draftId){
+        StartDraftPhase();
+    }
+})*/
+
+socket.on('add card', data =>{
+    console.log("data: " + data);
+    var index = draftCards.findIndex(e => e.card.id === data[1]);
+    draftCards[index].inDraft = false;
+    draftCards[index].documentImg.setAttribute('class', 'lockedCard');
+    if (+data[0] == player1Id){
+        AddCardToPlayer(player1Deck, data[1], "deck1Figures", player1DeckSizeBox);
+    } else if (+data[0] == player2Id){
+        
+        AddCardToPlayer(player2Deck, data[1], "deck2Figures", player2DeckSizeBox);
+    }
+    ChangeDraftTurnData();
+})
+
+Startup();
+
+async function Startup(){
     player1Deck = new PlayerDeck();
     player2Deck = new PlayerDeck();
+    allCards = await GetCardsJson();
+    FetchDraftInfo(draftId);
+}
 
-    player1Decksorted = false;
-    player2DeckSorted = false;
-    //player2DeckSizeText = document.getElementById("player2DeckSize");
+function FetchDraftInfo (id) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "GetDraftInfo", true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+        draftId: id
+    }));
+    xhr.onload = function() {
+        draftData = JSON.parse(this.response);
+        ParseDraftData();
+    }
+}
+async function GetCardsJson(){
+    let tempList = [];
+    const response = await fetch("cards.json");
+    const data = await response.json();
+    let cardsJson = data;
+    for (let i = 0; i < cardsJson.length; i++){
+        let card = cardsJson[i];
+        const id = card.id;
+        const title = card.attributes.title;
+        const size = card.attributes.size;
+        const image = card.attributes.image.url;
+        tempList[i] = new Card(id, title, size, image);
+    }
+    return tempList;
+}
 
-    minSpecials;
-    currentSpecials = 0;
-    unusedSpecials = this.CreateSortedSpecialAttackList();
-
-    currentPlayer = 1;
-    turnsUntilSwitchSide = 1;
-    draftFinished = false;
-
-    constructor(size, minSpecials){
-        this.size = size;
-        this.minSpecials = minSpecials;
-        this.GetCardsJson();
+function ParseDraftData(){
+    //draft
+    const draftManagerData = draftData[0];
+    draftPhase = draftManagerData.draft_phase;
+    picksUntilChangeTurn = draftManagerData.picks_until_change_turn;
+    currentPlayer = draftManagerData.player_turn;
+    
+    //draftkort
+    const draftCardList = draftData[1];
+    for (let i = 0; i < draftCardList.length; i++){
+        draftCards[i] = new DraftCard(draftCardList[i].card_id);
     }
 
-    async GetCardsJson(){
-        const response = await fetch("cards.json");
-        const data = await response.json();
-        let cardsJson = data;
-        for (let i = 0; i < cardsJson.length; i++){
-            let card = cardsJson[i];
-            const id = card.id;
-            const title = card.attributes.title;
-            const size = card.attributes.size;
-            const image = card.attributes.image.url;
-            allCards[i] = new Card(id, title, size, image);
+    draftCards = SortBySize(draftCards);
+
+    //players
+    const playerData = draftData[2];
+    let player1Data;
+    let player2Data;
+    if (playerData[0].in_draft_id == 1){
+        player1Data = playerData[0];
+        player2Data = playerData[1];
+    } else{
+        player1Data = playerData[1];
+        player2Data = playerData[0];
+    }
+    player1Name = player1Data.player_name;
+    player2Name = player2Data.player_name;
+    player1Button.innerText = player1Name;
+    player2Button.innerText = player2Name;
+    document.getElementById("player1Title").innerText = player1Name;
+    document.getElementById("player2Title").innerText = player2Name;
+    player1ReadyButton.innerText = player1Name + " Ready";
+    player2ReadyButton.innerText = player2Name + " Ready";
+    player1Ready = player1Data.ready;
+    player2Ready = player2Data.ready;
+    player1Id = player1Data.id;
+    player2Id = player2Data.id;
+
+    //decks
+    const deckData = draftData[3];
+    let player1DeckData = [];
+    let player2DeckData = [];
+    if (deckData[0].length == 0){
+        if (deckData[1].length != 0){
+            player1DeckData = deckData[1];
         }
 
-        //fortsätter med metoden här för annars funkar inte asyncg
-        
-        this.GenerateDraft();
-
-        for (let i = 0; i < this.draftCardList.length; i++){
-            this.draftCards[i] = new DraftCard(this.draftCardList[i]);
-        }
-
-        this.draftCards = this.SortBySize(this.draftCards);
-
-        this.DisplayDraftCards();
-
-    }
-
-    GenerateDraft(){
-        let tempList = this.CreateSortedList();
-        this.Shuffle(tempList);
-        this.draftCardList = this.GetDraftFromShuffledList(tempList);
-        this.draftCardList = this.CheckMinSpecials(this.draftCardList);
-        console.log(this.draftCardList);
-    }
-
-    /*implementera bannade kort: använd en till variabel*/
-    CreateSortedList() {
-        let tempList = [];
-        for (let i = 0; i < this.amountOfDifferentCards; i++) {
-            tempList[i] = i + 1;
-        }
-        return tempList;
-    }
-
-    CreateSortedSpecialAttackList(){
-        let array = [70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 188, 189]
-        return array;
-    }
-
-    GetDraftFromShuffledList(fullList){
-        let draftList = [];
-        for (let i = 0; i < this.size; i++){
-            //kollar om den har specialattack
-            var index = this.unusedSpecials.indexOf(fullList[i]);
-            if (index !== -1) {
-                this.unusedSpecials.splice(index, 1);
-                this.currentSpecials++;
-            }
-            draftList[i] = fullList[i];
-        }
-        return draftList;
-    }
-
-    CheckMinSpecials(draftList){
-        while (this.currentSpecials < this.minSpecials){
-            for (let i = 0; i < draftList.length; i++){
-                //kollar om det inte är en specialattack
-                if (this.CreateSortedSpecialAttackList().includes(draftList[i]) == false){
-                    let randomIndex = Math.floor(Math.random() * this.unusedSpecials.length);
-                    draftList[i] = this.unusedSpecials[randomIndex];
-                    this.unusedSpecials.splice(randomIndex, 1);
-                    this.currentSpecials++;
-                    break;
-                }
-            }
-        }
-        return draftList;
-    }
-
-    Shuffle(array) {
-        let currentIndex = array.length,  randomIndex;
-      
-        while (currentIndex != 0) {
-      
-          randomIndex = Math.floor(Math.random() * currentIndex);
-          currentIndex--;
-      
-          // Byt elementet med sista platsen av arrayen
-          [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
-        }
-      
-        return array;
-    }
-
-    SortBySize(array){
-        array.sort((a, b) => a.card.size - b.card.size || a.card.id - b.card.id);
-
-        return array;
-    }
-
-    SortByPickOrder(array){
-        array.sort((a, b) => a.pickOrder - b.pickOrder);
-
-        return array;
-    }
-
-    DisplayDraftCards(){
-        for (let i = 0; i < this.draftCards.length; i++){
-            var img = document.createElement('img');
-            document.getElementById('draftFigures').appendChild(img);
-            img.src = this.draftCards[i].card.image;
-            img.addEventListener('click',(evt) => DraftClick(i));
-
-            this.draftCards[i].documentImg = img;
-        }
-    }
-
-    PickCard(draftCard){
-        draftCard.inDraft = false;
-        draftCard.documentImg.setAttribute('class', 'lockedCard');
-        this.turnsUntilSwitchSide--;
-        if (this.currentPlayer == 1){
-            draftCard.owner = 1;
-            let deckId = "deck1Figures";
-            this.AddCardToPlayer(this.player1Deck, draftCard, deckId);
-            this.player1Deck.size += draftCard.card.size;
-            document.getElementById("player1DeckSize").innerHTML = "Size: " + this.player1Deck.size;
-            
+    } else if (deckData[1].length == 0){
+        player1DeckData = deckData[0];
+    } else {
+        if (deckData[0][0].player_id == player1Data.id){
+            player1DeckData = deckData[0];
+            player2DeckData = deckData[1];
         } else{
-            draftCard.owner = 2;
-            let deckId = "deck2Figures";
-            this.AddCardToPlayer(this.player2Deck, draftCard, deckId);
-            this.player2Deck.size += draftCard.card.size;
-            document.getElementById("player2DeckSize").innerHTML = "Size: " + this.player2Deck.size;
-        }
-        if (this.turnsUntilSwitchSide == 0){
-            if (this.currentPlayer == 1){
-                this.currentPlayer = 2;
-                currentTurnMessage.innerHTML = "Player 2's turn to choose";
-            } else{
-                this.currentPlayer = 1;
-                currentTurnMessage.innerHTML = "Player 1's turn to choose";
-            }
-            this.turnsUntilSwitchSide = 2;
-        } else if (this.player2Deck.deck.length == 15){
-            this.draftFinished = true;
+            player1DeckData = deckData[1];
+            player2DeckData = deckData[0];
         }
     }
+    console.log("player1deckdata: " + player1DeckData);
+    for (let i = 0; i < player1DeckData.length; i++){
+        AddCardToPlayer(player1Deck, player1DeckData[i].card_id, "deck1Figures", player1DeckSizeBox);
+        var index = draftCards.findIndex(e => e.card.id === player1DeckData[i].card_id);
+        draftCards[index].inDraft = false;
+    }
+    for (let i = 0; i < player2DeckData.length; i++){
+        AddCardToPlayer(player2Deck, player2DeckData[i].card_id, "deck2Figures", player2DeckSizeBox);
+        var index = draftCards.findIndex(e => e.card.id === player2DeckData[i].card_id);
+        draftCards[index].inDraft = false;
+    }
 
-    AddCardToPlayer(playerDeck, draftCard, deckId){
-        const id = draftCard.card.id;
-        const title = draftCard.card.title;
-        const size = draftCard.card.size;
-        const image = draftCard.card.image;
-        let newDraftCard = new DraftCard(id);
+    DisplayDraftCards();
 
+    if (draftPhase == 1){
+        if (currentPlayer == 1){
+            currentTurnMessage.innerHTML = player1Name + "'s turn to choose";
+        } else{
+            currentTurnMessage.innerHTML = player2Name + "'s turn to choose";
+        }
+    }
+    else if (draftPhase == 2){
+        MakeDraftVisible();
+        currentTurnMessage.innerHTML = "Draft finished";
+    }
+}
+
+function SortBySize(array){
+    array.sort((a, b) => a.card.size - b.card.size || a.card.id - b.card.id);
+
+    return array;
+}
+
+function SortByPickOrder(array){
+    array.sort((a, b) => a.pickOrder - b.pickOrder);
+
+    return array;
+}
+
+function DisplayDraftCards(){
+    for (let i = 0; i < draftCards.length; i++){
         var img = document.createElement('img');
-        document.getElementById(deckId).appendChild(img);
-        img.src = image;
+        document.getElementById('draftFigures').appendChild(img);
+        img.src = draftCards[i].card.image;
+        draftCards[i].documentImg = img;
 
-        newDraftCard.documentImg = img;
-        newDraftCard.owner = draftCard.owner;
-        newDraftCard.inDraft = false;
-        newDraftCard.pickOrder = playerDeck.deck.length + 1;
+        img.addEventListener('click',(evt) => DraftClick(i));
 
-        playerDeck.deck.push(newDraftCard);
-        if(playerDeck.sorted){
-            playerDeck.sorted= !playerDeck.sorted;
-            this.SortDeck(playerDeck)
+        console.log("displaying draftcard: " + draftCards[i].documentImg.src);
+        if (draftCards[i].inDraft == false){
+            draftCards[i].documentImg.setAttribute('class', 'lockedCard');
         }
+    }
+}
+
+function DisplayDeck(playerDeck, deckFigures){
+    for (let i = 0; i < playerDeck.deck.length; i++){
+        var img = document.createElement('img');
+        deckFigures.appendChild(img);
+        img.src = playerDeck.deck[i].card.image;
+    }
+}
+
+function MakeDraftVisible(){
+    draftFiguresBox.classList.remove("hidePopup");
+    player1DeckBox.classList.remove("hidePopup");
+    player2DeckBox.classList.remove("hidePopup");
+    beginningPopup.classList.add("hidePopup");
+    readyPopup.classList.add("hidePopup");
+    document.getElementById("player1SortDeck").onclick = (evt) => SortDeck(player1Deck);
+    document.getElementById("player2SortDeck").onclick = (evt) => SortDeck(player2Deck);
+}
+
+function OpenReadyPopup(){
+    console.log("Openreadypopup")
+    beginningPopup.classList.add("hidePopup");
+    readyPopup.classList.remove("hidePopup");
+    if (player1Ready){
+        player1ReadyButton.disabled = true;
+        player1ReadyImage.src = "images/UI/Checkmark.png";
+    }
+    if (player2Ready){
+        player2ReadyButton.disabled = true;
+        player2ReadyImage.src = "images/UI/Checkmark.png";
+    }
+}
+
+function PickCard(draftCard){
+    draftCard.inDraft = false;
+    draftCard.documentImg.setAttribute('class', 'lockedCard');
+    if (currentPlayer == 1){
+        let deckId = "deck1Figures";
+        AddCardToPlayer(player1Deck, draftCard.card.id, deckId, player1DeckSizeBox);
         
+    } else{
+        let deckId = "deck2Figures";
+        AddCardToPlayer(player2Deck, draftCard.card.id, deckId, player2DeckSizeBox);
     }
+    ChangeDraftTurnData();
+}
 
-    SortDeck(playerDeck){
-        let deckFigures;
-        let sortButton;
-        if (playerDeck == draftManager.player1Deck){
-            deckFigures = document.getElementById("deck1Figures");
-            sortButton = document.getElementById("player1SortDeck");
+function ChangeDraftTurnData(){
+    picksUntilChangeTurn--;
+    if (picksUntilChangeTurn == 0){
+        if (currentPlayer == 1){
+            currentPlayer = 2;
+            currentTurnMessage.innerHTML = player2Name + "'s turn to choose";
         } else{
-            deckFigures = document.getElementById("deck2Figures");
-            sortButton = document.getElementById("player2SortDeck");
+            currentPlayer = 1;
+            currentTurnMessage.innerHTML = player1Name + "'s turn to choose";
         }
-
-        //ta bort display
-        while (deckFigures.firstChild) {
-            deckFigures.removeChild(deckFigures.lastChild);
-        }
-
-        //sortera
-        if (playerDeck.sorted){
-            playerDeck.deck = this.SortByPickOrder(playerDeck.deck);
-            sortButton.textContent = "Sort by size";
-        }else{
-            playerDeck.deck = this.SortBySize(playerDeck.deck);
-            sortButton.textContent = "Sort by pick order";
-        }
-        playerDeck.sorted= !playerDeck.sorted;
-
-        //ny display
-        for (let i = 0; i < playerDeck.deck.length; i++){
-            var img = document.createElement('img');
-            deckFigures.appendChild(img);
-            img.src = playerDeck.deck[i].card.image;
-        }
+        picksUntilChangeTurn = 2;
     }
+}
+
+function AddCardToPlayer(playerDeck, id, deckId, deckSizeBox){
+    let newDraftCard = new DraftCard(id);
+    playerDeck.size += newDraftCard.card.size;
+    deckSizeBox.innerHTML = "Size: " + playerDeck.size;
+    console.log("decksize: " + playerDeck.size);
+
+    var img = document.createElement('img');
+    document.getElementById(deckId).appendChild(img);
+    img.src = newDraftCard.card.image;
+
+    newDraftCard.documentImg = img;
+    newDraftCard.inDraft = false;
+    newDraftCard.pickOrder = playerDeck.deck.length + 1;
+
+    playerDeck.deck.push(newDraftCard);
+    if(playerDeck.sorted){
+        playerDeck.sorted= !playerDeck.sorted;
+        SortDeck(playerDeck)
+    }
+
+    if (player2Deck.deck.length == 15){
+        EndDraft();
+    }
+    
+}
+
+function SortDeck(playerDeck){
+    let deckFigures;
+    let sortButton;
+    if (playerDeck == player1Deck){
+        deckFigures = document.getElementById("deck1Figures");
+        sortButton = document.getElementById("player1SortDeck");
+    } else{
+        deckFigures = document.getElementById("deck2Figures");
+        sortButton = document.getElementById("player2SortDeck");
+    }
+
+    //ta bort display
+    while (deckFigures.firstChild) {
+        deckFigures.removeChild(deckFigures.lastChild);
+    }
+
+    //sortera
+    if (playerDeck.sorted){
+        playerDeck.deck = SortByPickOrder(playerDeck.deck);
+        sortButton.textContent = "Sort by size";
+    }else{
+        playerDeck.deck = SortBySize(playerDeck.deck);
+        sortButton.textContent = "Sort by pick order";
+    }
+    playerDeck.sorted= !playerDeck.sorted;
+
+    DisplayDeck(playerDeck, deckFigures);
+}
+
+function CheckIfBothPlayersReady(){
+    console.log("player1ready: " + player1Ready);
+    console.log("player2ready: " + player2Ready);
+    if (draftPhase == 0 && player1Ready && player2Ready){
+        StartDraftPhase();
+    }
+}
+
+function StartDraftPhase(){
+    if (draftPhase != 0){
+    } else{
+        draftPhase = 1;
+        MakeDraftVisible();
+        currentTurnMessage.innerHTML = player1Name + "'s turn to choose";
+    }
+}
+
+function EndDraft(){
+    draftPhase = 2;
+    currentTurnMessage.innerHTML = "Draft has finished";
 }
 
 function DraftClick(i){
     //window.alert(evt.currentTarget.src);
-    if (draftManager.draftCards[i].inDraft && !draftManager.draftFinished){
-        draftManager.PickCard(draftManager.draftCards[i]);
+    if (draftCards[i].inDraft && draftPhase == 1 && currentPlayer == userRole){
+        PickCard(draftCards[i]);
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "CreateDeckCard", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({
+            playerId: playerId,
+            cardId: draftCards[i].card.id
+        }));
+        xhr.onload = function() {
+            let message = [playerId, draftCards[i].card.id, draftId];
+            socket.emit('add card', message);
+        }
     }
 }
 
-function BeginSetup() {
-    beginningPopup.classList.add("hidePopup");
-    draftManager = new DraftManager(50, 2);
-    console.log(draftManager);
-    document.getElementById("player1SortDeck").onclick = (evt) => draftManager.SortDeck(draftManager.player1Deck);
-    document.getElementById("player2SortDeck").onclick = (evt) => draftManager.SortDeck(draftManager.player2Deck);
+function PlayerClick(i){
+    console.log("playerClick " + i + "draftphase: " + draftPhase);
+    userRole = i;
+    if (userRole == 1){
+        playerId = player1Id;
+        player1ReadyButton.disabled = false;
+    } else if (userRole == 2){
+        playerId = player2Id;
+        player2ReadyButton.disabled = false;
+    }
+
+    if (draftPhase != 0){
+        MakeDraftVisible();
+    } else{
+        OpenReadyPopup();
+    }
+}
+
+//implementera databasfunktion
+function ReadyClick(i){
+    console.log("readyClick " + i);
+
+    if (userRole == 1){
+        player1Ready = true;
+        player1ReadyImage.src = "images/UI/Checkmark.png";
+
+    } else{
+        player2Ready = true;
+        player2ReadyImage.src = "images/UI/Checkmark.png";
+    }
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "PlayerReady", true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+        playerId: playerId,
+        draftId: draftId
+    }));
+    xhr.onload = function() {
+        let message = [playerId, draftId];
+        socket.emit('player ready', message);
+        CheckIfBothPlayersReady();
+    }
 }
