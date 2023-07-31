@@ -29,7 +29,7 @@ io.on("connection", socket => {
     });
 
     socket.on('player ready', message => {
-        console.log("socket sent player ready in room " + socket.room);
+        console.log("socket sent player ready in room " + message[1]);
         socket.to(message[1].toString()).emit('player ready', message[0]);
     })
 
@@ -97,6 +97,14 @@ app.post("/GenerateNewDraft", async (req, res) => {
     if (player2 == null || player2 == ''){
         player2 = 'Player 2';
     }
+    
+    let r = Math.floor(Math.random() * 2);
+    if (r == 1){
+        let tempName = player1;
+        player1 = player2;
+        player2 = tempName;
+    }
+
     let names = [player1, player2];
     await (CreatePlayers(result, names))
     /*await (CreatePlayer(result, 1, JSON.stringify(data.player1Name)))
@@ -271,6 +279,11 @@ app.post("/CreateDeckCard", async (req, res) => {
     let draftPhase = 1
     picksUntilChangeTurn--
 
+    //kollar om det är slutet, player och count är från före update
+    if (playerTurn == 2 && count == 14){
+        draftPhase = 2
+    }
+
     if (picksUntilChangeTurn == 0){
         picksUntilChangeTurn = 2
         if (playerTurn == 1){
@@ -278,11 +291,6 @@ app.post("/CreateDeckCard", async (req, res) => {
         } else{
             playerTurn = 1
         }
-    }
-
-    //kollar om det är slutet, count är från innan kort 
-    if (playerTurn == 2 && count == 14){
-        draftPhase = 2
     }
 
     await UpdateDraft(draft.id, draftPhase, playerTurn, picksUntilChangeTurn)

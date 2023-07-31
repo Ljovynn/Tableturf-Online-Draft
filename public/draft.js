@@ -8,6 +8,9 @@ const draftId = entriesArray[0][1];
 let beginningPopup = document.getElementById("beginningPopup");
 let readyPopup = document.getElementById("readyPopup");
 
+var popSfx = new Audio('Audio/Pop.mp3');
+var drawCardSfx = new Audio('Audio/DrawCard.mp3');
+
 let draftFiguresBox = document.getElementById("draftFigures");
 let player1DeckBox = document.getElementById("deck1Figures");
 let player2DeckBox = document.getElementById("deck2Figures");
@@ -101,7 +104,9 @@ class PlayerDeck{
     }
 }
 
-const socket = io('http://localhost:8080');
+const socket = io();
+//const socket = io.connect();
+//const socket = io('http://85.228.196.253:8080');
 socket.emit('join', draftId.toString());
 console.log("joining room " + draftId.toString());
 
@@ -188,7 +193,7 @@ function ParseDraftData(){
         draftCards[i] = new DraftCard(draftCardList[i].card_id);
     }
 
-    draftCards = SortBySize(draftCards);
+    draftCards = SortBySizeReverse(draftCards);
 
     //players
     const playerData = draftData[2];
@@ -263,6 +268,12 @@ function ParseDraftData(){
 
 function SortBySize(array){
     array.sort((a, b) => a.card.size - b.card.size || a.card.id - b.card.id);
+
+    return array;
+}
+
+function SortBySizeReverse(array){
+    array.sort((a, b) => b.card.size - a.card.size || a.card.id - b.card.id);
 
     return array;
 }
@@ -346,10 +357,18 @@ function ChangeDraftTurnData(){
             currentTurnMessage.innerHTML = player1Name + "'s turn to choose";
         }
         picksUntilChangeTurn = 2;
+
+        if (userRole == currentPlayer){
+            popSfx.play();
+            currentTurnMessage.style.color = '#2a7321';
+        } else if (userRole != 0){
+            currentTurnMessage.style.color = '#4d2d3b';
+        }
     }
 }
 
 function AddCardToPlayer(playerDeck, id, deckId, deckSizeBox){
+    drawCardSfx.play();
     let newDraftCard = new DraftCard(id);
     playerDeck.size += newDraftCard.card.size;
     deckSizeBox.innerHTML = "Size: " + playerDeck.size;
@@ -396,7 +415,7 @@ function SortDeck(playerDeck){
         playerDeck.deck = SortByPickOrder(playerDeck.deck);
         sortButton.textContent = "Sort by size";
     }else{
-        playerDeck.deck = SortBySize(playerDeck.deck);
+        playerDeck.deck = SortBySizeReverse(playerDeck.deck);
         sortButton.textContent = "Sort by pick order";
     }
     playerDeck.sorted= !playerDeck.sorted;
@@ -413,17 +432,20 @@ function CheckIfBothPlayersReady(){
 }
 
 function StartDraftPhase(){
+    popSfx.play();
     if (draftPhase != 0){
     } else{
         draftPhase = 1;
         MakeDraftVisible();
         currentTurnMessage.innerHTML = player1Name + "'s turn to choose";
+        CheckTextColour();
     }
 }
 
 function EndDraft(){
     draftPhase = 2;
     currentTurnMessage.innerHTML = "Draft has finished";
+    currentTurnMessage.style.color = '#000000';
 }
 
 function DraftClick(i){
@@ -444,6 +466,14 @@ function DraftClick(i){
     }
 }
 
+function CheckTextColour(){
+    if (userRole == currentPlayer){
+        currentTurnMessage.style.color = '#2a7321';
+    } else if (userRole != 0){
+        currentTurnMessage.style.color = '#4d2d3b';
+    }
+}
+
 function PlayerClick(i){
     console.log("playerClick " + i + "draftphase: " + draftPhase);
     userRole = i;
@@ -457,12 +487,12 @@ function PlayerClick(i){
 
     if (draftPhase != 0){
         MakeDraftVisible();
+        CheckTextColour();
     } else{
         OpenReadyPopup();
     }
 }
 
-//implementera databasfunktion
 function ReadyClick(i){
     console.log("readyClick " + i);
 
