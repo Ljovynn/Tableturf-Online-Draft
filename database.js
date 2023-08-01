@@ -89,7 +89,7 @@ export async function PlayerReady (player_id){
 }
 
 //await UpdateDraft(27, 1, 2, 2)
-const result = await GetDeckCount(1);
+/*const result = await GetDeckCount(1);
 const result2 = JSON.stringify(result);
 console.log(result2 + " json")
-console.log(result + " databaseresult!")
+console.log(result + " databaseresult!")*/

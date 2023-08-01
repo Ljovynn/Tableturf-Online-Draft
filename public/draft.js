@@ -15,6 +15,16 @@ let draftFiguresBox = document.getElementById("draftFigures");
 let player1DeckBox = document.getElementById("deck1Figures");
 let player2DeckBox = document.getElementById("deck2Figures");
 
+let sortDeck1Button = document.getElementById("player1SortDeck");
+let sortDeck2Button = document.getElementById("player2SortDeck");
+
+let exportDeckPopup = document.getElementById("exportDeckPopup");
+let exportDeck1Button = document.getElementById("exportDeck1");
+let exportDeck2Button = document.getElementById("exportDeck2");
+let copyExportButton = document.getElementById("copyExportText");
+let closeExportPopupButton = document.getElementById("closeExportPopup");
+let codeId = document.getElementById("code");
+
 let player1Button = document.getElementById("player1Button");
 let player2Button = document.getElementById("player2Button");
 let spectatorButton = document.getElementById("spectatorButton");
@@ -28,6 +38,14 @@ let currentTurnMessage = document.getElementById("currentTurnMessage");
 
 let player1DeckSizeBox = document.getElementById("player1DeckSize");
 let player2DeckSizeBox = document.getElementById("player2DeckSize");
+
+copyExportButton.addEventListener("click", () => {
+    navigator.clipboard.writeText(codeId.innerText);
+});
+
+closeExportPopupButton.addEventListener("click", () => {
+    exportDeckPopup.classList.add("hidePopup");
+});
 
 let allCards = [];
 
@@ -262,6 +280,8 @@ function ParseDraftData(){
     }
     else if (draftPhase == 2){
         MakeDraftVisible();
+        exportDeck1Button.disabled = false;
+        exportDeck2Button.disabled = false;
         currentTurnMessage.innerHTML = "Draft finished";
     }
 }
@@ -314,8 +334,12 @@ function MakeDraftVisible(){
     player2DeckBox.classList.remove("hidePopup");
     beginningPopup.classList.add("hidePopup");
     readyPopup.classList.add("hidePopup");
-    document.getElementById("player1SortDeck").onclick = (evt) => SortDeck(player1Deck);
-    document.getElementById("player2SortDeck").onclick = (evt) => SortDeck(player2Deck);
+    sortDeck1Button.disabled = false;
+    sortDeck2Button.disabled = false;
+    sortDeck1Button.onclick = (evt) => SortDeck(player1Deck);
+    sortDeck2Button.onclick = (evt) => SortDeck(player2Deck);
+    exportDeck1Button.onclick = (evt) => ExportDeck(player1Deck);
+    exportDeck2Button.onclick = (evt) => ExportDeck(player2Deck);
 }
 
 function OpenReadyPopup(){
@@ -359,7 +383,7 @@ function ChangeDraftTurnData(){
         picksUntilChangeTurn = 2;
 
         if (userRole == currentPlayer){
-            popSfx.play();
+            //popSfx.play();
             currentTurnMessage.style.color = '#2a7321';
         } else if (userRole != 0){
             currentTurnMessage.style.color = '#4d2d3b';
@@ -423,6 +447,19 @@ function SortDeck(playerDeck){
     DisplayDeck(playerDeck, deckFigures);
 }
 
+function ExportDeck(playerDeck){
+    exportDeckPopup.classList.remove("hidePopup");
+
+    playerDeck.deck = SortBySizeReverse(playerDeck.deck);
+    let name = "Draft"
+    let cards = [];
+    for (let i = 0; i < playerDeck.deck.length; i++){
+        cards[i] = playerDeck.deck[i].card.id;
+    }
+    jsonString = JSON.stringify({name, cards});
+    codeId.innerText = jsonString;
+}
+
 function CheckIfBothPlayersReady(){
     console.log("player1ready: " + player1Ready);
     console.log("player2ready: " + player2Ready);
@@ -446,6 +483,8 @@ function EndDraft(){
     draftPhase = 2;
     currentTurnMessage.innerHTML = "Draft has finished";
     currentTurnMessage.style.color = '#000000';
+    exportDeck1Button.disabled = false;
+    exportDeck2Button.disabled = false;
 }
 
 function DraftClick(i){
