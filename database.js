@@ -21,7 +21,7 @@ export async function GetDraft(id){
 }
 
 export async function GetPlayersInDraft(draftId){
-    const [rows] = await pool.query(`SELECT * FROM players WHERE draft_id = ? ORDER BY in_draft_id`, [draftId])
+    const [rows] = await pool.query(`SELECT * FROM players WHERE draft_id = ? ORDER BY id`, [draftId])
     return rows;
 }
 
@@ -45,17 +45,17 @@ export async function GetDraftCards(draftId){
     return rows;
 }
 
-export async function CreateDraft(){
-    const result = await pool.query(`INSERT INTO drafts () VALUES ()`)
+export async function CreateDraft(timer){
+    const result = await pool.query(`INSERT INTO drafts (timer) VALUES (?)`, [timer])
     return JSON.stringify(result[0].insertId);
 }
 
-export async function CreatePlayer(draft_id, in_draft_id, player_name){
-    await pool.query(`INSERT INTO players (draft_id, in_draft_id, player_name) VALUES (?, ?, ?)`, [draft_id, in_draft_id, player_name])
+export async function CreatePlayer(draft_id, player_name){
+    await pool.query(`INSERT INTO players (draft_id, player_name) VALUES (?, ?)`, [draft_id, player_name])
 }
 
 export async function CreatePlayers(draft_id, playerNames){
-    await pool.query(`INSERT INTO players (draft_id, in_draft_id, player_name) VALUES (?, 1, ?), (?, 2, ?)`, [draft_id, playerNames[0], draft_id, playerNames[1]]);
+    await pool.query(`INSERT INTO players (draft_id, player_name) VALUES (?, ?), (?, ?)`, [draft_id, playerNames[0], draft_id, playerNames[1]]);
 }
 
 export async function CreateDraftCard(draft_id, card_id){

@@ -13,6 +13,7 @@ let player1NameDoc = document.getElementById("player1");
 let player2NameDoc = document.getElementById("player2");
 let draftSizeDoc = document.getElementById("draftSize");
 let minSpecialsDoc = document.getElementById("312Size");
+let timerDoc = document.getElementById("timerList");
 let generateDraftBtn = document.getElementById("generateDraft");
 
 //let popup = document.getElementById("popup");
@@ -27,6 +28,7 @@ generateDraftBtn.addEventListener("click", () => {
     let player2 = player2NameDoc.value;
     let draftSize = draftSizeDoc.value;
     let minSpecials = minSpecialsDoc.value;
+    let timer = timerDoc.value;
 
     //console.log(player1NameDoc);
     //console.log("innarhtml: namn: "  + player1);
@@ -38,7 +40,8 @@ generateDraftBtn.addEventListener("click", () => {
         player1Name: player1,
         player2Name: player2,
         draftSize: +draftSize,
-        minSpecials: +minSpecials
+        minSpecials: +minSpecials,
+        timer: +timer
     }));
     xhr.onload = function() {
 

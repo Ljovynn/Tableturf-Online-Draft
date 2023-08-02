@@ -28,6 +28,8 @@ let codeId = document.getElementById("code");
 let optionsPopup = document.getElementById("optionsPopup")
 let optionsButton = document.getElementById("options");
 let closeOptionsButton = document.getElementById("closeOptions");
+
+let muteAudioCheckbox = document.getElementById("muteAudioCheckbox");
 let sortOrderForm = document.getElementById("setSizeOrder");
 let specialCardSortForm = document.getElementById("set312Order");
 
@@ -44,6 +46,8 @@ let currentTurnMessage = document.getElementById("currentTurnMessage");
 
 let player1DeckSizeBox = document.getElementById("player1DeckSize");
 let player2DeckSizeBox = document.getElementById("player2DeckSize");
+
+let muteAudio = false;
 
 copyExportButton.addEventListener("click", () => {
     navigator.clipboard.writeText(codeId.innerText);
@@ -65,6 +69,13 @@ closeOptionsButton.addEventListener("click", () => {
     optionsPopup.classList.add("hidePopup");
     exportDeck1Button.disabled = false;
     exportDeck2Button.disabled = false;
+    if (muteAudioCheckbox.checked){
+        muteAudio = true;;
+        localStorage['mute'] = '1';
+    } else{
+        muteAudio = false;
+        localStorage['mute'] = '0';
+    }
 });
 
 let allCards = [];
@@ -93,11 +104,17 @@ let player2Name;
 let currentPlayer = 1;
 let picksUntilChangeTurn = 1;
 let draftPhase = 0;
+let draftTimer = 0; //maximum
+let timer = 0; //det som tickar ner
 
 let draftData;
 
 var storedSort = localStorage['sort'] || '1';
 var stored312Order = localStorage['312Order'] || '1';
+muteAudio = localStorage['mute' || '0'];
+if (muteAudio == 1){
+    muteAudioCheckbox.checked = true;
+}
 sortOrderForm.value = storedSort;
 specialCardSortForm.value = stored312Order;
 
@@ -149,7 +166,6 @@ class PlayerDeck{
 
 const socket = io();
 //const socket = io.connect();
-//const socket = io('http://85.228.196.253:8080');
 socket.emit('join', draftId.toString());
 
 socket.on('player ready', data =>{
@@ -226,6 +242,7 @@ function ParseDraftData(){
     draftPhase = draftManagerData.draft_phase;
     picksUntilChangeTurn = draftManagerData.picks_until_change_turn;
     currentPlayer = draftManagerData.player_turn;
+    draftTimer = draftManagerData.timer;
     
     //draftkort
     const draftCardList = draftData[1];
@@ -237,15 +254,8 @@ function ParseDraftData(){
 
     //players
     const playerData = draftData[2];
-    let player1Data;
-    let player2Data;
-    if (playerData[0].in_draft_id == 1){
-        player1Data = playerData[0];
-        player2Data = playerData[1];
-    } else{
-        player1Data = playerData[1];
-        player2Data = playerData[0];
-    }
+    let player1Data = playerData[0];
+    let player2Data = playerData[1];
     player1Name = player1Data.player_name;
     player2Name = player2Data.player_name;
     player1Button.innerText = player1Name;
@@ -454,7 +464,9 @@ function ChangeDraftTurnData(){
 }
 
 function AddCardToPlayer(playerDeck, id, deckId, deckSizeBox){
-    drawCardSfx.play();
+    if (!muteAudio){
+        drawCardSfx.play();
+    }
     let newDraftCard = new DraftCard(id);
     playerDeck.size += newDraftCard.card.size;
     deckSizeBox.innerHTML = "Size: " + playerDeck.size;
@@ -541,7 +553,9 @@ function CheckIfBothPlayersReady(){
 }
 
 function StartDraftPhase(){
-    popSfx.play();
+    if (!muteAudio){
+        popSfx.play();
+    }
     if (draftPhase != 0){
     } else{
         draftPhase = 1;

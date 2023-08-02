@@ -85,9 +85,9 @@ app.post("/GenerateNewDraft", async (req, res) => {
     try {
         const data = req.body
     console.log("data: " + data);
-    console.log("data [0]: " + data.player1Name);
+    console.log("timer: " + data.timer);
 
-    const result = await CreateDraft()
+    const result = await CreateDraft(data.timer)
 
     let player1 = data.player1Name;
     let player2 = data.player2Name;
@@ -106,12 +106,12 @@ app.post("/GenerateNewDraft", async (req, res) => {
     }
 
     let names = [player1, player2];
-    await (CreatePlayers(result, names))
+    await (CreatePlayers(result, names));
     /*await (CreatePlayer(result, 1, JSON.stringify(data.player1Name)))
     await (CreatePlayer(result, 2, JSON.stringify(data.player2Name)))*/
 
-    const draftSize = +JSON.stringify(data.draftSize)
-    const minSpecials = +JSON.stringify(data.minSpecials)
+    const draftSize = +JSON.stringify(data.draftSize);
+    const minSpecials = +JSON.stringify(data.minSpecials);
 
     let draftList = CreateSortedList(amountOfDifferentCards);
     Shuffle(draftList);
@@ -144,13 +144,20 @@ app.post("/PlayerReady", async (req, res) =>{
     
         console.log(playerId + " ready");
         await PlayerReady(playerId);
+        let otherPlayer;
+        if (playerId == players[0].id){
+            otherPlayer = players[1];
+        } else if (playerId == players[1].id){
+            otherPlayer = players[0];
+        } else{
+            console.log("player not in draft");
+            res.sendStatus(599);
+        }
     
         //horrendous code ik but its fast
-        if ((players[0].id == playerId || players[1].id == playerId)){
-            if (draft.draft_phase == 0 && (players[0].ready || players[0].id == playerId) && (players[1].ready || players[1].id == playerId)){
-                console.log("starting draft");
-                await StartDraft(draft.id);
-            }
+        if (draft.draft_phase == 0 && otherPlayer.ready){
+            console.log("starting draft");
+            await StartDraft(draft.id);
         }
     } catch(err){
         res.sendStatus(599);
@@ -258,13 +265,19 @@ app.post("/CreateDeckCard", async (req, res) => {
     const player = await GetPlayer(data.playerId);
     const count = await GetDeckCount(player.id)
     const draft = await GetDraft(player.draft_id);
+    const players = await GetPlayersInDraft(draft.id)
+    let playerInDraftId = 0;
+    if (player.id == players[0].id){
+        playerInDraftId = 1;
+    } else if (player.id = players[1].id){
+        playerInDraftId = 2;
+    }
 
     console.log ("count: " + count);/*
-    console.log ("player in draft id: " + player.in_draft_id);
     console.log ("player turn: " + draft.player_turn);
     console.log ("draft phase: " + draft.draft_phase);*/
 
-    if (count < 15 && player.in_draft_id == draft.player_turn && draft.draft_phase == 1){
+    if (count < 15 && (playerInDraftId == draft.player_turn) && draft.draft_phase == 1){
         await CreateDeckCard(data.playerId, count + 1, data.cardId);
     } else{
         console.log("fraud!");
