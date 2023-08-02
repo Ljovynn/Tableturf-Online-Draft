@@ -25,6 +25,12 @@ let copyExportButton = document.getElementById("copyExportText");
 let closeExportPopupButton = document.getElementById("closeExportPopup");
 let codeId = document.getElementById("code");
 
+let optionsPopup = document.getElementById("optionsPopup")
+let optionsButton = document.getElementById("options");
+let closeOptionsButton = document.getElementById("closeOptions");
+let sortOrderForm = document.getElementById("setSizeOrder");
+let specialCardSortForm = document.getElementById("set312Order");
+
 let player1Button = document.getElementById("player1Button");
 let player2Button = document.getElementById("player2Button");
 let spectatorButton = document.getElementById("spectatorButton");
@@ -45,6 +51,20 @@ copyExportButton.addEventListener("click", () => {
 
 closeExportPopupButton.addEventListener("click", () => {
     exportDeckPopup.classList.add("hidePopup");
+    optionsButton.disabled = false;
+});
+
+optionsButton.addEventListener("click", () => {
+    optionsPopup.classList.remove("hidePopup");
+    exportDeck1Button.disabled = true;
+    exportDeck2Button.disabled = true;
+});
+
+closeOptionsButton.addEventListener("click", () => {
+    UpdateSort();
+    optionsPopup.classList.add("hidePopup");
+    exportDeck1Button.disabled = false;
+    exportDeck2Button.disabled = false;
 });
 
 let allCards = [];
@@ -75,6 +95,11 @@ let picksUntilChangeTurn = 1;
 let draftPhase = 0;
 
 let draftData;
+
+var storedSort = localStorage['sort'] || '1';
+var stored312Order = localStorage['312Order'] || '1';
+sortOrderForm.value = storedSort;
+specialCardSortForm.value = stored312Order;
 
 player1Button.addEventListener('click',(evt) => PlayerClick(1));
 player2Button.addEventListener('click',(evt) => PlayerClick(2));
@@ -126,10 +151,8 @@ const socket = io();
 //const socket = io.connect();
 //const socket = io('http://85.228.196.253:8080');
 socket.emit('join', draftId.toString());
-console.log("joining room " + draftId.toString());
 
 socket.on('player ready', data =>{
-    console.log("player1id: "+ player1Id +  " data: " + data)
     if (player1Id == data){
         player1Ready = true;
         player1ReadyImage.src = "images/UI/Checkmark.png";
@@ -148,7 +171,6 @@ socket.on('player ready', data =>{
 })*/
 
 socket.on('add card', data =>{
-    console.log("data: " + data);
     var index = draftCards.findIndex(e => e.card.id === data[1]);
     draftCards[index].inDraft = false;
     draftCards[index].documentImg.setAttribute('class', 'lockedCard');
@@ -211,7 +233,7 @@ function ParseDraftData(){
         draftCards[i] = new DraftCard(draftCardList[i].card_id);
     }
 
-    draftCards = SortBySizeReverse(draftCards);
+    draftCards = SortBySize(draftCards, 1, 3);
 
     //players
     const playerData = draftData[2];
@@ -257,7 +279,6 @@ function ParseDraftData(){
             player2DeckData = deckData[0];
         }
     }
-    console.log("player1deckdata: " + player1DeckData);
     for (let i = 0; i < player1DeckData.length; i++){
         AddCardToPlayer(player1Deck, player1DeckData[i].card_id, "deck1Figures", player1DeckSizeBox);
         var index = draftCards.findIndex(e => e.card.id === player1DeckData[i].card_id);
@@ -286,16 +307,58 @@ function ParseDraftData(){
     }
 }
 
-function SortBySize(array){
-    array.sort((a, b) => a.card.size - b.card.size || a.card.id - b.card.id);
-
+function CreateSortedSpecialAttackList(){
+    let array = [70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 188, 189]
     return array;
 }
 
-function SortBySizeReverse(array){
-    array.sort((a, b) => b.card.size - a.card.size || a.card.id - b.card.id);
+function SortBySize(array, reverseValue, specialAttackValue){
+    if (specialAttackValue == 3){
+        if (reverseValue == 2){
+            array.sort((a, b) => a.card.size - b.card.size || a.card.id - b.card.id);
+        } else{
+            array.sort((a, b) => b.card.size - a.card.size || a.card.id - b.card.id);
+        }
+        return array;
+    } else{
+        let tempFullList = []
+        let tempNormalCardList = [];
+        let temp312List = []
+        let all312List = CreateSortedSpecialAttackList();
+        for (let i = 0; i < array.length; i++){
+            var index = all312List.indexOf(array[i].card.id);
+            if (index !== -1) {
+                temp312List.push(array[i]);
+            } else{
+                tempNormalCardList.push(array[i]);
+            }
+        }
 
-    return array;
+        if (reverseValue == 2){
+            tempNormalCardList.sort((a, b) => a.card.size - b.card.size || a.card.id - b.card.id);
+        } else{
+            tempNormalCardList.sort((a, b) => b.card.size - a.card.size || a.card.id - b.card.id);
+        }
+
+        temp312List.sort((a, b) => a.card.id - b.card.id);
+
+        if (specialAttackValue == 1){
+            for (let i = 0; i < temp312List.length; i++){
+                tempFullList.push(temp312List[i]);
+            }
+            for (let i = 0; i < tempNormalCardList.length; i++){
+                tempFullList.push(tempNormalCardList[i]);
+            }
+        } else{
+            for (let i = 0; i < tempNormalCardList.length; i++){
+                tempFullList.push(tempNormalCardList[i]);
+            }
+            for (let i = 0; i < temp312List.length; i++){
+                tempFullList.push(temp312List[i]);
+            }
+        }
+        return tempFullList;
+    }
 }
 
 function SortByPickOrder(array){
@@ -313,7 +376,6 @@ function DisplayDraftCards(){
 
         img.addEventListener('click',(evt) => DraftClick(i));
 
-        console.log("displaying draftcard: " + draftCards[i].documentImg.src);
         if (draftCards[i].inDraft == false){
             draftCards[i].documentImg.setAttribute('class', 'lockedCard');
         }
@@ -336,6 +398,7 @@ function MakeDraftVisible(){
     readyPopup.classList.add("hidePopup");
     sortDeck1Button.disabled = false;
     sortDeck2Button.disabled = false;
+    optionsButton.disabled = false;
     sortDeck1Button.onclick = (evt) => SortDeck(player1Deck);
     sortDeck2Button.onclick = (evt) => SortDeck(player2Deck);
     exportDeck1Button.onclick = (evt) => ExportDeck(player1Deck);
@@ -343,7 +406,6 @@ function MakeDraftVisible(){
 }
 
 function OpenReadyPopup(){
-    console.log("Openreadypopup")
     beginningPopup.classList.add("hidePopup");
     readyPopup.classList.remove("hidePopup");
     if (player1Ready){
@@ -396,7 +458,6 @@ function AddCardToPlayer(playerDeck, id, deckId, deckSizeBox){
     let newDraftCard = new DraftCard(id);
     playerDeck.size += newDraftCard.card.size;
     deckSizeBox.innerHTML = "Size: " + playerDeck.size;
-    console.log("decksize: " + playerDeck.size);
 
     var img = document.createElement('img');
     document.getElementById(deckId).appendChild(img);
@@ -439,7 +500,7 @@ function SortDeck(playerDeck){
         playerDeck.deck = SortByPickOrder(playerDeck.deck);
         sortButton.textContent = "Sort by size";
     }else{
-        playerDeck.deck = SortBySizeReverse(playerDeck.deck);
+        playerDeck.deck = SortBySize(playerDeck.deck, +sortOrderForm.value, +specialCardSortForm.value);
         sortButton.textContent = "Sort by pick order";
     }
     playerDeck.sorted= !playerDeck.sorted;
@@ -447,10 +508,23 @@ function SortDeck(playerDeck){
     DisplayDeck(playerDeck, deckFigures);
 }
 
+function UpdateSort(){
+    localStorage['sort'] = sortOrderForm.value;
+    localStorage['312Order'] = specialCardSortForm.value;
+
+    if (player1Deck.sorted == true){
+        player1Deck.deck = SortBySize(player1Deck.deck, +sortOrderForm.value, +specialCardSortForm.value);
+    }
+    if (player2Deck.sorted == true){
+        player2Deck.deck = SortBySize(player2Deck.deck, +sortOrderForm.value, +specialCardSortForm.value);
+    }
+}
+
 function ExportDeck(playerDeck){
     exportDeckPopup.classList.remove("hidePopup");
+    optionsButton.disabled = true;
 
-    playerDeck.deck = SortBySizeReverse(playerDeck.deck);
+    playerDeck.deck = SortBySize(playerDeck.deck, +sortOrderForm.value, +specialCardSortForm.value);
     let name = "Draft"
     let cards = [];
     for (let i = 0; i < playerDeck.deck.length; i++){
@@ -461,8 +535,6 @@ function ExportDeck(playerDeck){
 }
 
 function CheckIfBothPlayersReady(){
-    console.log("player1ready: " + player1Ready);
-    console.log("player2ready: " + player2Ready);
     if (draftPhase == 0 && player1Ready && player2Ready){
         StartDraftPhase();
     }
@@ -514,7 +586,6 @@ function CheckTextColour(){
 }
 
 function PlayerClick(i){
-    console.log("playerClick " + i + "draftphase: " + draftPhase);
     userRole = i;
     if (userRole == 1){
         playerId = player1Id;
@@ -533,8 +604,6 @@ function PlayerClick(i){
 }
 
 function ReadyClick(i){
-    console.log("readyClick " + i);
-
     if (userRole == 1){
         player1Ready = true;
         player1ReadyImage.src = "images/UI/Checkmark.png";
