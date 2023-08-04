@@ -16,7 +16,7 @@ export async function GetDrafts(){
 }
 
 export async function GetDraft(id){
-    const [rows] = await pool.query(`SELECT * FROM drafts WHERE id = ?`, [id])
+    const [rows] = await pool.query(`SELECT *, SUBSTRING(DATE_FORMAT(\`last_update\`, '%Y-%m-%d %T.%f'),1,21) as formatted_update FROM drafts WHERE id = ?`, [id])
     return rows[0];
 }
 
@@ -84,12 +84,17 @@ export async function UpdateDraft(draft_id, draft_phase, player_turn, picks_unti
     [draft_phase, player_turn, picks_until_change_turn, draft_id])
 }
 
+export async function DraftTimerDepleted(draft_id){
+    await pool.query(`UPDATE drafts SET draft_phase = 3, last_update = NOW() WHERE id = ?`,
+    [draft_id])
+}
+
 export async function PlayerReady (player_id){
     await pool.query(`UPDATE players SET ready = TRUE WHERE id = ?`, [player_id])
 }
 
 //await UpdateDraft(27, 1, 2, 2)
-/*const result = await GetDeckCount(1);
+/*const result = await GetDraft(9);
 const result2 = JSON.stringify(result);
 console.log(result2 + " json")
 console.log(result + " databaseresult!")*/

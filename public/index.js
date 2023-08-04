@@ -16,7 +16,39 @@ let minSpecialsDoc = document.getElementById("312Size");
 let timerDoc = document.getElementById("timerList");
 let generateDraftBtn = document.getElementById("generateDraft");
 
-//let popup = document.getElementById("popup");
+let optionsPopup = document.getElementById("optionsPopup")
+let optionsButton = document.getElementById("options");
+let closeOptionsButton = document.getElementById("closeOptions");
+
+let muteAudioCheckbox = document.getElementById("muteAudioCheckbox");
+let sortOrderForm = document.getElementById("setSizeOrder");
+let specialCardSortForm = document.getElementById("set312Order");
+
+var storedSort = localStorage['sort'] || '1';
+var stored312Order = localStorage['312Order'] || '1';
+var mute = localStorage['mute' || '0'];
+if (mute == '1'){
+    muteAudioCheckbox.checked = true;
+}
+sortOrderForm.value = storedSort;
+specialCardSortForm.value = stored312Order;
+
+optionsButton.addEventListener("click", () => {
+    optionsPopup.classList.add("openPopup");
+    optionsButton.disabled = true;
+});
+
+closeOptionsButton.addEventListener("click", () => {
+    optionsButton.disabled = false;
+    optionsPopup.classList.remove("openPopup");
+    if (muteAudioCheckbox.checked){
+        localStorage['mute'] = '1';
+    } else{
+        localStorage['mute'] = '0';
+    }
+    localStorage['sort'] = sortOrderForm.value;
+    localStorage['312Order'] = specialCardSortForm.value;
+});
 
 /*var storedLang = localStorage['language'] || 'en';
 document.documentElement.setAttribute('lang', storedLang);

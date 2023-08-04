@@ -7,7 +7,7 @@ import {createServer } from 'http';
 
 import {GetDraft, GetPlayersInDraft, GetPlayer, GetDeckCards, GetDraftCards, CreateDraft,
     CreatePlayers, CreateDraftCards, CreateDeckCard, UpdateDraft, PlayerReady, StartDraft,
-    GetDeckCount} from './database.js'
+    GetDeckCount, DraftTimerDepleted} from './database.js'
 
 import { Server } from "socket.io";
 
@@ -55,31 +55,78 @@ app.get("/draft", async (req, res) => {
 
 //indexes 0 = draftcards, 1 = players, 2 = playerdecks
 app.post("/GetDraftInfo", async (req, res) =>{
-    const draftId = req.body.draftId;
-    let data = [];
-
-    //get draft
-    data[0] = await GetDraft(draftId);
-    if (data[0] == null){
+    try {
+        const draftId = req.body.draftId;
+        let data = [];
+    
+        //get draft
+        data[0] = await GetDraft(draftId);
+        if (data[0] == null){
+            res.sendStatus(599);
+            return;
+        }
+    
+        //get draftcards
+        data[1] = await GetDraftCards(draftId);
+    
+        //get players
+    
+        data[2] = await GetPlayersInDraft(draftId);
+    
+        //get player decks
+        let decks = [];
+        decks[0] = await GetDeckCards(data[2][0].id);
+        decks[1] = await GetDeckCards(data[2][1].id);
+        data[3] = decks;
+    
+        res.status(200).send(data);
+    } catch (err){
         res.sendStatus(599);
-        return;
     }
-
-    //get draftcards
-    data[1] = await GetDraftCards(draftId);
-
-    //get players
-
-    data[2] = await GetPlayersInDraft(draftId);
-
-    //get player decks
-    let decks = [];
-    decks[0] = await GetDeckCards(data[2][0].id);
-    decks[1] = await GetDeckCards(data[2][1].id);
-    data[3] = decks;
-
-    res.status(200).send(data);
 })
+
+app.post("/TimerBelowLimit", async (req, res) =>{
+    try {
+        const draftId = req.body.draftId;
+        const draft = await GetDraft(draftId);
+        if (draft.draft_phase == 3){
+            console.log("draft phase is 3");
+            res.sendStatus(200);
+            return;
+        }
+        if (draft.draft_phase != 1){
+            console.log("draft phase isnt 1");
+            res.sendStatus(599);
+            return;
+        }
+        var now = new Date();
+        let timeSinceLastUpdate = CreateDateFromTimestamp(draft.formatted_update);
+        var t = (timeSinceLastUpdate.getTime() + (draft.timer * 1000)) - now.getTime();
+        //result = result / 1000;
+        console.log("result: " + t);
+        if (t <= -2000){
+            console.log("draft timer depleted");
+            await DraftTimerDepleted(draftId);
+            res.sendStatus(201);
+            return;
+        }
+        res.sendStatus(250);
+        return;
+    } catch (err){
+        console.log("error timerrequest " + req.body.draftId);
+        res.sendStatus(599);
+    }
+});
+
+function CreateDateFromTimestamp(timestamp){
+    console.log("timestamp: " + timestamp);
+    var t = timestamp.split(/[- :.]/);
+    console.log(t[5]);
+    let result = new Date(t[0], t[1] -1, t[2], t[3], t[4], t[5]);
+    console.log("resulting date: " + result.toString());
+    console.log("result: " + result.getTime().toString());
+    return result;
+}
 
 app.post("/GenerateNewDraft", async (req, res) => {
     try {
@@ -130,7 +177,6 @@ app.post("/GenerateNewDraft", async (req, res) => {
     res.status(201).send(result)
     } catch (err){
         res.sendStatus(599);
-        return;
     }
 })
 
@@ -163,8 +209,6 @@ app.post("/PlayerReady", async (req, res) =>{
         res.sendStatus(599);
         return;
     }
-    
-
     res.sendStatus(201);
 })
 
@@ -273,9 +317,10 @@ app.post("/CreateDeckCard", async (req, res) => {
         playerInDraftId = 2;
     }
 
-    console.log ("count: " + count);/*
+    console.log ("indraftid: " + playerInDraftId);
+    console.log ("count: " + count);
     console.log ("player turn: " + draft.player_turn);
-    console.log ("draft phase: " + draft.draft_phase);*/
+    console.log ("draft phase: " + draft.draft_phase);
 
     if (count < 15 && (playerInDraftId == draft.player_turn) && draft.draft_phase == 1){
         await CreateDeckCard(data.playerId, count + 1, data.cardId);

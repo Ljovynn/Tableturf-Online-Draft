@@ -8,8 +8,10 @@ const draftId = entriesArray[0][1];
 let beginningPopup = document.getElementById("beginningPopup");
 let readyPopup = document.getElementById("readyPopup");
 
-var popSfx = new Audio('Audio/Pop.mp3');
-var drawCardSfx = new Audio('Audio/DrawCard.mp3');
+var tickSfx = new Audio('Audio/timertick.mp3');
+var errorSfx = new Audio('Audio/error.mp3');
+var drawCardSfx = new Audio('Audio/drawCard.mp3');
+var draftFinishedSfx = new Audio('Audio/draftFinished.mp3');
 
 let draftFiguresBox = document.getElementById("draftFigures");
 let player1DeckBox = document.getElementById("deck1Figures");
@@ -43,6 +45,7 @@ let player1ReadyImage = document.getElementById("player1Check");
 let player2ReadyImage = document.getElementById("player2Check");
 
 let currentTurnMessage = document.getElementById("currentTurnMessage");
+let timerMessage = document.getElementById("timer");
 
 let player1DeckSizeBox = document.getElementById("player1DeckSize");
 let player2DeckSizeBox = document.getElementById("player2DeckSize");
@@ -105,14 +108,17 @@ let currentPlayer = 1;
 let picksUntilChangeTurn = 1;
 let draftPhase = 0;
 let draftTimer = 0; //maximum
-let timer = 0; //det som tickar ner
+let timerInterval = 0; //det som tickar ner
+let playerIsInTime = true;
+let timeSinceUpdate;
 
 let draftData;
 
 var storedSort = localStorage['sort'] || '1';
 var stored312Order = localStorage['312Order'] || '1';
-muteAudio = localStorage['mute' || '0'];
-if (muteAudio == 1){
+var mute = localStorage['mute' || '0'];
+if (mute == '1'){
+    muteAudio = true;
     muteAudioCheckbox.checked = true;
 }
 sortOrderForm.value = storedSort;
@@ -243,6 +249,7 @@ function ParseDraftData(){
     picksUntilChangeTurn = draftManagerData.picks_until_change_turn;
     currentPlayer = draftManagerData.player_turn;
     draftTimer = draftManagerData.timer;
+    timeSinceUpdate = CreateDateFromTimestamp(draftManagerData.formatted_update)
     
     //draftkort
     const draftCardList = draftData[1];
@@ -271,32 +278,14 @@ function ParseDraftData(){
 
     //decks
     const deckData = draftData[3];
-    let player1DeckData = [];
-    let player2DeckData = [];
-    if (deckData[0].length == 0){
-        if (deckData[1].length != 0){
-            player1DeckData = deckData[1];
-        }
-
-    } else if (deckData[1].length == 0){
-        player1DeckData = deckData[0];
-    } else {
-        if (deckData[0][0].player_id == player1Data.id){
-            player1DeckData = deckData[0];
-            player2DeckData = deckData[1];
-        } else{
-            player1DeckData = deckData[1];
-            player2DeckData = deckData[0];
-        }
-    }
-    for (let i = 0; i < player1DeckData.length; i++){
-        AddCardToPlayer(player1Deck, player1DeckData[i].card_id, "deck1Figures", player1DeckSizeBox);
-        var index = draftCards.findIndex(e => e.card.id === player1DeckData[i].card_id);
+    for (let i = 0; i < deckData[0].length; i++){
+        AddCardToPlayer(player1Deck, deckData[0][i].card_id, "deck1Figures", player1DeckSizeBox);
+        var index = draftCards.findIndex(e => e.card.id === deckData[0][i].card_id);
         draftCards[index].inDraft = false;
     }
-    for (let i = 0; i < player2DeckData.length; i++){
-        AddCardToPlayer(player2Deck, player2DeckData[i].card_id, "deck2Figures", player2DeckSizeBox);
-        var index = draftCards.findIndex(e => e.card.id === player2DeckData[i].card_id);
+    for (let i = 0; i < deckData[1].length; i++){
+        AddCardToPlayer(player2Deck, deckData[1][i].card_id, "deck2Figures", player2DeckSizeBox);
+        var index = draftCards.findIndex(e => e.card.id === deckData[1][i].card_id);
         draftCards[index].inDraft = false;
     }
 
@@ -308,13 +297,90 @@ function ParseDraftData(){
         } else{
             currentTurnMessage.innerHTML = player2Name + "'s turn to choose";
         }
+        if (draftTimer != 0){
+            SetTimer();
+            timerInterval = setInterval(SetTimer, 1000);
+        }
     }
     else if (draftPhase == 2){
         MakeDraftVisible();
         exportDeck1Button.disabled = false;
         exportDeck2Button.disabled = false;
-        currentTurnMessage.innerHTML = "Draft finished";
+        currentTurnMessage.innerHTML = "Draft has finished";
     }
+    else if (draftPhase == 3){
+        MakeDraftVisible();
+        exportDeck1Button.disabled = false;
+        exportDeck2Button.disabled = false;
+        if (currentPlayer == 1){
+            currentTurnMessage.innerHTML = player1Name + " ran out of time";
+        } else{
+            currentTurnMessage.innerHTML = player2Name + " ran out of time";
+        }
+        timerMessage.style.color = '#F90100';
+        timerMessage.innerHTML = "0";
+    }
+}
+
+function CreateDateFromTimestamp(timestamp){
+    console.log("timestamp: " + timestamp);
+    var t = timestamp.split(/[- :.]/);
+    let result = new Date(t[0], t[1] -1, t[2], t[3], t[4], t[5], t[6]);
+    console.log ("resulting date: " + result);
+    console.log("result MS: " + result.getTime().toString());
+    console.log(new Date());
+    return result;
+}
+
+function SetTimer(){
+    var now = new Date();
+    console.log("time since last update: " + timeSinceUpdate)
+    console.log("now: " + now);
+    var result = (timeSinceUpdate.getTime() + (draftTimer * 1000)) - now.getTime();
+    //result = result / 1000;
+    console.log("result: " + result);
+    if (result < 5000){
+        if (result <= -2000){
+            TimerBelowLimit();
+        } else if (result >= 0){
+            PlayAudio(tickSfx);
+            timerMessage.style.color = '#F90100';
+        } else{
+            playerIsInTime = false;
+        }
+    }
+    var secondsTimer = Math.floor((result % (1000 * 60)) / 1000)
+    let message = Math.max(secondsTimer, 0).toString();
+    timerMessage.innerHTML = message;
+    //timerMessage.innerHTML = result / 1000;
+    return result;
+}
+
+function TimerBelowLimit(){
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "TimerBelowLimit", true);
+    xhr.setRequestHeader('Content-Type', 'application/json');;
+    xhr.send(JSON.stringify({
+        draftId: +draftId
+    }));
+    xhr.onload = function() {
+        console.log("timer server response: " + xhr.status);
+        if (xhr.status == 201 || xhr.status == 200){
+            EndDraftFromTimeout();
+        }
+    }
+}
+
+function EndDraftFromTimeout(){
+    PlayAudio(errorSfx);
+    clearInterval(timerInterval);
+    draftPhase = 3;
+    if (currentPlayer == 1){
+        currentTurnMessage.innerHTML = player1Name + " ran out of time";
+    } else{
+        currentTurnMessage.innerHTML = player2Name + " ran out of time";
+    }
+    currentTurnMessage.style.color = '#000000';
 }
 
 function CreateSortedSpecialAttackList(){
@@ -347,7 +413,7 @@ function SortBySize(array, reverseValue, specialAttackValue){
         if (reverseValue == 2){
             tempNormalCardList.sort((a, b) => a.card.size - b.card.size || a.card.id - b.card.id);
         } else{
-            tempNormalCardList.sort((a, b) => b.card.size - a.card.size || a.card.id - b.card.id);
+            tempNormalCardList.sort((a, b) => b.card.size - a.card.size || b.card.id - a.card.id);
         }
 
         temp312List.sort((a, b) => a.card.id - b.card.id);
@@ -455,7 +521,6 @@ function ChangeDraftTurnData(){
         picksUntilChangeTurn = 2;
 
         if (userRole == currentPlayer){
-            //popSfx.play();
             currentTurnMessage.style.color = '#2a7321';
         } else if (userRole != 0){
             currentTurnMessage.style.color = '#4d2d3b';
@@ -464,9 +529,8 @@ function ChangeDraftTurnData(){
 }
 
 function AddCardToPlayer(playerDeck, id, deckId, deckSizeBox){
-    if (!muteAudio){
-        drawCardSfx.play();
-    }
+    PlayAudio(drawCardSfx);
+    playerIsInTime = true;
     let newDraftCard = new DraftCard(id);
     playerDeck.size += newDraftCard.card.size;
     deckSizeBox.innerHTML = "Size: " + playerDeck.size;
@@ -487,6 +551,15 @@ function AddCardToPlayer(playerDeck, id, deckId, deckSizeBox){
 
     if (player2Deck.deck.length == 15){
         EndDraft();
+        return;
+    }
+    
+    if (draftPhase == 1){
+        timeSinceUpdate = new Date();
+        if (draftTimer != 0){
+            timerMessage.style.color = '#000000';
+            SetTimer();
+        }
     }
     
 }
@@ -553,29 +626,35 @@ function CheckIfBothPlayersReady(){
 }
 
 function StartDraftPhase(){
-    if (!muteAudio){
-        popSfx.play();
-    }
+    timeSinceUpdate = new Date();
+    PlayAudio(tickSfx);
     if (draftPhase != 0){
     } else{
         draftPhase = 1;
         MakeDraftVisible();
         currentTurnMessage.innerHTML = player1Name + "'s turn to choose";
         CheckTextColour();
+        if (draftTimer != 0){
+            SetTimer();
+            timerInterval = setInterval(SetTimer, 1000);
+        }
     }
 }
 
 function EndDraft(){
+    PlayAudio(draftFinishedSfx);
+    clearInterval(timerInterval);
     draftPhase = 2;
     currentTurnMessage.innerHTML = "Draft has finished";
     currentTurnMessage.style.color = '#000000';
+    timerMessage.innerText = "\n";
     exportDeck1Button.disabled = false;
     exportDeck2Button.disabled = false;
 }
 
 function DraftClick(i){
     //window.alert(evt.currentTarget.src);
-    if (draftCards[i].inDraft && draftPhase == 1 && currentPlayer == userRole){
+    if (draftCards[i].inDraft && draftPhase == 1 && currentPlayer == userRole && playerIsInTime){
         PickCard(draftCards[i]);
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "CreateDeckCard", true);
@@ -596,6 +675,12 @@ function CheckTextColour(){
         currentTurnMessage.style.color = '#2a7321';
     } else if (userRole != 0){
         currentTurnMessage.style.color = '#4d2d3b';
+    }
+}
+
+function PlayAudio(audio){
+    if (!muteAudio){
+        audio.play();
     }
 }
 
