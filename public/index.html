@@ -15,6 +15,13 @@
                 font-family:Arial, Helvetica, sans-serif;
                 text-align: center;
             }
+            .languageIcon{
+                width: 50px;
+                height: auto;
+                position: absolute;
+                top: 4.7%;
+                left: 86.3%;
+            }
             .optionsPopup{
                 background-color: rgb(241, 241, 241);
                 width: 400px;
@@ -36,11 +43,19 @@
                 left: 90%;
                 position: absolute;
             }
+            .langBox{
+                top: 5%;
+                left: 89.5%;
+                position: absolute;
+            }
             h3 {
                 color: rgb(149, 149, 253);
             }
             div {
                 padding: 10px;
+            }
+            main{
+                visibility: hidden;
             }
         </style>
     </head>
@@ -48,33 +63,31 @@
         <header>
             <h1>Tableturf Online Draft</h1>
         </header>
-        <!--
-            <div class="langBox">
-                <select class="form-select" onchange="ChangeLang()" id="languages" name="languages">
-                    <option value="en">languages</option>
-                    <option value="en">English</option>
-                    <option value="de">German - Deutsch</option>
-                    <option value="ja">Japanese - 日本語</option>
-                    <option value="sv">Swedish - svenska</option>
-                </select>
-            </div>
-            -->
-        <div lang="en">
-            <h3>How to use</h3>
-            <p>- Choose draft settings</p>
-            <p>- Click on "Generate draft"</p>
-            <p>- Open the link, and give it to your opponent <br/></p>
-            <h3>Draft settings</h2>
+        <div class="langBox">
+            <select class="form-select" onchange="ChangeLang()" id="languages" name="languages">
+                <option value="en">English</option>
+                <!--<option value="de">Deutsch</option>
+                <option value="ja">日本語</option>-->
+                <option value="sv">Svenska</option>
+            </select>
+        </div>         
+        <img src="images/UI/LanguageIcon.jpg" alt="languageIcon" class="languageIcon">   
+        <main class="main">
+            <h3 data-key="howToUse">SOMETHING WENT WRONG</h3>
+            <p data-key="chooseDraftSettings"></p>
+            <p data-key="clickOnGenerateDraft"></p>
+            <p data-key="openLinkGiveToOpponent"><br/></p>
+            <h3 data-key="draftSettings"></h2>
             <div>
-                <label for="draftSize">Number of cards in draft (30-209):</label>
+                <label for="draftSize" data-key="numberOfCardsInDraft"></label>
                 <input type="number" id="draftSize" name="draftSize" min="30" max="209" value="60">  
             </div>
             <div>
-                <label for="Player1Name">Player 1 name:</label>
+                <label for="Player1Name" data-key="player1Name"></label>
                 <input type="text" id="player1" name="Player1Name " value="Player 1"><br><br>
-                <label for="Player2Name">Player 2 name:</label>
+                <label for="Player2Name" data-key="player2Name"></label>
                 <input type="text" id="player2" name="Player2Name" value="Player 2">
-                <p style="font-size: 13px">player positions will be randomized</p>
+                <p style="font-size: 13px" data-key="playerPositionsRandomized"></p>
             </div>
                 <!--
                 <div>
@@ -92,57 +105,59 @@
                 </div>
                 -->
             <div>
-                <label for="312Size">Minimum number of special attack cards: (0-17)</label>
+                <label for="312Size" data-key="312Size"></label>
                 <input type="number" id="312Size" name="312Size" min="0" max="17" value="3">  
             </div>
             <div>
-                <label for="timer">Timer:</label>
+                <label for="timer" data-key="timer"></label>
                     <select name="timer" id="timerList">
-                    <option value="0">None</option>
-                    <option value="10">10 seconds</option>
-                    <option value="20">20 seconds</option>
-                    <option value="30">30 seconds</option>
-                    <option value="40">40 seconds</option>
-                    <option value="50">50 seconds</option>
-                    <option value="60">1 minute</option>
-                    <option value="120">2 minutes</option>
+                    <option value="0" data-key="none"></option>
+                    <option value="10" data-key="10"></option>
+                    <option value="20" data-key="20"></option>
+                    <option value="30" data-key="30"></option>
+                    <option value="40" data-key="40"></option>
+                    <option value="50" data-key="50"></option>
+                    <option value="60" data-key="60"></option>
+                    <option value="120" data-key="120"></option>
                 </select>
             </div>
-            <p><button id="generateDraft">Generate Draft</button></p>
-            <h3>Draft link</h3>
+            <p><button id="generateDraft" data-key="generateDraft"></button></p>
+            <h3 data-key="draftLink"></h3>
             <h2 id="link" class="text-line"> <br></h2>
             <div>
-                <button id="copyDraft" disabled>Copy</button>
-                <button id="openDraft" disabled>Open</button>
+                <button id="copyDraft" data-key="copy" disabled></button>
+                <button id="openDraft" data-key="open" disabled></button>
             </div>
             <div>
-                <h3>About</h3>
-                <p>Tableturf Online Draft is a tool for drafting cards in tableturf! 
-                <br/>It will generate a random list of cards from which both players will take turns picking cards for their own decks.
-                <br/>When the draft is finished, create your decks and start playing!
-                <br><br>Created by Ljovynn</p>
+                <h3 data-key="about"></h3>
+                <p data-key="aboutParagraph1"></p>
+                <p data-key="aboutParagraph2"></p>
+                <p data-key="aboutParagraph3"></p>
+                <br>
+                <p data-key="createdByLjovynn"></p>
             </div>
-            <button class="optionsButton" id="options">Options</button>
+            <button class="optionsButton" id="options" data-key="options"></button>
             <div class="optionsPopup" id="optionsPopup">
-                <h3>Options<br></h3>
+                <h3 data-key="options"><br></h3>
                 <div>
-                    <label for="muteAudio">Mute audio</label>
+                    <label for="muteAudio" data-key="muteAudio"></label>
                     <input type="checkbox" id="muteAudioCheckbox" name="muteAudio"><br><br>
-                    <label for="setSizeOrder">Deck sorting order:</label>
+                    <label for="setSizeOrder" data-key="deckSortingOrder"></label>
                     <select class="form-select" id="setSizeOrder" name="setSizeOrder">
-                        <option value="1">Large to small</option>
-                        <option value="2">Small to large</option>
+                        <option value="1" data-key="largeToSmall"></option>
+                        <option value="2" data-key="smallToLarge"></option>
                     </select><br><br>
-                    <label for="set312Order">Special attack card sorting:</label>
+                    <label for="set312Order" data-key="312Sorting"></label>
                     <select class="form-select" id="set312Order" name="set312Order">
-                        <option value="1">Start</option>
-                        <option value="2">End</option>
-                        <option value="3">In sort</option>
+                        <option value="1" data-key="start"></option>
+                        <option value="2" data-key="end"></option>
+                        <option value="3" data-key="inSort"></option>
                     </select><br><br><br>
                 </div>
-                <button id="closeOptions">Close</button>
+                <button id="closeOptions" data-key="close"></button>
             </div>
-        </div>
+        </main>
+    <script>src="langData.js"</script>
     <script src="index.js"></script>
     </script>
     </body>

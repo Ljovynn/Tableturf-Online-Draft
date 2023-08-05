@@ -84,10 +84,10 @@ export async function UpdateDraft(draft_id, draft_phase, player_turn, picks_unti
     [draft_phase, player_turn, picks_until_change_turn, draft_id])
 }
 
-export async function DraftTimerDepleted(draft_id){
+/*export async function DraftTimerDepleted(draft_id){
     await pool.query(`UPDATE drafts SET draft_phase = 3, last_update = NOW() WHERE id = ?`,
     [draft_id])
-}
+}*/
 
 export async function PlayerReady (player_id){
     await pool.query(`UPDATE players SET ready = TRUE WHERE id = ?`, [player_id])

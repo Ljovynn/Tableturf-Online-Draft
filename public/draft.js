@@ -186,7 +186,6 @@ socket.on('player ready', data =>{
 });
 
 /*socket.on('start draft', data =>{
-    console.log("data: " + data);
     if (+data == draftId){
         StartDraftPhase();
     }
@@ -226,6 +225,7 @@ function FetchDraftInfo (id) {
         ParseDraftData();
     }
 }
+
 async function GetCardsJson(){
     let tempList = [];
     const response = await fetch("cards.json");
@@ -308,18 +308,6 @@ function ParseDraftData(){
         exportDeck2Button.disabled = false;
         currentTurnMessage.innerHTML = "Draft has finished";
     }
-    else if (draftPhase == 3){
-        MakeDraftVisible();
-        exportDeck1Button.disabled = false;
-        exportDeck2Button.disabled = false;
-        if (currentPlayer == 1){
-            currentTurnMessage.innerHTML = player1Name + " ran out of time";
-        } else{
-            currentTurnMessage.innerHTML = player2Name + " ran out of time";
-        }
-        timerMessage.style.color = '#F90100';
-        timerMessage.innerHTML = "0";
-    }
 }
 
 function CreateDateFromTimestamp(timestamp){
@@ -328,19 +316,24 @@ function CreateDateFromTimestamp(timestamp){
     let result = new Date(t[0], t[1] -1, t[2], t[3], t[4], t[5], t[6]);
     console.log ("resulting date: " + result);
     console.log("result MS: " + result.getTime().toString());
-    console.log(new Date());
     return result;
 }
 
 function SetTimer(){
     var now = new Date();
+    let timeUntilPost = -5000;
+    if (currentPlayer == userRole){
+        timeUntilPost = -2000;
+    }
+    if (userRole == 0){
+        timeUntilPost = -8000;
+    }
+
     console.log("time since last update: " + timeSinceUpdate)
-    console.log("now: " + now);
     var result = (timeSinceUpdate.getTime() + (draftTimer * 1000)) - now.getTime();
     //result = result / 1000;
-    console.log("result: " + result);
     if (result < 5000){
-        if (result <= -2000){
+        if (result <= timeUntilPost){
             TimerBelowLimit();
         } else if (result >= 0){
             PlayAudio(tickSfx);
@@ -364,23 +357,23 @@ function TimerBelowLimit(){
         draftId: +draftId
     }));
     xhr.onload = function() {
-        console.log("timer server response: " + xhr.status);
-        if (xhr.status == 201 || xhr.status == 200){
-            EndDraftFromTimeout();
+        if (xhr.status != 200){
+            console.log("status not 200, " + xhr.status);
+            return;
         }
+        const cardData = JSON.parse(this.response);
+        let cardToPick = +cardData;
+        var index = draftCards.findIndex(e => e.card.id === cardToPick);
+        PickCard(draftCards[index]);
+        let currentUserId;
+        if (currentPlayer == 1){
+            currentUserId = player1Id;
+        } else{
+            currentUserId = player2Id;
+        }
+        let message = [currentUserId, draftCards[index].card.id, draftId];
+        socket.emit('add card', message);
     }
-}
-
-function EndDraftFromTimeout(){
-    PlayAudio(errorSfx);
-    clearInterval(timerInterval);
-    draftPhase = 3;
-    if (currentPlayer == 1){
-        currentTurnMessage.innerHTML = player1Name + " ran out of time";
-    } else{
-        currentTurnMessage.innerHTML = player2Name + " ran out of time";
-    }
-    currentTurnMessage.style.color = '#000000';
 }
 
 function CreateSortedSpecialAttackList(){

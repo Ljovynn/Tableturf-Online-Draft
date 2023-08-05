@@ -7,7 +7,7 @@ import {createServer } from 'http';
 
 import {GetDraft, GetPlayersInDraft, GetPlayer, GetDeckCards, GetDraftCards, CreateDraft,
     CreatePlayers, CreateDraftCards, CreateDeckCard, UpdateDraft, PlayerReady, StartDraft,
-    GetDeckCount, DraftTimerDepleted} from './database.js'
+    GetDeckCount} from './database.js'
 
 import { Server } from "socket.io";
 
@@ -41,7 +41,6 @@ io.on("connection", socket => {
     })
 });
 
-let allCards = [];
 const amountOfDifferentCards = 209
 
 app.use(express.static('public',{extensions:['html']}));
@@ -80,6 +79,7 @@ app.post("/GetDraftInfo", async (req, res) =>{
         data[3] = decks;
     
         res.status(200).send(data);
+        return;
     } catch (err){
         res.sendStatus(599);
     }
@@ -89,11 +89,6 @@ app.post("/TimerBelowLimit", async (req, res) =>{
     try {
         const draftId = req.body.draftId;
         const draft = await GetDraft(draftId);
-        if (draft.draft_phase == 3){
-            console.log("draft phase is 3");
-            res.sendStatus(200);
-            return;
-        }
         if (draft.draft_phase != 1){
             console.log("draft phase isnt 1");
             res.sendStatus(599);
@@ -103,14 +98,76 @@ app.post("/TimerBelowLimit", async (req, res) =>{
         let timeSinceLastUpdate = CreateDateFromTimestamp(draft.formatted_update);
         var t = (timeSinceLastUpdate.getTime() + (draft.timer * 1000)) - now.getTime();
         //result = result / 1000;
-        console.log("result: " + t);
-        if (t <= -2000){
-            console.log("draft timer depleted");
-            await DraftTimerDepleted(draftId);
-            res.sendStatus(201);
+        if (t > -2000){
+            res.sendStatus(250);
             return;
         }
-        res.sendStatus(250);
+
+        //genererar lista med oanvända draftkort
+        console.log("draft timer depleted");
+        const players = await(GetPlayersInDraft(draft.id));
+        let draftCards = await GetDraftCards(draft.id);
+        //let draftCards = draft;
+        let draftCardList = [];
+        for (let i = 0; i < draftCards.length; i++){
+            draftCardList.push(draftCards[i].card_id);
+        }
+
+        let player1Deck =  await(GetDeckCards(players[0].id));
+        let player2Deck = await(GetDeckCards(players[1].id));
+        let unpickedCards = []
+        for (let i = 0; i < draftCardList.length; i++){
+            let unpicked = true;
+            for (let j = 0; j < player1Deck.length; j++){
+                if (player1Deck[j].card_id == draftCardList[i]){
+                    unpicked = false;
+                }
+            }
+            for (let j = 0; j < player2Deck.length; j++){
+                if (player2Deck[j].card_id == draftCardList[i]){
+                    unpicked = false;
+                }
+            }
+            
+            if (unpicked){
+                unpickedCards.push(draftCardList[i]);
+            }
+        }
+
+        let r = Math.floor(Math.random() * unpickedCards.length);
+        let currentPlayerId;
+        let count;
+        if (draft.player_turn == 1){
+            currentPlayerId = players[0].id;
+            count = player1Deck.length;
+        } else{
+            currentPlayerId = players[1].id;
+            count = player2Deck.length;
+        }
+        await CreateDeckCard(currentPlayerId, count + 1, unpickedCards[r]);
+
+        //ändrar draft data
+        let picksUntilChangeTurn = draft.picks_until_change_turn
+        let playerTurn = draft.player_turn
+        let draftPhase = 1
+        picksUntilChangeTurn--
+
+        //kollar om det är slutet, player och count är från före update
+        if (playerTurn == 2 && count == 14){
+            draftPhase = 2
+        }
+
+        if (picksUntilChangeTurn == 0){
+            picksUntilChangeTurn = 2
+            if (playerTurn == 1){
+                playerTurn = 2
+            } else{
+                playerTurn = 1
+            }
+        }
+
+        await UpdateDraft(draft.id, draftPhase, playerTurn, picksUntilChangeTurn);
+        res.send(unpickedCards[r].toString());
         return;
     } catch (err){
         console.log("error timerrequest " + req.body.draftId);
@@ -124,7 +181,6 @@ function CreateDateFromTimestamp(timestamp){
     console.log(t[5]);
     let result = new Date(t[0], t[1] -1, t[2], t[3], t[4], t[5]);
     console.log("resulting date: " + result.toString());
-    console.log("result: " + result.getTime().toString());
     return result;
 }
 
