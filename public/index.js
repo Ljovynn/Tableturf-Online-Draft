@@ -1,7 +1,7 @@
 //document.getElementById("settings").onclick = OpenSettingsPopup;
 //document.getElementById("closeSettings").onclick = CloseSettingsPopup;
 
-const site = "http://tableturfdraft.se:8080"
+const site = "http://tableturfdraft.se"
 
 let linkBox = document.getElementById("link");
 let copyBtn = document.getElementById("copyDraft");
@@ -21,27 +21,32 @@ let optionsButton = document.getElementById("options");
 let closeOptionsButton = document.getElementById("closeOptions");
 
 let muteAudioCheckbox = document.getElementById("muteAudioCheckbox");
+let darkModeCheckbox = document.getElementById("darkModeCheckbox");
 let sortOrderForm = document.getElementById("setSizeOrder");
 let specialCardSortForm = document.getElementById("set312Order");
 
 let mainDiv = document.querySelector(".main");
+let body = document.querySelector(".body");
 
-let langData = [];
+let langData = GetLang();
 
 var storedSort = localStorage['sort'] || '1';
 var stored312Order = localStorage['312Order'] || '1';
 var storedLang = localStorage['language'] || 'en';
+var storedDark = localStorage['darkMode'] || '0';
 document.documentElement.setAttribute('lang', storedLang);
-console.log(storedLang);
 langForm.value = storedLang;
 var mute = localStorage['mute' || '0'];
 if (mute == '1'){
     muteAudioCheckbox.checked = true;
 }
+if (+storedDark == '1'){
+    body.classList.remove("lightMode");
+    body.classList.add("darkMode");
+    darkModeCheckbox.checked = true;
+}
 sortOrderForm.value = storedSort;
 specialCardSortForm.value = stored312Order;
-
-langData = GetLang();
 
 optionsButton.addEventListener("click", () => {
     optionsPopup.classList.add("openPopup");
@@ -55,6 +60,15 @@ closeOptionsButton.addEventListener("click", () => {
         localStorage['mute'] = '1';
     } else{
         localStorage['mute'] = '0';
+    }
+    if (darkModeCheckbox.checked){
+        localStorage['darkMode'] = '1';
+        body.classList.remove("lightMode");
+        body.classList.add("darkMode");
+    } else{
+        localStorage['darkMode'] = '0';
+        body.classList.add("lightMode");
+        body.classList.remove("darkMode");
     }
     localStorage['sort'] = sortOrderForm.value;
     localStorage['312Order'] = specialCardSortForm.value;
@@ -177,6 +191,7 @@ function GetLang(){
                     "start": "Start",
                     "end": "End",
                     "inSort": "In sort",
+                    "darkMode": "Dark mode",
                     "close": "Close"
                 }
             },
@@ -219,6 +234,7 @@ function GetLang(){
                     "start": "Början",
                     "end": "Slutet",
                     "inSort": "Inom sorteringen",
+                    "darkMode": "Mörkt läge",
                     "close": "Stäng"
                 }
             }

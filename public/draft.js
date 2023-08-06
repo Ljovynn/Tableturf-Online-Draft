@@ -5,6 +5,8 @@ const entriesArray = Array.from(entries)
 
 const draftId = entriesArray[0][1];
 
+let body = document.querySelector(".body");
+
 let beginningPopup = document.getElementById("beginningPopup");
 let readyPopup = document.getElementById("readyPopup");
 
@@ -30,8 +32,10 @@ let codeId = document.getElementById("code");
 let optionsPopup = document.getElementById("optionsPopup")
 let optionsButton = document.getElementById("options");
 let closeOptionsButton = document.getElementById("closeOptions");
+let langForm = document.getElementById("languages");
 
 let muteAudioCheckbox = document.getElementById("muteAudioCheckbox");
+let darkModeCheckbox = document.getElementById("darkModeCheckbox");
 let sortOrderForm = document.getElementById("setSizeOrder");
 let specialCardSortForm = document.getElementById("set312Order");
 
@@ -51,6 +55,8 @@ let player1DeckSizeBox = document.getElementById("player1DeckSize");
 let player2DeckSizeBox = document.getElementById("player2DeckSize");
 
 let muteAudio = false;
+
+let langData = GetLang();
 
 copyExportButton.addEventListener("click", () => {
     navigator.clipboard.writeText(codeId.innerText);
@@ -79,7 +85,35 @@ closeOptionsButton.addEventListener("click", () => {
         muteAudio = false;
         localStorage['mute'] = '0';
     }
+    if (darkModeCheckbox.checked){
+        localStorage['darkMode'] = '1';
+        body.classList.remove("lightMode");
+        body.classList.add("darkMode");
+    } else{
+        localStorage['darkMode'] = '0';
+        body.classList.add("lightMode");
+        body.classList.remove("darkMode");
+    }
+    ChangeLang()
 });
+
+function ChangeLang(){
+    localStorage['language'] = langForm.value;
+    storedLang = langForm.value;
+    applyStrings();
+
+    if (draftPhase == 1){
+        if (currentPlayer == 1){
+            currentTurnMessage.innerHTML = player1Name + langData.languages[storedLang].strings["sTurnToChoose"];
+        } else{
+            currentTurnMessage.innerHTML = player2Name + langData.languages[storedLang].strings["sTurnToChoose"];
+        }
+    } else{
+        currentTurnMessage.innerHTML = langData.languages[storedLang].strings["draftHasFinished"]
+    }
+    player1DeckSizeBox.innerHTML = langData.languages[storedLang].strings["size"] + player1Deck.size
+    player2DeckSizeBox.innerHTML = langData.languages[storedLang].strings["size"] + player2Deck.size
+}
 
 let allCards = [];
 
@@ -121,6 +155,15 @@ if (mute == '1'){
     muteAudio = true;
     muteAudioCheckbox.checked = true;
 }
+var storedDark = localStorage['darkMode'] || '0';
+if (+storedDark == '1'){
+    body.classList.remove("lightMode");
+    body.classList.add("darkMode");
+    darkModeCheckbox.checked = true;
+}
+var storedLang = localStorage['language'] || 'en';
+document.documentElement.setAttribute('lang', storedLang);
+langForm.value = storedLang;
 sortOrderForm.value = storedSort;
 specialCardSortForm.value = stored312Order;
 
@@ -242,6 +285,23 @@ async function GetCardsJson(){
     return tempList;
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    //skip the lang value in the HTML tag for this example
+    //langData = GetLangsJson();
+    applyStrings();
+    body.classList.remove("hidePopup");
+});
+
+function applyStrings() {
+    console.log(langData);
+    body.querySelectorAll(`[data-key]`).forEach(element => {
+        let key = element.getAttribute('data-key');
+        if (key) {
+            element.textContent = langData.languages[storedLang].strings[key];
+        }
+    });
+}
+
 function ParseDraftData(){
     //draft
     const draftManagerData = draftData[0];
@@ -269,8 +329,8 @@ function ParseDraftData(){
     player2Button.innerText = player2Name;
     document.getElementById("player1Title").innerText = player1Name;
     document.getElementById("player2Title").innerText = player2Name;
-    player1ReadyButton.innerText = player1Name + " Ready";
-    player2ReadyButton.innerText = player2Name + " Ready";
+    player1ReadyButton.innerText = player1Name + langData.languages[storedLang].strings["ready"];
+    player2ReadyButton.innerText = player2Name + langData.languages[storedLang].strings["ready"];
     player1Ready = player1Data.ready;
     player2Ready = player2Data.ready;
     player1Id = player1Data.id;
@@ -293,9 +353,9 @@ function ParseDraftData(){
 
     if (draftPhase == 1){
         if (currentPlayer == 1){
-            currentTurnMessage.innerHTML = player1Name + "'s turn to choose";
+            currentTurnMessage.innerHTML = player1Name + langData.languages[storedLang].strings["sTurnToChoose"];
         } else{
-            currentTurnMessage.innerHTML = player2Name + "'s turn to choose";
+            currentTurnMessage.innerHTML = player2Name + langData.languages[storedLang].strings["sTurnToChoose"];
         }
         if (draftTimer != 0){
             SetTimer();
@@ -306,7 +366,7 @@ function ParseDraftData(){
         MakeDraftVisible();
         exportDeck1Button.disabled = false;
         exportDeck2Button.disabled = false;
-        currentTurnMessage.innerHTML = "Draft has finished";
+        currentTurnMessage.innerHTML = langData.languages[storedLang].strings["draftHasFinished"];
     }
 }
 
@@ -506,10 +566,10 @@ function ChangeDraftTurnData(){
     if (picksUntilChangeTurn == 0){
         if (currentPlayer == 1){
             currentPlayer = 2;
-            currentTurnMessage.innerHTML = player2Name + "'s turn to choose";
+            currentTurnMessage.innerHTML = player2Name + langData.languages[storedLang].strings["sTurnToChoose"];
         } else{
             currentPlayer = 1;
-            currentTurnMessage.innerHTML = player1Name + "'s turn to choose";
+            currentTurnMessage.innerHTML = player1Name + langData.languages[storedLang].strings["sTurnToChoose"];
         }
         picksUntilChangeTurn = 2;
 
@@ -526,7 +586,7 @@ function AddCardToPlayer(playerDeck, id, deckId, deckSizeBox){
     playerIsInTime = true;
     let newDraftCard = new DraftCard(id);
     playerDeck.size += newDraftCard.card.size;
-    deckSizeBox.innerHTML = "Size: " + playerDeck.size;
+    deckSizeBox.innerHTML = langData.languages[storedLang].strings["size"] + playerDeck.size;
 
     var img = document.createElement('img');
     document.getElementById(deckId).appendChild(img);
@@ -576,10 +636,10 @@ function SortDeck(playerDeck){
     //sortera
     if (playerDeck.sorted){
         playerDeck.deck = SortByPickOrder(playerDeck.deck);
-        sortButton.textContent = "Sort by size";
+        sortButton.textContent = langData.languages[storedLang].strings["sortBySize"];
     }else{
         playerDeck.deck = SortBySize(playerDeck.deck, +sortOrderForm.value, +specialCardSortForm.value);
-        sortButton.textContent = "Sort by pick order";
+        sortButton.textContent = langData.languages[storedLang].strings["sortByPickOrder"];
     }
     playerDeck.sorted= !playerDeck.sorted;
 
@@ -625,7 +685,7 @@ function StartDraftPhase(){
     } else{
         draftPhase = 1;
         MakeDraftVisible();
-        currentTurnMessage.innerHTML = player1Name + "'s turn to choose";
+        currentTurnMessage.innerHTML = player1Name + langData.languages[storedLang].strings["sTurnToChoose"];
         CheckTextColour();
         if (draftTimer != 0){
             SetTimer();
@@ -638,7 +698,7 @@ function EndDraft(){
     PlayAudio(draftFinishedSfx);
     clearInterval(timerInterval);
     draftPhase = 2;
-    currentTurnMessage.innerHTML = "Draft has finished";
+    currentTurnMessage.innerHTML = langData.languages[storedLang].strings["draftHasFinished"];
     currentTurnMessage.style.color = '#000000';
     timerMessage.innerText = "\n";
     exportDeck1Button.disabled = false;
@@ -717,4 +777,68 @@ function ReadyClick(i){
         socket.emit('player ready', message);
         CheckIfBothPlayersReady();
     }
+}
+
+function GetLang(){
+    let result = {
+        "languages": {
+            "en": {
+                "strings": {
+                    "whoAreYou": "Who are you?",
+                    "spectator": "Spectator",
+                    "ready": " Ready",
+                    "waitingForPlayers": "Waiting for players to get ready",
+                    "draftHasFinished": "Draft has finished",
+                    "sTurnToChoose": "'s turn to choose",
+                    "sortBySize": "Sort by size",
+                    "sortByPickOrder": "Sort by pick order",
+                    "exportDeck": "Export deck",
+                    "exportDeckText": "Export deck to Andrio Celos' Tableturf Simulator",
+                    "size": "Size: ",
+                    "copy": "Copy",
+                    "options": "Options",
+                    "muteAudio": "Mute audio",
+                    "deckSortingOrder": "Deck sorting order:",
+                    "largeToSmall": "Large to small",
+                    "smallToLarge": "Small to large",
+                    "312Sorting": "Special attack card sorting:",
+                    "start": "Start",
+                    "end": "End",
+                    "inSort": "In sort",
+                    "language": "Language: ",
+                    "darkMode": "Dark mode",
+                    "close": "Close"
+                }
+            },
+            "sv": {
+                "strings": {
+                    "whoAreYou": "Vem är du?",
+                    "spectator": "Åskådare",
+                    "ready": " Redo",
+                    "waitingForPlayers": "Väntar för spelare att bli redo",
+                    "draftHasFinished": "Draften har avslutats",
+                    "sTurnToChoose": "s tur att välja",
+                    "sortBySize": "Sortera efter storlek",
+                    "sortByPickOrder": "Sortera efter väljordning",
+                    "exportDeck": "Exportera kortlek",
+                    "exportDeckText": "Exportera kortlek till Andrio Celos Tableturfsimulator",
+                    "size": "Storlek: ",
+                    "copy": "Kopiera",
+                    "options": "Inställningar",
+                    "muteAudio": "Stäng av ljud",
+                    "deckSortingOrder": "Sorteringsordning:",
+                    "largeToSmall": "Stor till liten",
+                    "smallToLarge": "Liten till stor",
+                    "312Sorting": "Specialkortsortering:",
+                    "start": "Början",
+                    "end": "Slutet",
+                    "inSort": "Inom sorteringen",
+                    "language": "Språk: ",
+                    "darkMode": "Mörkt läge",
+                    "close": "Stäng"
+                }
+            }
+        }
+    }
+    return result;
 }

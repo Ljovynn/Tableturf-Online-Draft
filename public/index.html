@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Tableturf Online Draft</title>
         <style>
@@ -11,7 +16,6 @@
                 font-family:Splatoon2;
             }
             body {
-                background: rgb(255, 255, 255);
                 font-family:Arial, Helvetica, sans-serif;
                 text-align: center;
             }
@@ -20,10 +24,10 @@
                 height: auto;
                 position: absolute;
                 top: 4.7%;
-                left: 86.3%;
+                left: 89.5%;
+                transform:  translate(-50px, 0px);
             }
             .optionsPopup{
-                background-color: rgb(241, 241, 241);
                 width: 400px;
                 height: 270px;
                 text-align: center;
@@ -57,9 +61,45 @@
             main{
                 visibility: hidden;
             }
+            .lightMode header{
+                color: rgb(22, 22, 22);
+            }
+            .darkMode header{
+                color: rgb(255, 255, 255);
+            }
+            .lightMode p{
+                color: rgb(22, 22, 22);
+            }
+            .darkMode p{
+                color: rgb(255, 255, 255);
+            }
+            .lightMode label{
+                color: rgb(22, 22, 22);
+            }
+            .darkMode label{
+                color: rgb(255, 255, 255);
+            }
+            .lightMode h2{
+                color: rgb(22, 22, 22);
+            }
+            .darkMode h2{
+                color: rgb(255, 255, 255);
+            }
+            .lightMode{
+                background: rgb(255, 255, 255);
+            }
+            .darkMode{
+                background: rgb(27, 27, 27);
+            }
+            .lightMode .secondaryBackgroundColor{
+                background-color: rgb(241, 241, 241);
+            }
+            .darkMode .secondaryBackgroundColor{
+                background-color: rgb(74, 74, 74);
+            }
         </style>
     </head>
-    <body>
+    <body class="body lightMode">
         <header>
             <h1>Tableturf Online Draft</h1>
         </header>
@@ -137,7 +177,7 @@
                 <p data-key="createdByLjovynn"></p>
             </div>
             <button class="optionsButton" id="options" data-key="options"></button>
-            <div class="optionsPopup" id="optionsPopup">
+            <div class="optionsPopup secondaryBackgroundColor" id="optionsPopup">
                 <h3 data-key="options"><br></h3>
                 <div>
                     <label for="muteAudio" data-key="muteAudio"></label>
@@ -152,7 +192,10 @@
                         <option value="1" data-key="start"></option>
                         <option value="2" data-key="end"></option>
                         <option value="3" data-key="inSort"></option>
-                    </select><br><br><br>
+                    </select><br><br>
+                    <label for="darkMode" data-key="darkMode"></label>
+                    <input type="checkbox" id="darkModeCheckbox" name="darkMode"><br>
+                    <br>
                 </div>
                 <button id="closeOptions" data-key="close"></button>
             </div>

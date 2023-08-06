@@ -187,7 +187,6 @@ function CreateDateFromTimestamp(timestamp){
 app.post("/GenerateNewDraft", async (req, res) => {
     try {
         const data = req.body
-    console.log("data: " + data);
     console.log("timer: " + data.timer);
 
     const result = await CreateDraft(data.timer)
