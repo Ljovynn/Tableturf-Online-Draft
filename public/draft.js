@@ -238,6 +238,7 @@ socket.on('add card', data =>{
     var index = draftCards.findIndex(e => e.card.id === data[1]);
     draftCards[index].inDraft = false;
     draftCards[index].documentImg.setAttribute('class', 'lockedCard');
+    timeSinceUpdate = new Date();
     if (+data[0] == player1Id){
         AddCardToPlayer(player1Deck, data[1], "deck1Figures", player1DeckSizeBox);
     } else if (+data[0] == player2Id){
@@ -550,6 +551,7 @@ function OpenReadyPopup(){
 function PickCard(draftCard){
     draftCard.inDraft = false;
     draftCard.documentImg.setAttribute('class', 'lockedCard');
+    timeSinceUpdate = new Date();
     if (currentPlayer == 1){
         let deckId = "deck1Figures";
         AddCardToPlayer(player1Deck, draftCard.card.id, deckId, player1DeckSizeBox);
@@ -608,9 +610,12 @@ function AddCardToPlayer(playerDeck, id, deckId, deckSizeBox){
     }
     
     if (draftPhase == 1){
-        timeSinceUpdate = new Date();
         if (draftTimer != 0){
-            timerMessage.style.color = '#000000';
+            if (darkModeCheckbox.checked){
+                timerMessage.style.color = '#ffffff';
+            } else{
+                timerMessage.style.color = '#000000';
+            }
             SetTimer();
         }
     }
