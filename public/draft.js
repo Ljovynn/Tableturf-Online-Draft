@@ -815,7 +815,7 @@ function GetLang(){
                     "whoAreYou": "Vem är du?",
                     "spectator": "Åskådare",
                     "ready": " Redo",
-                    "waitingForPlayers": "Väntar för spelare att bli redo",
+                    "waitingForPlayers": "Väntar på spelare att bli redo",
                     "draftHasFinished": "Draften har avslutats",
                     "sTurnToChoose": "s tur att välja",
                     "sortBySize": "Sortera efter storlek",
