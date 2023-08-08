@@ -1,2 +1,2 @@
 # Tableturf-Online-Draft
- Tableturf draft website
+The source code for http://tableturfdraft.se
