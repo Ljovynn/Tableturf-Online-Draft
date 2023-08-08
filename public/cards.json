@@ -3,1464 +3,1256 @@
         "id": "1",
         "attributes":{
             "title": "Hero Shot",
-            "size": "12",
-            "image":{"url": "images/cards/1.png"}
+            "size": "12"
         }
     },
         { "id": "2",
         "attributes":
         {"title":"Sploosh-o-matic",
-        "size": "9",
-        "image":{ "url": "images/cards/2.png"}
+        "size": "9"
         }
     },
     { "id": "3",
     "attributes":
         {"title":"Splattershot Jr.",
-        "size": "4",
-        "image":{ "url": "images/cards/3.png"}
+        "size": "4"
         }
     },
     { "id": "4",
     "attributes":
         {"title":"Splash-o-matic",
-        "size": "7",
-        "image":{ "url": "images/cards/4.png"}
+        "size": "7"
         }
     },
     { "id": "5",
     "attributes":
         {"title":"Aerospray MG",
-        "size": "7",
-        "image":{ "url": "images/cards/5.png"}
+        "size": "7"
         }
     },
     { "id": "6",
     "attributes":
         {"title":"Splattershot",
-        "size": "8",
-        "image":{ "url": "images/cards/6.png"}
+        "size": "8"
         }
     },
     { "id": "7",
     "attributes":
         {"title":".52 Gal",
-        "size": "7",
-        "image":{ "url": "images/cards/7.png"}
+        "size": "7"
         }
         },
         { "id": "8",
         "attributes":
         {"title":"N-ZAP '85",
-        "size": "5",
-        "image":{ "url": "images/cards/8.png"}
+        "size": "5"
         }
         },
         { "id": "9",
         "attributes":
         {"title":"Splattershot Pro",
-        "size": "9",
-        "image":{ "url": "images/cards/9.png"}
+        "size": "9"
         }
         },
         { "id": "10",
         "attributes":
         {"title":".96 Gal",
-        "size": "10",
-        "image":{ "url": "images/cards/10.png"}
+        "size": "10"
         }
         },
         { "id": "11",
         "attributes":
         {"title":"Jet Squelcher",
-        "size": "10",
-        "image":{ "url": "images/cards/11.png"}
+        "size": "10"
         }
         },
         { "id": "12",
         "attributes":
         {"title":"Luna Blaster",
-        "size": "7",
-        "image":{ "url": "images/cards/12.png"}
+        "size": "7"
         }
         },
         { "id": "13",
         "attributes":
         {"title":"Blaster",
-        "size": "8",
-        "image":{ "url": "images/cards/13.png"}
+        "size": "8"
         }
         },
         { "id": "14",
         "attributes":
         {"title":"Range Blaster",
-        "size": "9",
-        "image":{ "url": "images/cards/14.png"}
+        "size": "9"
         }
         },
         { "id": "15",
         "attributes":
         {"title":"Clash Blaster",
-        "size": "8",
-        "image":{ "url": "images/cards/15.png"}
+        "size": "8"
         }
         },
         { "id": "16",
         "attributes":
         {"title":"Rapid Blaster",
-        "size": "8",
-        "image":{ "url": "images/cards/16.png"}
+        "size": "8"
         }
         },
         { "id": "17",
         "attributes":
         {"title":"Rapid Blaster Pro",
-        "size": "9",
-        "image":{ "url": "images/cards/17.png"}
+        "size": "9"
         }
         },
         { "id": "18",
         "attributes":
         {"title":"L-3 Nozzlenose",
-        "size": "7",
-        "image":{ "url": "images/cards/18.png"}
+        "size": "7"
         }
         },
         { "id": "19",
         "attributes":
         {"title":"H-3 Nozzlenose",
-        "size": "8",
-        "image":{ "url": "images/cards/19.png"}
+        "size": "8"
         }
         },
         { "id": "20",
         "attributes":
         {"title":"Squeezer",
-        "size": "7",
-        "image":{ "url": "images/cards/20.png"}
+        "size": "7"
         }
         },
         { "id": "21",
         "attributes":
         {"title":"Carbon Roller",
-        "size": "7",
-        "image":{ "url": "images/cards/21.png"}
+        "size": "7"
         }
         },
         { "id": "22",
         "attributes":
         {"title":"Splat Roller",
-        "size": "9",
-        "image":{ "url": "images/cards/22.png"}
+        "size": "9"
         }
         },
         { "id": "23",
         "attributes":
         {"title":"Dynamo Roller",
-        "size": "13",
-        "image":{ "url": "images/cards/23.png"}
+        "size": "13"
         }
         },
         { "id": "24",
         "attributes":
         {"title":"Flingza Roller",
-        "size": "10",
-        "image":{ "url": "images/cards/24.png"}
+        "size": "10"
         }
         },
         { "id": "25",
         "attributes":
         {"title":"Inkbrush",
-        "size": "7",
-        "image":{ "url": "images/cards/25.png"}
+        "size": "7"
         }
         },
         { "id": "26",
         "attributes":
         {"title":"Octobrush",
-        "size": "9",
-        "image":{ "url": "images/cards/26.png"}
+        "size": "9"
         }
         },
         { "id": "27",
         "attributes":
         {"title":"Classic Squiffer",
-        "size": "8",
-        "image":{ "url": "images/cards/27.png"}
+        "size": "8"
         }
         },
         { "id": "28",
         "attributes":
         {"title":"Splat Charger",
-        "size": "8",
-        "image":{ "url": "images/cards/28.png"}
+        "size": "8"
         }
         },
         { "id": "29",
         "attributes":
         {"title":"Splatterscope",
-        "size": "10",
-        "image":{ "url": "images/cards/29.png"}
+        "size": "10"
         }
         },
         { "id": "30",
         "attributes":
         {"title":"E-liter 4K",
-        "size": "11",
-        "image":{ "url": "images/cards/30.png"}
+        "size": "11"
         }
         },
         { "id": "31",
         "attributes":
         {"title":"E-liter 4K Scope",
-        "size": "13",
-        "image":{ "url": "images/cards/31.png"}
+        "size": "13"
         }
         },
         { "id": "32",
         "attributes":
         {"title":"Bamboozler 14 Mk I",
-        "size": "7",
-        "image":{ "url": "images/cards/32.png"}
+        "size": "7"
         }
         },
         { "id": "33",
         "attributes":
         {"title":"Goo Tuber",
-        "size": "11",
-        "image":{ "url": "images/cards/33.png"}
+        "size": "11"
         }
         },
         { "id": "34",
         "attributes":
         {"title":"Slosher",
-        "size": "6",
-        "image":{ "url": "images/cards/34.png"}
+        "size": "6"
         }
         },
         { "id": "35",
         "attributes":
         {"title":"Tri-Slosher",
-        "size": "5",
-        "image":{ "url": "images/cards/35.png"}
+        "size": "5"
         }
         },
         { "id": "36",
         "attributes":
         {"title":"Sloshing Machine",
-        "size": "7",
-        "image":{ "url": "images/cards/36.png"}
+        "size": "7"
         }
         },
         { "id": "37",
         "attributes":
         {"title":"Bloblobber",
-        "size": "10",
-        "image":{ "url": "images/cards/37.png"}
+        "size": "10"
         }
         },
         { "id": "38",
         "attributes":
         {"title":"Explosher",
-        "size": "11",
-        "image":{ "url": "images/cards/38.png"}
+        "size": "11"
         }
         },
         { "id": "39",
         "attributes":
         {"title":"Mini Splatling",
-        "size": "7",
-        "image":{ "url": "images/cards/39.png"}
+        "size": "7"
         }
         },
         { "id": "40",
         "attributes":
         {"title":"Heavy Splatling",
-        "size": "12",
-        "image":{ "url": "images/cards/40.png"}
+        "size": "12"
         }
         },
         { "id": "41",
         "attributes":
         {"title":"Hydra Splatling",
-        "size": "13",
-        "image":{ "url": "images/cards/41.png"}
+        "size": "13"
         }
         },
         { "id": "42",
         "attributes":
         {"title":"Ballpoint Splatling",
-        "size": "10",
-        "image":{ "url": "images/cards/42.png"}
+        "size": "10"
         }
         },
         { "id": "43",
         "attributes":
         {"title":"Nautilus 47",
-        "size": "9",
-        "image":{ "url": "images/cards/43.png"}
+        "size": "9"
         }
         },
         { "id": "44",
         "attributes":
         {"title":"Dapple Dualies",
-        "size": "7",
-        "image":{ "url": "images/cards/44.png"}
+        "size": "7"
         }
         },
         { "id": "45",
         "attributes":
         {"title":"Splat Dualies",
-        "size": "8",
-        "image":{ "url": "images/cards/45.png"}
+        "size": "8"
         }
         },
         { "id": "46",
         "attributes":
         {"title":"Glooga Dualies",
-        "size": "9",
-        "image":{ "url": "images/cards/46.png"}
+        "size": "9"
         }
         },
         { "id": "47",
         "attributes":
         {"title":"Dualie Squelchers",
-        "size": "10",
-        "image":{ "url": "images/cards/47.png"}
+        "size": "10"
         }
         },
         { "id": "48",
         "attributes":
         {"title":"Dark Tetra Dualies",
-        "size": "8",
-        "image":{ "url": "images/cards/48.png"}
+        "size": "8"
         }
         },
         { "id": "49",
         "attributes":
         {"title":"Splat Brella",
-        "size": "11",
-        "image":{ "url": "images/cards/49.png"}
+        "size": "11"
         }
         },
         { "id": "50",
         "attributes":
         {"title":"Tenta Brella",
-        "size": "12",
-        "image":{ "url": "images/cards/50.png"}
+        "size": "12"
         }
         },
         { "id": "51",
         "attributes":
         {"title":"Undercover Brella",
-        "size": "8",
-        "image":{ "url": "images/cards/51.png"}
+        "size": "8"
         }
         },
         { "id": "52",
         "attributes":
         {"title":"Tri-Stringer",
-        "size": "11",
-        "image":{ "url": "images/cards/52.png"}
+        "size": "11"
         }
         },
         { "id": "53",
         "attributes":
         {"title":"REEF-LUX 450",
-        "size": "9",
-        "image":{ "url": "images/cards/53.png"}
+        "size": "9"
         }
         },
         { "id": "54",
         "attributes":
         {"title":"Splatana Stamper",
-        "size": "6",
-        "image":{ "url": "images/cards/54.png"}
+        "size": "6"
         }
         },
         { "id": "55",
         "attributes":
         {"title":"Splatana Wiper",
-        "size": "5",
-        "image":{ "url": "images/cards/55.png"}
+        "size": "5"
         }
         },
         { "id": "56",
         "attributes":
         {"title":"Splat Bomb",
-        "size": "3",
-        "image":{ "url": "images/cards/56.png"}
+        "size": "3"
         }
         },
         { "id": "57",
         "attributes":
         {"title":"Suction Bomb",
-        "size": "3",
-        "image":{ "url": "images/cards/57.png"}
+        "size": "3"
         }
         },
         { "id": "58",
         "attributes":
         {"title":"Burst Bomb",
-        "size": "1",
-        "image":{ "url": "images/cards/58.png"}
+        "size": "1"
         }
         },
         { "id": "59",
         "attributes":
         {"title":"Sprinkler",
-        "size": "3",
-        "image":{ "url": "images/cards/59.png"}
+        "size": "3"
         }
         },
         { "id": "60",
         "attributes":
         {"title":"Splash Wall",
-        "size": "5",
-        "image":{ "url": "images/cards/60.png"}
+        "size": "5"
         }
         },
         { "id": "61",
         "attributes":
         {"title":"Fizzy Bomb",
-        "size": "3",
-        "image":{ "url": "images/cards/61.png"}
+        "size": "3"
         }
         },
         { "id": "62",
         "attributes":
         {"title":"Curling Bomb",
-        "size": "4",
-        "image":{ "url": "images/cards/62.png"}
+        "size": "4"
         }
         },
         { "id": "63",
         "attributes":
         {"title":"Autobomb",
-        "size": "6",
-        "image":{ "url": "images/cards/63.png"}
+        "size": "6"
         }
         },
         { "id": "64",
         "attributes":
         {"title":"Squid Beakon",
-        "size": "9",
-        "image":{ "url": "images/cards/64.png"}
+        "size": "9"
         }
         },
         { "id": "65",
         "attributes":
         {"title":"Point Sensor",
-        "size": "5",
-        "image":{ "url": "images/cards/65.png"}
+        "size": "5"
         }
         },
         { "id": "66",
         "attributes":
         {"title":"Ink Mine",
-        "size": "4",
-        "image":{ "url": "images/cards/66.png"}
+        "size": "4"
         }
         },
         { "id": "67",
         "attributes":
         {"title":"Toxic Mist",
-        "size": "5",
-        "image":{ "url": "images/cards/67.png"}
+        "size": "5"
         }
         },
         { "id": "68",
         "attributes":
         {"title":"Angle Shooter",
-        "size": "5",
-        "image":{ "url": "images/cards/68.png"}
+        "size": "5"
         }
         },
         { "id": "69",
         "attributes":
         {"title":"Torpedo",
-        "size": "4",
-        "image":{ "url": "images/cards/69.png"}
+        "size": "4"
         }
         },
         { "id": "70",
         "attributes":
         {"title":"Trizooka",
-        "size": "12",
-        "image":{ "url": "images/cards/70.png"}
+        "size": "12"
         }
         },
         { "id": "71",
         "attributes":
         {"title":"Big Bubbler",
-        "size": "12",
-        "image":{ "url": "images/cards/71.png"}
+        "size": "12"
         }
         },
         { "id": "72",
         "attributes":
         {"title":"Zipcaster",
-        "size": "12",
-        "image":{ "url": "images/cards/72.png"}
+        "size": "12"
         }
         },
         { "id": "73",
         "attributes":
         {"title":"Tenta Missiles",
-        "size": "12",
-        "image":{ "url": "images/cards/73.png"}
+        "size": "12"
         }
         },
         { "id": "74",
         "attributes":
         {"title":"Ink Storm",
-        "size": "12",
-        "image":{ "url": "images/cards/74.png"}
+        "size": "12"
         }
         },
         { "id": "75",
         "attributes":
         {"title":"Booyah Bomb",
-        "size": "12",
-        "image":{ "url": "images/cards/75.png"}
+        "size": "12"
         }
         },
         { "id": "76",
         "attributes":
         {"title":"Wave Breaker",
-        "size": "12",
-        "image":{ "url": "images/cards/76.png"}
+        "size": "12"
         }
         },
         { "id": "77",
         "attributes":
         {"title":"Ink Vac",
-        "size": "12",
-        "image":{ "url": "images/cards/77.png"}
+        "size": "12"
         }
         },
         { "id": "78",
         "attributes":
         {"title":"Killer Wail 5.1",
-        "size": "12",
-        "image":{ "url": "images/cards/78.png"}
+        "size": "12"
         }
         },
         { "id": "79",
         "attributes":
         {"title":"Inkjet",
-        "size": "12",
-        "image":{ "url": "images/cards/79.png"}
+        "size": "12"
         }
         },
         { "id": "80",
         "attributes":
         {"title":"Ultra Stamp",
-        "size": "12",
-        "image":{ "url": "images/cards/80.png"}
+        "size": "12"
         }
         },
         { "id": "81",
         "attributes":
         {"title":"Crab Tank",
-        "size": "12",
-        "image":{ "url": "images/cards/81.png"}
+        "size": "12"
         }
         },
         { "id": "82",
         "attributes":
         {"title":"Reefslider",
-        "size": "12",
-        "image":{ "url": "images/cards/82.png"}
+        "size": "12"
         }
         },
         { "id": "83",
         "attributes":
         {"title":"Triple Inkstrike",
-        "size": "12",
-        "image":{ "url": "images/cards/83.png"}
+        "size": "12"
         }
         },
         { "id": "84",
         "attributes":
         {"title":"Tacticooler",
-        "size": "12",
-        "image":{ "url": "images/cards/84.png"}
+        "size": "12"
         }
         },
         { "id": "85",
         "attributes":
         {"title":"Sheldon",
-        "size": "13",
-        "image":{ "url": "images/cards/85.png"}
+        "size": "13"
         }
         },
         { "id": "86",
         "attributes":
         {"title":"Gnarly Eddy",
-        "size": "15",
-        "image":{ "url": "images/cards/86.png"}
+        "size": "15"
         }
         },
         { "id": "87",
         "attributes":
         {"title":"Jel La Fleur",
-        "size": "12",
-        "image":{ "url": "images/cards/87.png"}
+        "size": "12"
         }
         },
         { "id": "88",
         "attributes":
         {"title":"Mr. Coco",
-        "size": "15",
-        "image":{ "url": "images/cards/88.png"}
+        "size": "15"
         }
         },
         { "id": "89",
         "attributes":
         {"title":"Harmony",
-        "size": "15",
-        "image":{ "url": "images/cards/89.png"}
+        "size": "15"
         }
         },
         { "id": "90",
         "attributes":
         {"title":"Murch",
-        "size": "12",
-        "image":{ "url": "images/cards/90.png"}
+        "size": "12"
         }
         },
         { "id": "91",
         "attributes":
         {"title":"Mr. Grizz",
-        "size": "14",
-        "image":{ "url": "images/cards/91.png"}
+        "size": "14"
         }
         },
         { "id": "92",
         "attributes":
         {"title":"Marigold",
-        "size": "15",
-        "image":{ "url": "images/cards/92.png"}
+        "size": "15"
         }
         },
         { "id": "93",
         "attributes":
         {"title":"Smallfry",
-        "size": "3",
-        "image":{ "url": "images/cards/93.png"}
+        "size": "3"
         }
         },
         { "id": "94",
         "attributes":
         {"title":"Cuttlefish",
-        "size": "14",
-        "image":{ "url": "images/cards/94.png"}
+        "size": "14"
         }
         },
         { "id": "95",
         "attributes":
         {"title":"Captain",
-        "size": "16",
-        "image":{ "url": "images/cards/95.png"}
+        "size": "16"
         }
         },
         { "id": "96",
         "attributes":
         {"title":"Callie",
-        "size": "15",
-        "image":{ "url": "images/cards/96.png"}
+        "size": "15"
         }
         },
         { "id": "97",
         "attributes":
         {"title":"Marie",
-        "size": "15",
-        "image":{ "url": "images/cards/97.png"}
+        "size": "15"
         }
         },
         { "id": "98",
         "attributes":
         {"title":"Shiver",
-        "size": "17",
-        "image":{ "url": "images/cards/98.png"}
+        "size": "17"
         }
         },
         { "id": "99",
         "attributes":
         {"title":"Frye",
-        "size": "17",
-        "image":{ "url": "images/cards/99.png"}
+        "size": "17"
         }
         },
         { "id": "100",
         "attributes":
         {"title":"Big Man",
-        "size": "17",
-        "image":{ "url": "images/cards/100.png"}
+        "size": "17"
         }
         },
         { "id": "101",
         "attributes":
         {"title":"Judd",
-        "size": "14",
-        "image":{ "url": "images/cards/101.png"}
+        "size": "14"
         }
         },
         { "id": "102",
         "attributes":
         {"title":"Li'l Judd",
-        "size": "8",
-        "image":{ "url": "images/cards/102.png"}
+        "size": "8"
         }
         },
         { "id": "103",
         "attributes":
         {"title":"SquidForce",
-        "size": "10",
-        "image":{ "url": "images/cards/103.png"}
+        "size": "10"
         }
         },
         { "id": "104",
         "attributes":
         {"title":"Zink",
-        "size": "14",
-        "image":{ "url": "images/cards/104.png"}
+        "size": "14"
         }
         },
         { "id": "105",
         "attributes":
         {"title":"Krak-On",
-        "size": "14",
-        "image":{ "url": "images/cards/105.png"}
+        "size": "14"
         }
         },
         { "id": "106",
         "attributes":
         {"title":"Rockenberg",
-        "size": "9",
-        "image":{ "url": "images/cards/106.png"}
+        "size": "9"
         }
         },
         { "id": "107",
         "attributes":
         {"title":"Zekko",
-        "size": "12",
-        "image":{ "url": "images/cards/107.png"}
+        "size": "12"
         }
         },
         { "id": "108",
         "attributes":
         {"title":"Forge",
-        "size": "9",
-        "image":{ "url": "images/cards/108.png"}
+        "size": "9"
         }
         },
         { "id": "109",
         "attributes":
         {"title":"Firefin",
-        "size": "9",
-        "image":{ "url": "images/cards/109.png"}
+        "size": "9"
         }
         },
         { "id": "110",
         "attributes":
         {"title":"Skalop",
-        "size": "14",
-        "image":{ "url": "images/cards/110.png"}
+        "size": "14"
         }
         },
         { "id": "111",
         "attributes":
         {"title":"Splash Mob",
-        "size": "10",
-        "image":{ "url": "images/cards/111.png"}
+        "size": "10"
         }
         },
         { "id": "112",
         "attributes":
         {"title":"Inkline",
-        "size": "11",
-        "image":{ "url": "images/cards/112.png"}
+        "size": "11"
         }
         },
         { "id": "113",
         "attributes":
         {"title":"Tentatek",
-        "size": "2",
-        "image":{ "url": "images/cards/113.png"}
+        "size": "2"
         }
         },
         { "id": "114",
         "attributes":
         {"title":"Takoroka",
-        "size": "13",
-        "image":{ "url": "images/cards/114.png"}
+        "size": "13"
         }
         },
         { "id": "115",
         "attributes":
         {"title":"Annaki",
-        "size": "12",
-        "image":{ "url": "images/cards/115.png"}
+        "size": "12"
         }
         },
         { "id": "116",
         "attributes":
         {"title":"Enperry",
-        "size": "13",
-        "image":{ "url": "images/cards/116.png"}
+        "size": "13"
         }
         },
         { "id": "117",
         "attributes":
         {"title":"Toni Kensa",
-        "size": "8",
-        "image":{ "url": "images/cards/117.png"}
+        "size": "8"
         }
         },
         { "id": "118",
         "attributes":
         {"title":"Barazushi",
-        "size": "9",
-        "image":{ "url": "images/cards/118.png"}
+        "size": "9"
         }
         },
         { "id": "119",
         "attributes":
         {"title":"Emberz",
-        "size": "9",
-        "image":{ "url": "images/cards/119.png"}
+        "size": "9"
         }
         },
         { "id": "120",
         "attributes":
         {"title":"Octotrooper",
-        "size": "8",
-        "image":{ "url": "images/cards/120.png"}
+        "size": "8"
         }
         },
         { "id": "121",
         "attributes":
         {"title":"Shielded Octotrooper",
-        "size": "11",
-        "image":{ "url": "images/cards/121.png"}
+        "size": "11"
         }
         },
         { "id": "122",
         "attributes":
         {"title":"Twintacle Octotrooper",
-        "size": "11",
-        "image":{ "url": "images/cards/122.png"}
+        "size": "11"
         }
         },
         { "id": "123",
         "attributes":
         {"title":"Octohopper",
-        "size": "10",
-        "image":{ "url": "images/cards/123.png"}
+        "size": "10"
         }
         },
         { "id": "124",
         "attributes":
         {"title":"Octocopter",
-        "size": "4",
-        "image":{ "url": "images/cards/124.png"}
+        "size": "4"
         }
         },
         { "id": "125",
         "attributes":
         {"title":"Octobomber",
-        "size": "13",
-        "image":{ "url": "images/cards/125.png"}
+        "size": "13"
         }
         },
         { "id": "126",
         "attributes":
         {"title":"Octodisco",
-        "size": "12",
-        "image":{ "url": "images/cards/126.png"}
+        "size": "12"
         }
         },
         { "id": "127",
         "attributes":
         {"title":"Octopod",
-        "size": "2",
-        "image":{ "url": "images/cards/127.png"}
+        "size": "2"
         }
         },
         { "id": "128",
         "attributes":
         {"title":"Oversized Octopod",
-        "size": "11",
-        "image":{ "url": "images/cards/128.png"}
+        "size": "11"
         }
         },
         { "id": "129",
         "attributes":
         {"title":"Tentakook",
-        "size": "7",
-        "image":{ "url": "images/cards/129.png"}
+        "size": "7"
         }
         },
         { "id": "130",
         "attributes":
         {"title":"Octosniper",
-        "size": "10",
-        "image":{ "url": "images/cards/130.png"}
+        "size": "10"
         }
         },
         { "id": "131",
         "attributes":
         {"title":"Octocommander",
-        "size": "12",
-        "image":{ "url": "images/cards/131.png"}
+        "size": "12"
         }
         },
         { "id": "132",
         "attributes":
         {"title":"Octomissile",
-        "size": "5",
-        "image":{ "url": "images/cards/132.png"}
+        "size": "5"
         }
         },
         { "id": "133",
         "attributes":
         {"title":"Octozeppelin",
-        "size": "9",
-        "image":{ "url": "images/cards/133.png"}
+        "size": "9"
         }
         },
         { "id": "134",
         "attributes":
         {"title":"Squee-G",
-        "size": "8",
-        "image":{ "url": "images/cards/134.png"}
+        "size": "8"
         }
         },
         { "id": "135",
         "attributes":
         {"title":"Octostamp",
-        "size": "4",
-        "image":{ "url": "images/cards/135.png"}
+        "size": "4"
         }
         },
         { "id": "136",
         "attributes":
         {"title":"Amped Octostamp",
-        "size": "9",
-        "image":{ "url": "images/cards/136.png"}
+        "size": "9"
         }
         },
         { "id": "137",
         "attributes":
         {"title":"Flooder",
-        "size": "14",
-        "image":{ "url": "images/cards/137.png"}
+        "size": "14"
         }
         },
         { "id": "138",
         "attributes":
         {"title":"Octoballer",
-        "size": "13",
-        "image":{ "url": "images/cards/138.png"}
+        "size": "13"
         }
         },
         { "id": "139",
         "attributes":
         {"title":"Octoling",
-        "size": "11",
-        "image":{ "url": "images/cards/139.png"}
+        "size": "11"
         }
         },
         { "id": "140",
         "attributes":
         {"title":"DJ Octavio",
-        "size": "17",
-        "image":{ "url": "images/cards/140.png"}
+        "size": "17"
         }
         },
         { "id": "141",
         "attributes":
         {"title":"Chum",
-        "size": "5",
-        "image":{ "url": "images/cards/141.png"}
+        "size": "5"
         }
         },
         { "id": "142",
         "attributes":
         {"title":"Cohock",
-        "size": "9",
-        "image":{ "url": "images/cards/142.png"}
+        "size": "9"
         }
         },
         { "id": "143",
         "attributes":
         {"title":"Snatcher",
-        "size": "6",
-        "image":{ "url": "images/cards/143.png"}
+        "size": "6"
         }
         },
         { "id": "144",
         "attributes":
         {"title":"Steelhead",
-        "size": "12",
-        "image":{ "url": "images/cards/144.png"}
+        "size": "12"
         }
         },
         { "id": "145",
         "attributes":
         {"title":"Steel Eel",
-        "size": "10",
-        "image":{ "url": "images/cards/145.png"}
+        "size": "10"
         }
         },
         { "id": "146",
         "attributes":
         {"title":"Scrapper",
-        "size": "10",
-        "image":{ "url": "images/cards/146.png"}
+        "size": "10"
         }
         },
         { "id": "147",
         "attributes":
         {"title":"Stinger",
-        "size": "7",
-        "image":{ "url": "images/cards/147.png"}
+        "size": "7"
         }
         },
         { "id": "148",
         "attributes":
         {"title":"Maws",
-        "size": "12",
-        "image":{ "url": "images/cards/148.png"}
+        "size": "12"
         }
         },
         { "id": "149",
         "attributes":
         {"title":"Drizzler",
-        "size": "12",
-        "image":{ "url": "images/cards/149.png"}
+        "size": "12"
         }
         },
         { "id": "150",
         "attributes":
         {"title":"Flyfish",
-        "size": "13",
-        "image":{ "url": "images/cards/150.png"}
+        "size": "13"
         }
         },
         { "id": "151",
         "attributes":
         {"title":"Fish Stick",
-        "size": "9",
-        "image":{ "url": "images/cards/151.png"}
+        "size": "9"
         }
         },
         { "id": "152",
         "attributes":
         {"title":"Flipper-Flopper",
-        "size": "12",
-        "image":{ "url": "images/cards/152.png"}
+        "size": "12"
         }
         },
         { "id": "153",
         "attributes":
         {"title":"Slammin' Lid",
-        "size": "6",
-        "image":{ "url": "images/cards/153.png"}
+        "size": "6"
         }
         },
         { "id": "154",
         "attributes":
         {"title":"Big Shot",
-        "size": "13",
-        "image":{ "url": "images/cards/154.png"}
+        "size": "13"
         }
         },
         { "id": "155",
         "attributes":
         {"title":"Goldie",
-        "size": "12",
-        "image":{ "url": "images/cards/155.png"}
+        "size": "12"
         }
         },
         { "id": "156",
         "attributes":
         {"title":"Griller",
-        "size": "13",
-        "image":{ "url": "images/cards/156.png"}
+        "size": "13"
         }
         },
         { "id": "157",
         "attributes":
         {"title":"Mothership",
-        "size": "12",
-        "image":{ "url": "images/cards/157.png"}
+        "size": "12"
         }
         },
         { "id": "158",
         "attributes":
         {"title":"Mudmouth",
-        "size": "13",
-        "image":{ "url": "images/cards/158.png"}
+        "size": "13"
         }
         },
         { "id": "159",
         "attributes":
         {"title":"Zapfish",
-        "size": "9",
-        "image":{ "url": "images/cards/159.png"}
+        "size": "9"
         }
         },
         { "id": "160",
         "attributes":
         {"title":"Tower Control",
-        "size": "13",
-        "image":{ "url": "images/cards/160.png"}
+        "size": "13"
         }
         },
         { "id": "161",
         "attributes":
         {"title":"Rainmaker",
-        "size": "12",
-        "image":{ "url": "images/cards/161.png"}
+        "size": "12"
         }
         },
         { "id": "162",
         "attributes":
         {"title":"Power Clam",
-        "size": "11",
-        "image":{ "url": "images/cards/162.png"}
+        "size": "11"
         }
         },
         { "id": "163",
         "attributes":
         {"title":"Custom Splattershot Jr.",
-        "size": "4",
-        "image":{ "url": "images/cards/163.png"}
+        "size": "4"
         }
         },
         { "id": "164",
         "attributes":
         {"title":"Aerospray RG",
-        "size": "7",
-        "image":{ "url": "images/cards/164.png"}
+        "size": "7"
         }
         },
         { "id": "165",
         "attributes":
         {"title":"Tentatek Splatteershot",
-        "size": "8",
-        "image":{ "url": "images/cards/165.png"}
+        "size": "8"
         }
         },
         { "id": "166",
         "attributes":
         {"title":"Forge Splattershot Pro",
-        "size": "9",
-        "image":{ "url": "images/cards/166.png"}
+        "size": "9"
         }
         },
         { "id": "167",
         "attributes":
         {"title":"Splattershot Nova",
-        "size": "10",
-        "image":{ "url": "images/cards/167.png"}
+        "size": "10"
         }
         },
         { "id": "168",
         "attributes":
         {"title":"Luna Blaster Neo",
-        "size": "7",
-        "image":{ "url": "images/cards/168.png"}
+        "size": "7"
         }
         },
         { "id": "169",
         "attributes":
         {"title":"Carbon Roller Deco",
-        "size": "7",
-        "image":{ "url": "images/cards/169.png"}
+        "size": "7"
         }
         },
         { "id": "170",
         "attributes":
         {"title":"Big Swig Roller",
-        "size": "9",
-        "image":{ "url": "images/cards/170.png"}
+        "size": "9"
         }
         },
         { "id": "171",
         "attributes":
         {"title":"Inkbrush Nouveau",
-        "size": "7",
-        "image":{ "url": "images/cards/171.png"}
+        "size": "7"
         }
         },
         { "id": "172",
         "attributes":
         {"title":"Snipewriter 5H",
-        "size": "9",
-        "image":{ "url": "images/cards/172.png"}
+        "size": "9"
         }
         },
         { "id": "173",
         "attributes":
         {"title":"Slosher Deco",
-        "size": "6",
-        "image":{ "url": "images/cards/173.png"}
+        "size": "6"
         }
         },
         { "id": "174",
         "attributes":
         {"title":"Zink Mini Splatling",
-        "size": "7",
-        "image":{ "url": "images/cards/174.png"}
+        "size": "7"
         }
         },
         { "id": "175",
         "attributes":
         {"title":"Dapple Dualies Noueveau",
-        "size": "7",
-        "image":{ "url": "images/cards/175.png"}
+        "size": "7"
         }
         },
         { "id": "176",
         "attributes":
         {"title":"Neo Sploosh-o-Matic",
-        "size": "9",
-        "image":{ "url": "images/cards/176.png"}
+        "size": "9"
         }
         },
         { "id": "177",
         "attributes":
         {"title":"Neo Splash-o-Matic",
-        "size": "7",
-        "image":{ "url": "images/cards/177.png"}
+        "size": "7"
         }
         },
         { "id": "178",
         "attributes":
         {"title":"N-ZAP '89",
-        "size": "5",
-        "image":{ "url": "images/cards/178.png"}
+        "size": "5"
         }
         },
         { "id": "179",
         "attributes":
         {"title":".96 Gal Deco",
-        "size": "10",
-        "image":{ "url": "images/cards/179.png"}
+        "size": "10"
         }
         },
         { "id": "180",
         "attributes":
         {"title":"Custom Jet Squelcher",
-        "size": "10",
-        "image":{ "url": "images/cards/180.png"}
+        "size": "10"
         }
         },
         { "id": "181",
         "attributes":
         {"title":"Clash Blaster Neo",
-        "size": "8",
-        "image":{ "url": "images/cards/181.png"}
+        "size": "8"
         }
         },
         { "id": "182",
         "attributes":
         {"title":"Rapid Blaster Deco",
-        "size": "8",
-        "image":{ "url": "images/cards/182.png"}
+        "size": "8"
         }
         },
         { "id": "183",
         "attributes":
         {"title":"L-3 Nozzlenose D",
-        "size": "7",
-        "image":{ "url": "images/cards/183.png"}
+        "size": "7"
         }
         },
         { "id": "184",
         "attributes":
         {"title":"Krak-On Splat Roller",
-        "size": "9",
-        "image":{ "url": "images/cards/184.png"}
+        "size": "9"
         }
         },
         { "id": "185",
         "attributes":
         {"title":"Z+F Splat Charger",
-        "size": "8",
-        "image":{ "url": "images/cards/185.png"}
+        "size": "8"
         }
         },
         { "id": "186",
         "attributes":
         {"title":"Z+F Splatterscope",
-        "size": "10",
-        "image":{ "url": "images/cards/186.png"}
+        "size": "10"
         }
         },
         { "id": "187",
         "attributes":
         {"title":"Tri-Slosher Nouveau",
-        "size": "5",
-        "image":{ "url": "images/cards/187.png"}
+        "size": "5"
         }
         },
         { "id": "188",
         "attributes":
         {"title":"Kraken Royale",
-        "size": "12",
-        "image":{ "url": "images/cards/188.png"}
+        "size": "12"
         }
         },
         { "id": "189",
         "attributes":
         {"title":"Super Chump",
-        "size": "12",
-        "image":{ "url": "images/cards/189.png"}
+        "size": "12"
         }
         },
         { "id": "190",
         "attributes":
         {"title":"Shelly & Donny",
-        "size": "12",
-        "image":{ "url": "images/cards/190.png"}
+        "size": "12"
         }
         },
         { "id": "191",
         "attributes":
         {"title":"Annie",
-        "size": "13",
-        "image":{ "url": "images/cards/191.png"}
+        "size": "13"
         }
         },
         { "id": "192",
         "attributes":
         {"title":"Jelonzo",
-        "size": "12",
-        "image":{ "url": "images/cards/192.png"}
+        "size": "12"
         }
         },
         { "id": "193",
         "attributes":
         {"title":"Fred Crumbs",
-        "size": "11",
-        "image":{ "url": "images/cards/193.png"}
+        "size": "11"
         }
         },
         { "id": "194",
         "attributes":
         {"title":"Spyke",
-        "size": "13",
-        "image":{ "url": "images/cards/194.png"}
+        "size": "13"
         }
         },
         { "id": "195",
         "attributes":
         {"title":"The Eel Deal - Frye",
-        "size": "14",
-        "image":{ "url": "images/cards/195.png"}
+        "size": "14"
         }
         },
         { "id": "196",
         "attributes":
         {"title":"The Cold-Blooded Bandit - Shiver",
-        "size": "14",
-        "image":{ "url": "images/cards/196.png"}
+        "size": "14"
         }
         },
         { "id": "197",
         "attributes":
         {"title":"Manta Storm - Big Man",
-        "size": "14",
-        "image":{ "url": "images/cards/197.png"}
+        "size": "14"
         }
         },
         { "id": "198",
         "attributes":
         {"title":"Z+F",
-        "size": "11",
-        "image":{ "url": "images/cards/198.png"}
+        "size": "11"
         }
         },
         { "id": "199",
         "attributes":
         {"title":"Annaki Splattershot Nova",
-        "size": "10",
-        "image":{ "url": "images/cards/199.png"}
+        "size": "10"
         }
         },
         { "id": "200",
         "attributes":
         {"title":"Rapid Blaster Pro Deco",
-        "size": "9",
-        "image":{ "url": "images/cards/200.png"}
+        "size": "9"
         }
         },
         { "id": "201",
         "attributes":
         {"title":"S-BLAST '92",
-        "size": "9",
-        "image":{ "url": "images/cards/201.png"}
+        "size": "9"
         }
         },
         { "id": "202",
         "attributes":
         {"title":"H-3 Nozzlenose D",
-        "size": "8",
-        "image":{ "url": "images/cards/202.png"}
+        "size": "8"
         }
         },
         { "id": "203",
         "attributes":
         {"title":"Big Swig Roller Express",
-        "size": "9",
-        "image":{ "url": "images/cards/203.png"}
+        "size": "9"
         }
         },
         { "id": "204",
         "attributes":
         {"title":"Painbrush",
-        "size": "10",
-        "image":{ "url": "images/cards/204.png"}
+        "size": "10"
         }
         },
         { "id": "205",
         "attributes":
         {"title":"Heavy Splatling Deco",
-        "size": "12",
-        "image":{ "url": "images/cards/205.png"}
+        "size": "12"
         }
         },
         { "id": "206",
         "attributes":
         {"title":"Custom Dualie Squelchers",
-        "size": "10",
-        "image":{ "url": "images/cards/206.png"}
+        "size": "10"
         }
         },
     { "id": "207",
     "attributes":
         {"title":"Light Tetra Dualies",
-        "size": "8",
-        "image":{ "url": "images/cards/207.png"}
+        "size": "8"
         }
         },
     { "id": "208",
     "attributes":
         {"title":"Tenta Sorella Brella",
-        "size": "12",
-        "image":{ "url": "images/cards/208.png"}
+        "size": "12"
         }
         },
     { "id": "209",
     "attributes":
         {"title":"Splatana Wiper Deco",
-        "size": "5",
-        "image":{ "url": "images/cards/209.png"}
+        "size": "5"
         }
     }
 ]
+

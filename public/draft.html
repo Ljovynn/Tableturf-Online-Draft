@@ -93,7 +93,7 @@
 
             .playerDeckSizeBoxContainer{
                 width: 100%;
-                top: 10px;
+                top: 11px;
                 left: 0px;
                 height: 2.8vw;
                 position: relative;
@@ -167,7 +167,7 @@
 
             .optionsPopup{
                 width: 400px;
-                height: 320px;
+                height: 340px;
                 text-align: center;
                 border-radius: 6px;
                 top: 50%;
@@ -225,7 +225,7 @@
     </head>
     <body class="body hidePopup lightMode">
         <header>
-            <h3 id="currentTurnMessage">Waiting for players to get ready</h3>
+            <h3 id="currentTurnMessage" data-key="waitingForPlayers"></h3>
             <h3 id="timer"> <br></h3>
         </header>
         <div class= "draftBox thirdBackgroundColor" id = "draftBox">
@@ -234,13 +234,13 @@
         </div>
         <div class="playerDecks">
             <div class = "playerDeck thirdBackgroundColor" id = "player1Deck" style="left: 0%">
-                <h3 style="text-align: center;font-size:1vw" id="player1Title">Player 1</h3>
+                <h3 style="text-align: center;font-size:1vw" id="player1Title"></h3>
                 <div class = "deckFigures hidePopup" id = "deck1Figures">
                     
                 </div>
             </div>
             <div class = "playerDeck thirdBackgroundColor" id = "player2Deck" style= "transform: translate(-100%);left: 100%">
-                <h3 style="text-align: center;font-size:1vw" id="player2Title">Player 2</h3>
+                <h3 style="text-align: center;font-size:1vw" id="player2Title"></h3>
                 <div class = "deckFigures hidePopup" id = "deck2Figures">
                     
                 </div>
@@ -248,27 +248,27 @@
         </div>
         <div class = "playerSortDeckContainer">
             <div class = "playerSortDeck" style = "left: 0%">
-                <button id="player1SortDeck" class="deckButtons" data-key="sortBySize" disabled>Sort by size</button>
-                <button id="exportDeck1" class="deckButtons" data-key="exportDeck" disabled>Export deck</button>
+                <button id="player1SortDeck" class="deckButtons" data-key="sortBySize" disabled></button>
+                <button id="exportDeck1" class="deckButtons" data-key="exportDeck" disabled></button>
             </div>
             <div class = "playerSortDeck" style= "transform: translate(-50%);left: 50%">
                 <button id="options" class="deckButtons" data-key="options" disabled>Options </button>
             </div>
             <div class = "playerSortDeck" style= "transform: translate(-100%);left: 100%">
-                <button id="player2SortDeck" class="deckButtons" data-key="sortBySize" disabled>Sort by size</button>
-                <button id="exportDeck2" class="deckButtons" data-key="exportDeck" disabled>Export deck</button>
+                <button id="player2SortDeck" class="deckButtons" data-key="sortBySize" disabled></button>
+                <button id="exportDeck2" class="deckButtons" data-key="exportDeck" disabled></button>
             </div>
         </div>
         <div class = "playerDeckSizeBoxContainer">
             <div class = "playerDeckSizeBox" style="left: 0%">
-                <h3 id="player1DeckSize">Size: 0</h3>
+                <h3 id="player1DeckSize"></h3>
             </div>
             <div class="playerDeckSizeBox" style="transform: translate(-100%);left: 100%">
-                <h3 id="player2DeckSize">Size: 0</h3>
+                <h3 id="player2DeckSize"></h3>
             </div>
         </div>
         <div class= "beginningPopup secondaryBackgroundColor" id= "beginningPopup">
-            <h3 data-key="whoAreYou">Who are you?<br><br></h3>
+            <h3 data-key="whoAreYou"><br><br></h3>
             <div>
                 <p><button style="margin: 0px 20px 0px 20px;" id= "player1Button">Player 1</button>
                 <button style="margin: 0px 20px 0px 20px;" id= "spectatorButton" data-key="spectator">Spectator</button>
@@ -276,11 +276,11 @@
             </div>
         </div>
         <div class= "exportDeckPopup hidePopup secondaryBackgroundColor" id= "exportDeckPopup">
-            <h3 data-key="exportDeckText">Export deck to Andrio Celos' Tableturf Simulator</h3>
+            <h3 data-key="exportDeckText"></h3>
             <h3 style="margin: -20px 0px 0px 0px;">https://tableturf.andriocelos.net</h3>
             <div>
                 <p id="code"><br><br></p>
-                <p><button style="margin: 30px 40px 10px 40px; display: inline;" id= "copyExportText" data-key="copy" disabled>Copy</button>
+                <!--<p><button style="margin: 30px 40px 10px 40px; display: inline;" id= "copyExportText" data-key="copy" disabled>Copy</button>-->
                 <button style="margin: 30px 40px 10px 40px; display: inline;" id= "closeExportPopup" data-key="close">Close</button></p>
             </div>
         </div>
@@ -313,8 +313,8 @@
                 <label for="languages" data-key="language"></label>
                 <select class="form-select" id="languages" name="languages">
                     <option value="en">English</option>
-                    <!--<option value="de">Deutsch</option>
-                    <option value="ja">日本語</option>-->
+                    <!--<option value="de">Deutsch</option>-->
+                    <option value="ja">日本語</option>
                     <option value="sv">Svenska</option>
                 </select><br><br>
                 <label for="darkMode" data-key="darkMode"></label>

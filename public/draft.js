@@ -25,7 +25,7 @@ let sortDeck2Button = document.getElementById("player2SortDeck");
 let exportDeckPopup = document.getElementById("exportDeckPopup");
 let exportDeck1Button = document.getElementById("exportDeck1");
 let exportDeck2Button = document.getElementById("exportDeck2");
-let copyExportButton = document.getElementById("copyExportText");
+//let copyExportButton = document.getElementById("copyExportText");
 let closeExportPopupButton = document.getElementById("closeExportPopup");
 let codeId = document.getElementById("code");
 
@@ -58,9 +58,9 @@ let muteAudio = false;
 
 let langData = GetLang();
 
-copyExportButton.addEventListener("click", () => {
+/*copyExportButton.addEventListener("click", () => {
     navigator.clipboard.writeText(codeId.innerText);
-});
+});*/
 
 closeExportPopupButton.addEventListener("click", () => {
     exportDeckPopup.classList.add("hidePopup");
@@ -275,12 +275,22 @@ async function GetCardsJson(){
     const response = await fetch("cards.json");
     const data = await response.json();
     let cardsJson = data;
+    let path;
+    switch (storedLang){
+        case 'ja':
+            path = "images/cards/ja/";
+            break;
+        default:
+            path = "images/cards/en/";
+            break;
+    }
+
     for (let i = 0; i < cardsJson.length; i++){
         let card = cardsJson[i];
         const id = card.id;
         const title = card.attributes.title;
         const size = card.attributes.size;
-        const image = card.attributes.image.url;
+        const image = path + card.id + ".png";
         tempList[i] = new Card(id, title, size, image);
     }
     return tempList;
@@ -425,13 +435,13 @@ function TimerBelowLimit(){
         const cardData = JSON.parse(this.response);
         let cardToPick = +cardData;
         var index = draftCards.findIndex(e => e.card.id === cardToPick);
-        PickCard(draftCards[index]);
         let currentUserId;
         if (currentPlayer == 1){
             currentUserId = player1Id;
         } else{
             currentUserId = player2Id;
         }
+        PickCard(draftCards[index]);
         let message = [currentUserId, draftCards[index].card.id, draftId];
         socket.emit('add card', message);
     }
@@ -704,7 +714,11 @@ function EndDraft(){
     clearInterval(timerInterval);
     draftPhase = 2;
     currentTurnMessage.innerHTML = langData.languages[storedLang].strings["draftHasFinished"];
-    currentTurnMessage.style.color = '#000000';
+    if (darkModeCheckbox.checked){
+        currentTurnMessage.style.color = '#ffffff';
+    } else{
+        currentTurnMessage.style.color = '#000000';
+    }
     timerMessage.innerText = "\n";
     exportDeck1Button.disabled = false;
     exportDeck2Button.disabled = false;
@@ -841,6 +855,34 @@ function GetLang(){
                     "language": "Språk: ",
                     "darkMode": "Mörkt läge",
                     "close": "Stäng"
+                }
+            },
+            "ja": {
+                "strings": {
+                    "whoAreYou": "プレイヤーを選択してください",
+                    "spectator": "観戦",
+                    "ready": " Ready",
+                    "waitingForPlayers": "対戦相手を待っています...",
+                    "draftHasFinished": "ドラフト終了！",
+                    "sTurnToChoose": "が選択中 ",
+                    "sortBySize": "マス数順",
+                    "sortByPickOrder": "選択順",
+                    "exportDeck": "シミュレーターで実行",
+                    "exportDeckText": "シミュレーターで実行（下のコードをコピー）",
+                    "size": "合計マス数: ",
+                    "copy": "コピー",
+                    "options": "オプション",
+                    "muteAudio": "効果音オフ",
+                    "deckSortingOrder": "並べ方:",
+                    "largeToSmall": "降順",
+                    "smallToLarge": "昇順",
+                    "312Sorting": "スペシャルカードの位置:",
+                    "start": "上",
+                    "end": "下",
+                    "inSort": "変更なし",
+                    "language": "言語:",
+                    "darkMode": "ダークモード",
+                    "close": "閉じる"
                 }
             }
         }

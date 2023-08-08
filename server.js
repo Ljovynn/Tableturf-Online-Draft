@@ -42,6 +42,7 @@ io.on("connection", socket => {
 });
 
 const amountOfDifferentCards = 209
+let draftProcessingList = [];
 
 app.use(express.static('public',{extensions:['html']}));
 //</public>app.use(express.static('public'))//,{index:false,extensions:['html']});
@@ -102,6 +103,11 @@ app.post("/TimerBelowLimit", async (req, res) =>{
             res.sendStatus(250);
             return;
         }
+        if (draftProcessingList.includes(draftId)){
+            res.sendStatus(260);
+            return;
+        }
+        draftProcessingList.push(draftId);
 
         //genererar lista med oanvända draftkort
         console.log("draft timer depleted");
@@ -167,10 +173,18 @@ app.post("/TimerBelowLimit", async (req, res) =>{
         }
 
         await UpdateDraft(draft.id, draftPhase, playerTurn, picksUntilChangeTurn);
+        const index = draftProcessingList.indexOf(draftId);
+        if (index != 1){
+            draftProcessingList.splice(index, 1);
+        }
         res.send(unpickedCards[r].toString());
         return;
     } catch (err){
         console.log("error timerrequest " + req.body.draftId);
+        const index = draftProcessingList.indexOf(draftId);
+        if (index != 1){
+            draftProcessingList.splice(index, 1);
+        }
         res.sendStatus(599);
     }
 });
@@ -260,11 +274,12 @@ app.post("/PlayerReady", async (req, res) =>{
             console.log("starting draft");
             await StartDraft(draft.id);
         }
+        res.sendStatus(201);
+        return;
     } catch(err){
         res.sendStatus(599);
         return;
     }
-    res.sendStatus(201);
 })
 
 /*app.post("/StartDraft", async (req, res) =>{
@@ -371,11 +386,6 @@ app.post("/CreateDeckCard", async (req, res) => {
     } else if (player.id = players[1].id){
         playerInDraftId = 2;
     }
-
-    console.log ("indraftid: " + playerInDraftId);
-    console.log ("count: " + count);
-    console.log ("player turn: " + draft.player_turn);
-    console.log ("draft phase: " + draft.draft_phase);
 
     if (count < 15 && (playerInDraftId == draft.player_turn) && draft.draft_phase == 1){
         await CreateDeckCard(data.playerId, count + 1, data.cardId);

@@ -4,7 +4,7 @@
 const site = "http://tableturfdraft.se"
 
 let linkBox = document.getElementById("link");
-let copyBtn = document.getElementById("copyDraft");
+//let copyBtn = document.getElementById("copyDraft");
 let openBtn = document.getElementById("openDraft");
 
 let langForm = document.getElementById("languages");
@@ -137,13 +137,13 @@ generateDraftBtn.addEventListener("click", () => {
     //aktivera SSL först
     //copyBtn.disabled = false;
     openBtn.disabled = false;
-    }   
+    }
 });
 
-copyBtn.addEventListener("click", () => {
+/*copyBtn.addEventListener("click", () => {
     console.log(linkBox.innerText);
     navigator.clipboard.writeText(linkBox.innerText);
-});
+});*/
 
 openBtn.addEventListener("click", () => {
     window.location.href = linkBox.innerText;
@@ -155,9 +155,9 @@ function GetLang(){
             "en": {
                 "strings": {
                     "howToUse": "How to use",
-                    "chooseDraftSettings": "- Choose draft settings",
-                    "clickOnGenerateDraft": "- Click on \"Generate draft\"",
-                    "openLinkGiveToOpponent": "- Open the link, give it to your opponent\n",
+                    "chooseDraftSettings": "1. Choose draft settings",
+                    "clickOnGenerateDraft": "2. Click on \"Generate draft\"",
+                    "openLinkGiveToOpponent": "3. Open the link, give it to your opponent",
                     "draftSettings": "Draft settings",
                     "numberOfCardsInDraft": "Number of cards in draft (30-209):",
                     "player1Name": "Player 1 name:",
@@ -198,9 +198,9 @@ function GetLang(){
             "sv": {
                 "strings": {
                     "howToUse": "Hur man gör",
-                    "chooseDraftSettings": "- Välj draftinställningar",
-                    "clickOnGenerateDraft": "- Klicka på \"Generara draft\"",
-                    "openLinkGiveToOpponent": "- Öppna länken, och ge den till motståndaren\n",
+                    "chooseDraftSettings": "1. Välj draftinställningar",
+                    "clickOnGenerateDraft": "2. Klicka på \"Generara draft\"",
+                    "openLinkGiveToOpponent": "3. Öppna länken, och ge den till motståndaren",
                     "draftSettings": "Draftinställningar",
                     "numberOfCardsInDraft": "Antal kort i draften (30-209):",
                     "player1Name": "Första spelarens namn:",
@@ -236,6 +236,93 @@ function GetLang(){
                     "inSort": "Inom sorteringen",
                     "darkMode": "Mörkt läge",
                     "close": "Stäng"
+                }
+            },
+            "ja": {
+                "strings": {
+                    "howToUse": "使用方法",
+                    "chooseDraftSettings": "1-「カードの設定」欄より選ばれるカードの設定をする",
+                    "clickOnGenerateDraft": "2-「ドラフトURLを生成」ボタンをクリックする",
+                    "openLinkGiveToOpponent": "3- 生成されたURLを相手に共有する",
+                    "share": "4- 共有したURLをお互いに開く",
+                    "draftSettings": "カードの設定",
+                    "numberOfCardsInDraft": "カード数を選択してください(30-209):",
+                    "player1Name": "プレイヤー1:",
+                    "player2Name": "プレイヤー2:",
+                    "playerPositionsRandomized": "カードを選ぶ順番はランダムです",
+                    "312Size": "スペシャルカードの最低枚数 (0-17):",
+                    "timer": "カード選択の制限時間:",
+                    "none": "なし",
+                    "10": "10秒",
+                    "20": "20秒",
+                    "30": "30秒",
+                    "40": "40秒",
+                    "50": "50秒",
+                    "60": "1分",
+                    "120": "2分",
+                    "generateDraft": "ドラフトURLを生成",
+                    "draftLink": "ドラフトURL",
+                    "copy": "コピー",
+                    "open": "開く",
+                    "about": "「Tableturf Online Draft」について",
+                    "aboutParagraph1": "「Tableturf Online Draft」はナワバトラーでカードをドラフトするためのツールだ！",
+                    "aboutParagraph2": "「カードの設定」が参照され、ランダムにカードのリストが生成される！生成されたリストからカードを選びデッキを作ろう！",
+                    "aboutParagraph3": "ドラフトが終わったら、デッキを作って対戦しよう！",
+                    "createdByLjovynn": "Created by Ljovynn",
+                    "options": "オプション",
+                    "muteAudio": "効果音オフ",
+                    "deckSortingOrder": "並べ方:",
+                    "largeToSmall": "降順",
+                    "smallToLarge": "昇順",
+                    "312Sorting": "スペシャルカードの位置:",
+                    "start": "上",
+                    "end": "下",
+                    "inSort": "変更なし",
+                    "darkMode": "ダークモード",
+                    "close": "閉じる"
+                }
+            },
+            "de": {
+                "strings": {
+                    "howToUse": "Anleitung",
+                    "chooseDraftSettings": "1. Wähle deine draft Einstellungen",
+                    "clickOnGenerateDraft": "2. Click on \"Generate draft\"",
+                    "openLinkGiveToOpponent": "3. Erstelle einen Link und teile diesen mit deinem Gegner",
+                    "draftSettings": "Draft Einstellungen",
+                    "numberOfCardsInDraft": "Number of cards in draft (30-209):",
+                    "player1Name": "Player 1 name:",
+                    "player2Name": "Player 2 name:",
+                    "playerPositionsRandomized": "Player positions will be randomized",
+                    "312Size": "Minimum number of special attack cards (0-17):",
+                    "timer": "Timer:",
+                    "none": "None",
+                    "10": "10 seconds",
+                    "20": "20 seconds",
+                    "30": "30 seconds",
+                    "40": "40 seconds",
+                    "50": "50 seconds",
+                    "60": "1 minute",
+                    "120": "2 minutes",
+                    "generateDraft": "Generate draft",
+                    "draftLink": "Draft link",
+                    "copy": "Copy",
+                    "open": "Open",
+                    "about": "About",
+                    "aboutParagraph1": "Tableturf Online Draft is a tool for drafting cards in Tableturf!",
+                    "aboutParagraph2": "It will first generate a random list of cards. Then, both players will take turns picking cards for their own decks.",
+                    "aboutParagraph3": "When the draft is finished, create your decks and start playing!",
+                    "createdByLjovynn": "Created by Ljovynn",
+                    "options": "Options",
+                    "muteAudio": "Mute audio",
+                    "deckSortingOrder": "Deck sorting order:",
+                    "largeToSmall": "Large to small",
+                    "smallToLarge": "Small to large",
+                    "312Sorting": "Special attack card sorting:",
+                    "start": "Start",
+                    "end": "End",
+                    "inSort": "In sort",
+                    "darkMode": "Dark mode",
+                    "close": "Close"
                 }
             }
         }
