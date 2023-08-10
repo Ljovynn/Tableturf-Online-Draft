@@ -776,10 +776,12 @@ function PlayerClick(i){
 
 function ReadyClick(i){
     if (userRole == 1){
+        player1ReadyButton.disabled = true;
         player1Ready = true;
         player1ReadyImage.src = "images/UI/Checkmark.png";
 
     } else{
+        player2ReadyButton.disabled = true;
         player2Ready = true;
         player2ReadyImage.src = "images/UI/Checkmark.png";
     }
@@ -864,11 +866,11 @@ function GetLang(){
                     "ready": " Ready",
                     "waitingForPlayers": "対戦相手を待っています...",
                     "draftHasFinished": "ドラフト終了！",
-                    "sTurnToChoose": "が選択中 ",
+                    "sTurnToChoose": "が選択中",
                     "sortBySize": "マス数順",
                     "sortByPickOrder": "選択順",
                     "exportDeck": "シミュレーターで実行",
-                    "exportDeckText": "シミュレーターで実行（下のコードをコピー）",
+                    "exportDeckText": "シミュレーターで実行（下のコードをコピー",
                     "size": "合計マス数: ",
                     "copy": "コピー",
                     "options": "オプション",
