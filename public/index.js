@@ -14,6 +14,7 @@ let player2NameDoc = document.getElementById("player2");
 let draftSizeDoc = document.getElementById("draftSize");
 let minSpecialsDoc = document.getElementById("312Size");
 let timerDoc = document.getElementById("timerList");
+let stageDoc = document.getElementById("stages");
 let generateDraftBtn = document.getElementById("generateDraft");
 
 let optionsPopup = document.getElementById("optionsPopup")
@@ -118,6 +119,7 @@ generateDraftBtn.addEventListener("click", () => {
     let draftSize = draftSizeDoc.value;
     let minSpecials = minSpecialsDoc.value;
     let timer = timerDoc.value;
+    let stage = stageDoc.value;
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "GenerateNewDraft", true);
@@ -127,7 +129,8 @@ generateDraftBtn.addEventListener("click", () => {
         player2Name: player2,
         draftSize: +draftSize,
         minSpecials: +minSpecials,
-        timer: +timer
+        timer: +timer,
+        stage: +stage
     }));
     xhr.onload = function() {
 
@@ -173,6 +176,16 @@ function GetLang(){
                     "50": "50 seconds",
                     "60": "1 minute",
                     "120": "2 minutes",
+                    "stage": "stage:",
+                    "undefined": "Undefined",
+                    "mainStreet": "Main Street",
+                    "thunderPoint": "Thunder Point",
+                    "xMarksTheGarden": "X Marks the Garden",
+                    "squareSquared": "Squared Squared",
+                    "lakefrontProperty": "Lakefront Property",
+                    "doubleGemini": "Double Gemini",
+                    "riverDrift": "River Drift",
+                    "boxSeats": "Box Seats",
                     "generateDraft": "Generate draft",
                     "draftLink": "Draft link",
                     "copy": "Copy",
@@ -216,6 +229,16 @@ function GetLang(){
                     "50": "50 sekunder",
                     "60": "1 minut",
                     "120": "2 minuter",
+                    "stage": "Karta:",
+                    "undefined": "Obestämt",
+                    "mainStreet": "Main Street",
+                    "thunderPoint": "Thunder Point",
+                    "xMarksTheGarden": "X Marks the Garden",
+                    "squareSquared": "Squared Squared",
+                    "lakefrontProperty": "Lakefront Property",
+                    "doubleGemini": "Double Gemini",
+                    "riverDrift": "River Drift",
+                    "boxSeats": "Box Seats",
                     "generateDraft": "Generera draft",
                     "draftLink": "Draftlänk",
                     "copy": "Kopiera",
@@ -260,6 +283,16 @@ function GetLang(){
                     "50": "50秒",
                     "60": "1分",
                     "120": "2分",
+                    "stage": "ステージ:",
+                    "undefined": "不定期",
+                    "mainStreet": "まっすぐストリート",
+                    "thunderPoint": "かみなりステーション",
+                    "xMarksTheGarden": "ばってんガーデン",
+                    "squareSquared": "ましかくスクエア",
+                    "lakefrontProperty": "ぽっかりレイク",
+                    "doubleGemini": "ふたごアイランド",
+                    "riverDrift": "うねうねリバー",
+                    "boxSeats": "こぢんまりスタジアム",
                     "generateDraft": "ドラフトURLを生成",
                     "draftLink": "ドラフトURL",
                     "copy": "コピー",

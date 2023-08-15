@@ -21,6 +21,10 @@ let player2DeckBox = document.getElementById("deck2Figures");
 
 let sortDeck1Button = document.getElementById("player1SortDeck");
 let sortDeck2Button = document.getElementById("player2SortDeck");
+let player1Title = document.getElementById("player1Title");
+let player2Title = document.getElementById("player2Title");
+
+let stageImage = document.getElementById("stageImage");
 
 let exportDeckPopup = document.getElementById("exportDeckPopup");
 let exportDeck1Button = document.getElementById("exportDeck1");
@@ -69,6 +73,7 @@ closeExportPopupButton.addEventListener("click", () => {
 
 optionsButton.addEventListener("click", () => {
     optionsPopup.classList.remove("hidePopup");
+    optionsButton.disabled = true;
     exportDeck1Button.disabled = true;
     exportDeck2Button.disabled = true;
 });
@@ -76,6 +81,7 @@ optionsButton.addEventListener("click", () => {
 closeOptionsButton.addEventListener("click", () => {
     UpdateSort();
     optionsPopup.classList.add("hidePopup");
+    optionsButton.disabled = false;
     exportDeck1Button.disabled = false;
     exportDeck2Button.disabled = false;
     if (muteAudioCheckbox.checked){
@@ -321,6 +327,36 @@ function ParseDraftData(){
     currentPlayer = draftManagerData.player_turn;
     draftTimer = draftManagerData.timer;
     timeSinceUpdate = CreateDateFromTimestamp(draftManagerData.formatted_update)
+
+    switch (draftManagerData.stage){
+        case 1:
+            stageImage.src = "images/stages/Main Street.png";
+            break;
+        case 2:
+            stageImage.src = "images/stages/Thunder Point.png";
+            break;
+        case 3:
+            stageImage.src = "images/stages/X Marks The Garden.png";
+            break;
+        case 4:
+            stageImage.src = "images/stages/Square Squared.png";
+            break;
+        case 5:
+            stageImage.src = "images/stages/Lakefront Property.png";
+            break;
+        case 6:
+            stageImage.src = "images/stages/Double Gemini.png";
+            break;
+        case 7:
+            stageImage.src = "images/stages/River Drift.png";
+            break;
+        case 8:
+            stageImage.src = "images/stages/Box Seats.png";
+            break;
+        default:
+            stageImage.src = "images/stages/Undefined.png";
+            break;
+    }
     
     //draftkort
     const draftCardList = draftData[1];
@@ -338,8 +374,8 @@ function ParseDraftData(){
     player2Name = player2Data.player_name;
     player1Button.innerText = player1Name;
     player2Button.innerText = player2Name;
-    document.getElementById("player1Title").innerText = player1Name;
-    document.getElementById("player2Title").innerText = player2Name;
+    player1Title.innerText = player1Name;
+    player2Title.innerText = player2Name;
     player1ReadyButton.innerText = player1Name + langData.languages[storedLang].strings["ready"];
     player2ReadyButton.innerText = player2Name + langData.languages[storedLang].strings["ready"];
     player1Ready = player1Data.ready;
@@ -365,8 +401,10 @@ function ParseDraftData(){
     if (draftPhase == 1){
         if (currentPlayer == 1){
             currentTurnMessage.innerHTML = player1Name + langData.languages[storedLang].strings["sTurnToChoose"];
+            player1Title.style.color = '#2a7321';
         } else{
             currentTurnMessage.innerHTML = player2Name + langData.languages[storedLang].strings["sTurnToChoose"];
+            player2Title.style.color = '#2a7321';
         }
         if (draftTimer != 0){
             SetTimer();
@@ -579,9 +617,13 @@ function ChangeDraftTurnData(){
         if (currentPlayer == 1){
             currentPlayer = 2;
             currentTurnMessage.innerHTML = player2Name + langData.languages[storedLang].strings["sTurnToChoose"];
+            player2Title.style.color = '#2a7321';
+            player1Title.style.color = GetDefaultColour();
         } else{
             currentPlayer = 1;
             currentTurnMessage.innerHTML = player1Name + langData.languages[storedLang].strings["sTurnToChoose"];
+            player1Title.style.color = '#2a7321';
+            player2Title.style.color = GetDefaultColour();
         }
         picksUntilChangeTurn = 2;
 
@@ -621,11 +663,7 @@ function AddCardToPlayer(playerDeck, id, deckId, deckSizeBox){
     
     if (draftPhase == 1){
         if (draftTimer != 0){
-            if (darkModeCheckbox.checked){
-                timerMessage.style.color = '#ffffff';
-            } else{
-                timerMessage.style.color = '#000000';
-            }
+            timerMessage.style.color = GetDefaultColour();
             SetTimer();
         }
     }
@@ -701,6 +739,7 @@ function StartDraftPhase(){
         draftPhase = 1;
         MakeDraftVisible();
         currentTurnMessage.innerHTML = player1Name + langData.languages[storedLang].strings["sTurnToChoose"];
+        player1Title.style.color = '#2a7321';
         CheckTextColour();
         if (draftTimer != 0){
             SetTimer();
@@ -714,11 +753,9 @@ function EndDraft(){
     clearInterval(timerInterval);
     draftPhase = 2;
     currentTurnMessage.innerHTML = langData.languages[storedLang].strings["draftHasFinished"];
-    if (darkModeCheckbox.checked){
-        currentTurnMessage.style.color = '#ffffff';
-    } else{
-        currentTurnMessage.style.color = '#000000';
-    }
+    currentTurnMessage.style.color = GetDefaultColour();
+    player1Title.style.color = GetDefaultColour();
+    player2Title.style.color = GetDefaultColour();
     timerMessage.innerText = "\n";
     exportDeck1Button.disabled = false;
     exportDeck2Button.disabled = false;
@@ -753,6 +790,14 @@ function CheckTextColour(){
 function PlayAudio(audio){
     if (!muteAudio){
         audio.play();
+    }
+}
+
+function GetDefaultColour(){
+    if (darkModeCheckbox.checked){
+        return '#ffffff';
+    } else{
+        return '#000000';
     }
 }
 
@@ -826,7 +871,7 @@ function GetLang(){
                     "start": "Start",
                     "end": "End",
                     "inSort": "In sort",
-                    "language": "Language: ",
+                    "language": "Language:",
                     "darkMode": "Dark mode",
                     "close": "Close"
                 }
@@ -854,7 +899,7 @@ function GetLang(){
                     "start": "Början",
                     "end": "Slutet",
                     "inSort": "Inom sorteringen",
-                    "language": "Språk: ",
+                    "language": "Språk:",
                     "darkMode": "Mörkt läge",
                     "close": "Stäng"
                 }

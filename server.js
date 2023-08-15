@@ -202,8 +202,9 @@ app.post("/GenerateNewDraft", async (req, res) => {
     try {
         const data = req.body
     console.log("timer: " + data.timer);
+    console.log("stage: " + data.stage);
 
-    const result = await CreateDraft(data.timer)
+    const result = await CreateDraft(data.timer, data.stage)
 
     let player1 = data.player1Name;
     let player2 = data.player2Name;

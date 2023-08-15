@@ -23,7 +23,8 @@
             }
 
             body{
-                max-width: 99.4vw;
+                margin: 0 0 0 0;
+                max-width: 100vw;
                 width: 100%;
                 height: 100%;
                 left: 0;
@@ -74,11 +75,11 @@
                 padding: 10px;
             }
 
-            .playerSortDeckContainer{
+            .bottomInfoContainer{
                 width: 100%;
                 top: 10px;
                 left: 0px;
-                height: 2.5vw;
+                height: 3vw;
                 text-align: center;
                 pointer-events:none;
                 position: relative;
@@ -91,11 +92,30 @@
                 text-align: center;
             }
 
+            .midInfoContainer{
+                pointer-events: all;
+                width: 15vw;
+                top: 0px;
+                left: 50%;
+                height: 100%;
+                transform: translate(-50%, 0%);
+                display: flex;
+                margin: 0 0 0 0;
+                position: absolute;
+                text-align: center;
+            }
+
+            .midInfoContainer img{
+                width: 6.6vw;
+                height: auto;
+                position: relative;
+            }
+
             .playerDeckSizeBoxContainer{
                 width: 100%;
-                top: 11px;
+                top: 5px;
                 left: 0px;
-                height: 2.8vw;
+                height: 0.2vw;
                 position: relative;
                 pointer-events:none;
             }
@@ -246,13 +266,18 @@
                 </div>
             </div>
         </div>
-        <div class = "playerSortDeckContainer">
+        <div class = "bottomInfoContainer">
             <div class = "playerSortDeck" style = "left: 0%">
                 <button id="player1SortDeck" class="deckButtons" data-key="sortBySize" disabled></button>
                 <button id="exportDeck1" class="deckButtons" data-key="exportDeck" disabled></button>
             </div>
-            <div class = "playerSortDeck" style= "transform: translate(-50%);left: 50%">
-                <button id="options" class="deckButtons" data-key="options" disabled>Options </button>
+            <div class = "midInfoContainer">
+                <div>
+                    <img alt="Stage" id= "stageImage">
+                </div>
+                <div style="margin: 1vw 0 0 1vw">
+                    <button id="options" class="deckButtons" data-key="options" disabled></button>
+                </div>
             </div>
             <div class = "playerSortDeck" style= "transform: translate(-100%);left: 100%">
                 <button id="player2SortDeck" class="deckButtons" data-key="sortBySize" disabled></button>
@@ -268,7 +293,7 @@
             </div>
         </div>
         <div class= "beginningPopup secondaryBackgroundColor" id= "beginningPopup">
-            <h3 data-key="whoAreYou"><br><br></h3>
+            <h3 data-key="whoAreYou">Who are you?<br><br></h3>
             <div>
                 <p><button style="margin: 0px 20px 0px 20px;" id= "player1Button">Player 1</button>
                 <button style="margin: 0px 20px 0px 20px;" id= "spectatorButton" data-key="spectator">Spectator</button>
@@ -297,27 +322,27 @@
         <div class= "optionsPopup hidePopup secondaryBackgroundColor" id= "optionsPopup">
             <h3 data-key="options">Options<br></h3>
             <div>
-                <label for="muteAudio" data-key="muteAudio"></label>
+                <label for="muteAudio" data-key="muteAudio">Mute audio</label>
                 <input type="checkbox" id="muteAudioCheckbox" name="muteAudio"><br><br>
-                <label for="setSizeOrder" data-key="deckSortingOrder"></label>
+                <label for="setSizeOrder" data-key="deckSortingOrder">Deck sorting order:</label>
                 <select class="form-select" id="setSizeOrder" name="setSizeOrder">
-                    <option value="1" data-key="largeToSmall"></option>
-                    <option value="2" data-key="smallToLarge"></option>
+                    <option value="1" data-key="largeToSmall">Large to small</option>
+                    <option value="2" data-key="smallToLarge">Small to large</option>
                 </select><br><br>
-                <label for="set312Order" data-key="312Sorting"></label>
+                <label for="set312Order" data-key="312Sorting">Special attack card sorting:</label>
                 <select class="form-select" id="set312Order" name="set312Order">
-                    <option value="1" data-key="start"></option>
-                    <option value="2" data-key="end"></option>
-                    <option value="3" data-key="inSort"></option>
+                    <option value="1" data-key="start">Start</option>
+                    <option value="2" data-key="end">End</option>
+                    <option value="3" data-key="inSort">In sort</option>
                 </select><br><br>
-                <label for="languages" data-key="language"></label>
+                <label for="languages" data-key="language">Language:</label>
                 <select class="form-select" id="languages" name="languages">
                     <option value="en">English</option>
                     <!--<option value="de">Deutsch</option>-->
                     <option value="ja">日本語</option>
                     <option value="sv">Svenska</option>
                 </select><br><br>
-                <label for="darkMode" data-key="darkMode"></label>
+                <label for="darkMode" data-key="darkMode">Dark mode</label>
                 <input type="checkbox" id="darkModeCheckbox" name="darkMode"><br><br>
             </div>
             <button id="closeOptions" data-key="close">Close</button>

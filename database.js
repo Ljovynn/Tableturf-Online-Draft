@@ -45,8 +45,8 @@ export async function GetDraftCards(draftId){
     return rows;
 }
 
-export async function CreateDraft(timer){
-    const result = await pool.query(`INSERT INTO drafts (timer) VALUES (?)`, [timer])
+export async function CreateDraft(timer, stage){
+    const result = await pool.query(`INSERT INTO drafts (timer, stage) VALUES (?, ?)`, [timer, stage])
     return JSON.stringify(result[0].insertId);
 }
 
@@ -93,7 +93,7 @@ export async function PlayerReady (player_id){
     await pool.query(`UPDATE players SET ready = TRUE WHERE id = ?`, [player_id])
 }
 
-//await UpdateDraft(27, 1, 2, 2)
+//const result = await CreateDraft(20, 2);
 /*const result = await GetDraft(9);
 const result2 = JSON.stringify(result);
 console.log(result2 + " json")
