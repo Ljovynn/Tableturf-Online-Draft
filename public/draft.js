@@ -82,8 +82,10 @@ closeOptionsButton.addEventListener("click", () => {
     UpdateSort();
     optionsPopup.classList.add("hidePopup");
     optionsButton.disabled = false;
-    exportDeck1Button.disabled = false;
-    exportDeck2Button.disabled = false;
+    if (draftPhase == 2){
+        exportDeck1Button.disabled = false;
+        exportDeck2Button.disabled = false;
+    }
     if (muteAudioCheckbox.checked){
         muteAudio = true;;
         localStorage['mute'] = '1';
