@@ -773,6 +773,10 @@ function DraftClick(i){
             cardId: draftCards[i].card.id
         }));
         xhr.onload = function() {
+            if (xhr.status != 201){
+                alert("Something went wrong. Please refresh the page.")
+                return;
+            }
             let message = [playerId, draftCards[i].card.id, draftId];
             socket.emit('add card', message);
         }
