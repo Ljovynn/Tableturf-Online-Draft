@@ -133,13 +133,16 @@ generateDraftBtn.addEventListener("click", () => {
         stage: +stage
     }));
     xhr.onload = function() {
+        if (xhr.status != 201){
+            linkBox.innerText = langData.languages[storedLang].strings["somethingWentWrong"];
+            return;
+        }
+        var data = JSON.parse(this.responseText);
+        linkBox.innerText = site + "/draft?id=" + data;
 
-    var data = JSON.parse(this.responseText);
-    linkBox.innerText = site + "/draft?id=" + data;
-
-    //aktivera SSL först
-    //copyBtn.disabled = false;
-    openBtn.disabled = false;
+        //aktivera SSL först
+        //copyBtn.disabled = false;
+        openBtn.disabled = false;
     }
 });
 
@@ -188,6 +191,7 @@ function GetLang(){
                     "boxSeats": "Box Seats",
                     "generateDraft": "Generate draft",
                     "draftLink": "Draft link",
+                    "somethingWentWrong": "Something went wrong...",
                     "copy": "Copy",
                     "open": "Open",
                     "about": "About",
@@ -241,6 +245,7 @@ function GetLang(){
                     "boxSeats": "Box Seats",
                     "generateDraft": "Generera draft",
                     "draftLink": "Draftlänk",
+                    "somethingWentWrong": "Något gick fel...",
                     "copy": "Kopiera",
                     "open": "Öppna",
                     "about": "Om",
@@ -295,6 +300,7 @@ function GetLang(){
                     "boxSeats": "こぢんまりスタジアム",
                     "generateDraft": "ドラフトURLを生成",
                     "draftLink": "ドラフトURL",
+                    "somethingWentWrong": "何かが間違っていた...。",
                     "copy": "コピー",
                     "open": "開く",
                     "about": "「Tableturf Online Draft」について",
