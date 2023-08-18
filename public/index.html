@@ -161,7 +161,16 @@
                 <option value="8" data-key="boxSeats">Box Seats</option>
                 </select>
             </div>
-            <p><button id="generateDraft" data-key="generateDraft">Generate draft</button></p>
+            <!-- Kommentera in / ut denna css för att tillåta användning av outgivna kort:
+            .unreleasedCards{
+                visibility: hidden;
+                position: absolute;
+            } -->
+            <div class="unreleasedCards">
+                <label for="includeUnreleasedCards" data-key="includeUnreleasedCards">Include unreleased cards</label>
+                <input type="checkbox" id="includeUnreleasedCardsCheckbox" name="includeUnreleasedCards">
+            </div>
+            <p><button id="generateDraft" data-key="generateDraft" style="font-weight: bold;">Generate draft</button></p>
             <h3 data-key="draftLink">Draft link</h3>
             <h2 id="link" class="text-line"> <br></h2>
             <div>

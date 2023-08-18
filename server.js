@@ -41,7 +41,8 @@ io.on("connection", socket => {
     })
 });
 
-const amountOfDifferentCards = 209
+const amountOfDifferentCards = 209;
+const unreleasedAmountOfDifferentCards = 12;
 let draftProcessingList = [];
 
 app.use(express.static('public',{extensions:['html']}));
@@ -192,17 +193,13 @@ app.post("/TimerBelowLimit", async (req, res) =>{
 function CreateDateFromTimestamp(timestamp){
     console.log("timestamp: " + timestamp);
     var t = timestamp.split(/[- :.]/);
-    console.log(t[5]);
     let result = new Date(t[0], t[1] -1, t[2], t[3], t[4], t[5]);
-    console.log("resulting date: " + result.toString());
     return result;
 }
 
 app.post("/GenerateNewDraft", async (req, res) => {
     try {
         const data = req.body
-    console.log("timer: " + data.timer);
-    console.log("stage: " + data.stage);
 
     const result = await CreateDraft(data.timer, data.stage)
 
@@ -229,8 +226,14 @@ app.post("/GenerateNewDraft", async (req, res) => {
 
     const draftSize = +JSON.stringify(data.draftSize);
     const minSpecials = +JSON.stringify(data.minSpecials);
-
-    let draftList = CreateSortedList(amountOfDifferentCards);
+    
+    let draftList;
+    if (data.includeUnreleasedCards == true){
+        draftList = CreateSortedList(amountOfDifferentCards, unreleasedAmountOfDifferentCards);
+    } else{
+        draftList = CreateSortedList(amountOfDifferentCards, 0);
+    }
+    
     Shuffle(draftList);
     draftList = GetDraftFromShuffledList(draftList, draftSize, minSpecials);
     console.log(draftList + " after shenanigans");
@@ -251,7 +254,6 @@ app.post("/GenerateNewDraft", async (req, res) => {
 })
 
 app.post("/PlayerReady", async (req, res) =>{
-
     try {
         const playerId = req.body.playerId;
         const draftId = req.body.draftId;
@@ -279,7 +281,6 @@ app.post("/PlayerReady", async (req, res) =>{
         return;
     } catch(err){
         res.sendStatus(599);
-        return;
     }
 })
 
@@ -294,10 +295,13 @@ app.post("/PlayerReady", async (req, res) =>{
     res.sendStatus(201);
 })*/
 
-function CreateSortedList(amountOfDifferentCards) {
+function CreateSortedList(amountOfDifferentCards, unreleasedCards) {
     let tempList = [];
+    for (let i = -unreleasedCards; i < 0; i++){
+        tempList.push(i);
+    }
     for (let i = 0; i < amountOfDifferentCards; i++) {
-        tempList[i] = i + 1;
+        tempList.push(i + 1);
     }
     return tempList;
 }

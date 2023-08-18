@@ -3,6 +3,8 @@
 
 const site = "http://tableturfdraft.se"
 
+let includeUnreleasedCardsCheckbox = document.getElementById("includeUnreleasedCardsCheckbox");
+
 let linkBox = document.getElementById("link");
 //let copyBtn = document.getElementById("copyDraft");
 let openBtn = document.getElementById("openDraft");
@@ -120,6 +122,10 @@ generateDraftBtn.addEventListener("click", () => {
     let minSpecials = minSpecialsDoc.value;
     let timer = timerDoc.value;
     let stage = stageDoc.value;
+    let includeUnreleasedCards = false;
+    if (includeUnreleasedCardsCheckbox.checked){
+        includeUnreleasedCards = true;
+    }
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "GenerateNewDraft", true);
@@ -130,7 +136,8 @@ generateDraftBtn.addEventListener("click", () => {
         draftSize: +draftSize,
         minSpecials: +minSpecials,
         timer: +timer,
-        stage: +stage
+        stage: +stage,
+        includeUnreleasedCards: includeUnreleasedCards
     }));
     xhr.onload = function() {
         if (xhr.status != 201){
@@ -189,6 +196,7 @@ function GetLang(){
                     "doubleGemini": "Double Gemini",
                     "riverDrift": "River Drift",
                     "boxSeats": "Box Seats",
+                    "includeUnreleasedCards": "Include unreleased cards",
                     "generateDraft": "Generate draft",
                     "draftLink": "Draft link",
                     "somethingWentWrong": "Something went wrong...",
@@ -243,6 +251,7 @@ function GetLang(){
                     "doubleGemini": "Double Gemini",
                     "riverDrift": "River Drift",
                     "boxSeats": "Box Seats",
+                    "includeUnreleasedCards": "Inkludera outgivna kort",
                     "generateDraft": "Generera draft",
                     "draftLink": "Draftlänk",
                     "somethingWentWrong": "Något gick fel...",
@@ -298,6 +307,7 @@ function GetLang(){
                     "doubleGemini": "ふたごアイランド",
                     "riverDrift": "うねうねリバー",
                     "boxSeats": "こぢんまりスタジアム",
+                    "includeUnreleasedCards": "未発表カードを含む",
                     "generateDraft": "ドラフトURLを生成",
                     "draftLink": "ドラフトURL",
                     "somethingWentWrong": "何かが間違っていた...。",

@@ -184,12 +184,10 @@ player2ReadyButton.addEventListener('click',(evt) => ReadyClick(2));
 
 class Card{
     id;
-    title;
     size;
     image;
-    constructor(id, title, size, image){
+    constructor(id, size, image){
         this.id = id;
-        this.title = title;
         this.size = size;
         this.image = image;
     }
@@ -201,11 +199,17 @@ class DraftCard{
     inDraft = true;
     pickOrder;
     constructor(id){
-        let tempCard = allCards[id - 1];
-        let title = tempCard.title;
+        //hantera outgivna kort
+        let index;
+        if (id < 0){
+            index = amountOfDifferentCards - id - 1;
+        } else{
+            index = id - 1;
+        }
+        let tempCard = allCards[index];
         let size = +tempCard.size;
         let image = tempCard.image;
-        this.card = new Card(id, title, size, image);
+        this.card = new Card(id, size, image);
     }
 }
 
@@ -296,10 +300,9 @@ async function GetCardsJson(){
     for (let i = 0; i < cardsJson.length; i++){
         let card = cardsJson[i];
         const id = card.id;
-        const title = card.attributes.title;
-        const size = card.attributes.size;
+        const size = card.size;
         const image = path + card.id + ".png";
-        tempList[i] = new Card(id, title, size, image);
+        tempList[i] = new Card(id, size, image);
     }
     return tempList;
 }
@@ -312,7 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function applyStrings() {
-    console.log(langData);
+    //console.log(langData);
     body.querySelectorAll(`[data-key]`).forEach(element => {
         let key = element.getAttribute('data-key');
         if (key) {
@@ -422,11 +425,9 @@ function ParseDraftData(){
 }
 
 function CreateDateFromTimestamp(timestamp){
-    console.log("timestamp: " + timestamp);
     var t = timestamp.split(/[- :.]/);
     let result = new Date(t[0], t[1] -1, t[2], t[3], t[4], t[5], t[6]);
-    console.log ("resulting date: " + result);
-    console.log("result MS: " + result.getTime().toString());
+    //console.log ("resulting date: " + result);
     return result;
 }
 
@@ -440,7 +441,6 @@ function SetTimer(){
         timeUntilPost = -8000;
     }
 
-    console.log("time since last update: " + timeSinceUpdate)
     var result = (timeSinceUpdate.getTime() + (draftTimer * 1000)) - now.getTime();
     //result = result / 1000;
     if (result < 5000){
