@@ -55,6 +55,8 @@ let player2ReadyImage = document.getElementById("player2Check");
 let currentTurnMessage = document.getElementById("currentTurnMessage");
 let timerMessage = document.getElementById("timer");
 
+let backToHomepageButton = document.getElementById("backToHomepage");
+
 let player1DeckSizeBox = document.getElementById("player1DeckSize");
 let player2DeckSizeBox = document.getElementById("player2DeckSize");
 
@@ -65,6 +67,10 @@ let langData = GetLang();
 /*copyExportButton.addEventListener("click", () => {
     navigator.clipboard.writeText(codeId.innerText);
 });*/
+
+backToHomepageButton.addEventListener("click", () => {
+    window.location.href = "http://tableturfdraft.se";
+});
 
 closeExportPopupButton.addEventListener("click", () => {
     exportDeckPopup.classList.add("hidePopup");
@@ -278,6 +284,12 @@ function FetchDraftInfo (id) {
     }));
     xhr.onload = function() {
         draftData = JSON.parse(this.response);
+        if (xhr.status != 200){
+            beginningPopup.classList.add("hidePopup");
+            backToHomepageButton.classList.remove("hidePopup");
+            alert("Invalid draft ID");
+            return;
+        }
         ParseDraftData();
     }
 }
@@ -421,6 +433,7 @@ function ParseDraftData(){
         exportDeck1Button.disabled = false;
         exportDeck2Button.disabled = false;
         currentTurnMessage.innerHTML = langData.languages[storedLang].strings["draftHasFinished"];
+        backToHomepageButton.classList.remove("hidePopup");
     }
 }
 
@@ -754,6 +767,7 @@ function EndDraft(){
     PlayAudio(draftFinishedSfx);
     clearInterval(timerInterval);
     draftPhase = 2;
+    backToHomepageButton.classList.remove("hidePopup");
     currentTurnMessage.innerHTML = langData.languages[storedLang].strings["draftHasFinished"];
     currentTurnMessage.style.color = GetDefaultColour();
     player1Title.style.color = GetDefaultColour();
@@ -845,6 +859,10 @@ function ReadyClick(i){
         draftId: draftId
     }));
     xhr.onload = function() {
+        if (xhr.status != 201){
+            alert("Something went wrong. Please refresh the page.");
+            return;
+        }
         let message = [playerId, draftId];
         socket.emit('player ready', message);
         CheckIfBothPlayersReady();
@@ -879,7 +897,8 @@ function GetLang(){
                     "inSort": "In sort",
                     "language": "Language:",
                     "darkMode": "Dark mode",
-                    "close": "Close"
+                    "close": "Close",
+                    "back": "Back"
                 }
             },
             "sv": {
@@ -907,7 +926,8 @@ function GetLang(){
                     "inSort": "Inom sorteringen",
                     "language": "Språk:",
                     "darkMode": "Mörkt läge",
-                    "close": "Stäng"
+                    "close": "Stäng",
+                    "back": "Tillbaka"
                 }
             },
             "ja": {
@@ -935,7 +955,8 @@ function GetLang(){
                     "inSort": "変更なし",
                     "language": "言語:",
                     "darkMode": "ダークモード",
-                    "close": "閉じる"
+                    "close": "閉じる",
+                    "back": "バック"
                 }
             }
         }

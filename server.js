@@ -81,7 +81,6 @@ app.post("/GetDraftInfo", async (req, res) =>{
         data[3] = decks;
     
         res.status(200).send(data);
-        return;
     } catch (err){
         res.sendStatus(599);
     }
@@ -270,30 +269,18 @@ app.post("/PlayerReady", async (req, res) =>{
         } else{
             console.log("player not in draft");
             res.sendStatus(599);
+            return;
         }
     
-        //horrendous code ik but its fast
         if (draft.draft_phase == 0 && otherPlayer.ready){
             console.log("starting draft");
             await StartDraft(draft.id);
         }
         res.sendStatus(201);
-        return;
     } catch(err){
         res.sendStatus(599);
     }
 })
-
-/*app.post("/StartDraft", async (req, res) =>{
-    console.log("starting draft")
-    const draftId = req.body.draftId;
-    let draft = await GetDraft(draftId);
-    if (draft.draftPhase == 0){
-        await StartDraft(draftId);
-    }
-
-    res.sendStatus(201);
-})*/
 
 function CreateSortedList(amountOfDifferentCards, unreleasedCards) {
     let tempList = [];
@@ -358,24 +345,6 @@ function GetDraftFromShuffledList(fullList, draftSize, minSpecials){
     return draftList;
 }
 
-/*app.post("/CreateDraft", async (req, res) => {
-    const data = req.body
-    const result = await CreateDraft()
-    res.status(201).send(result)
-})*/
-
-/*app.post("/CreatePlayer", async (req, res) => {
-    const data = req.body
-    const result = await CreatePlayer(data.draft_id, data.playerName)
-    res.status(201).send(result)
-})*/
-/*
-app.post("/CreateDraftCard", async (req, res) => {
-    const data = req.body
-    await CreateDraftCard(data.draft_id, data.card_id)
-    res.status(201).send(data.card_id)
-})*/
-
 //ha med card id och player id
 app.post("/CreateDeckCard", async (req, res) => {
     try {
@@ -395,13 +364,12 @@ app.post("/CreateDeckCard", async (req, res) => {
     if (count < 15 && (playerInDraftId == draft.player_turn) && draft.draft_phase == 1){
         await CreateDeckCard(data.playerId, count + 1, data.cardId);
     } else{
-        console.log("fraud!");
+        console.log("Fraudulent attempt");
         res.status(599).send(data.card_id)
         return;
     }
 
     //ändrar draft data
-    //const draft = await GetDraft(data.draft_id)
     let picksUntilChangeTurn = draft.picks_until_change_turn
     let playerTurn = draft.player_turn
     let draftPhase = 1
@@ -426,6 +394,5 @@ app.post("/CreateDeckCard", async (req, res) => {
     res.sendStatus(201);
     } catch (err){
         res.sendStatus(599);
-        return;
     }
 })
