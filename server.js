@@ -109,7 +109,6 @@ app.post("/TimerBelowLimit", async (req, res) =>{
         console.log("draft timer depleted");
         const players = await GetPlayersInDraft(draft.id);
         let draftCards = await GetDraftCards(draft.id);
-        //let draftCards = draft;
         let draftCardList = [];
         for (let i = 0; i < draftCards.length; i++){
             draftCardList.push(draftCards[i].card_id);
@@ -170,7 +169,7 @@ app.post("/TimerBelowLimit", async (req, res) =>{
 
         await UpdateDraft(draft.id, draftPhase, playerTurn, picksUntilChangeTurn);
         const index = draftProcessingList.indexOf(draftId);
-        if (index != 1){
+        if (index !== -1){
             draftProcessingList.splice(index, 1);
         }
         res.send(unpickedCards[r].toString());
@@ -178,7 +177,7 @@ app.post("/TimerBelowLimit", async (req, res) =>{
     } catch (err){
         console.log("error timerrequest " + req.body.draftId);
         const index = draftProcessingList.indexOf(draftId);
-        if (index != 1){
+        if (index !== -1){
             draftProcessingList.splice(index, 1);
         }
         res.sendStatus(599);
