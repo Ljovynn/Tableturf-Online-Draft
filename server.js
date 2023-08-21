@@ -33,9 +33,6 @@ io.on("connection", socket => {
         socket.to(message[1].toString()).emit('player ready', message[0]);
     })
 
-    /*socket.on('start draft', message => {
-        socket.to(socket.room).emit('start draft', message);
-    })*/
     socket.on('add card', message => {
         socket.to(message[2].toString()).emit('add card', message);
     })
@@ -54,7 +51,6 @@ app.get("/draft", async (req, res) => {
     res.sendFile(join(__dirname, "draft.html"));
 })
 
-//indexes 0 = draftcards, 1 = players, 2 = playerdecks
 app.post("/GetDraftInfo", async (req, res) =>{
     try {
         const draftId = req.body.draftId;
@@ -220,8 +216,6 @@ app.post("/GenerateNewDraft", async (req, res) => {
 
     let names = [player1, player2];
     await CreatePlayers(result, names);
-    /*await (CreatePlayer(result, 1, JSON.stringify(data.player1Name)))
-    await (CreatePlayer(result, 2, JSON.stringify(data.player2Name)))*/
 
     const draftSize = +JSON.stringify(data.draftSize);
     const minSpecials = +JSON.stringify(data.minSpecials);
@@ -240,11 +234,6 @@ app.post("/GenerateNewDraft", async (req, res) => {
     //lägger in utan sort på databas
 
     await CreateDraftCards(result, draftList);
-    /*for (let i = 0; i < draftList.length; i++){
-
-        await CreateDraftCard(result, draftList[i]);
-        console.log("create card " + draftList[i]);
-    }*/
 
     res.status(201).send(result)
     } catch (err){
