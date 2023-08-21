@@ -786,7 +786,8 @@ function DraftClick(i){
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send(JSON.stringify({
             playerId: playerId,
-            cardId: draftCards[i].card.id
+            cardId: draftCards[i].card.id,
+            draftId: draftId
         }));
         xhr.onload = function() {
             if (xhr.status != 201){

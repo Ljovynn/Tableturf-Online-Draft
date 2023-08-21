@@ -111,7 +111,7 @@ app.post("/TimerBelowLimit", async (req, res) =>{
 
         //genererar lista med oanvända draftkort
         console.log("draft timer depleted");
-        const players = await(GetPlayersInDraft(draft.id));
+        const players = await GetPlayersInDraft(draft.id);
         let draftCards = await GetDraftCards(draft.id);
         //let draftCards = draft;
         let draftCardList = [];
@@ -119,8 +119,8 @@ app.post("/TimerBelowLimit", async (req, res) =>{
             draftCardList.push(draftCards[i].card_id);
         }
 
-        let player1Deck =  await(GetDeckCards(players[0].id));
-        let player2Deck = await(GetDeckCards(players[1].id));
+        let player1Deck =  await GetDeckCards(players[0].id);
+        let player2Deck = await GetDeckCards(players[1].id);
         let unpickedCards = []
         for (let i = 0; i < draftCardList.length; i++){
             let unpicked = true;
@@ -219,7 +219,7 @@ app.post("/GenerateNewDraft", async (req, res) => {
     }
 
     let names = [player1, player2];
-    await (CreatePlayers(result, names));
+    await CreatePlayers(result, names);
     /*await (CreatePlayer(result, 1, JSON.stringify(data.player1Name)))
     await (CreatePlayer(result, 2, JSON.stringify(data.player2Name)))*/
 
@@ -257,7 +257,7 @@ app.post("/PlayerReady", async (req, res) =>{
         const playerId = req.body.playerId;
         const draftId = req.body.draftId;
         const players = await GetPlayersInDraft(draftId)
-        const draft = await GetDraft(players[0].draft_id);
+        const draft = await GetDraft(draftId);
     
         console.log(playerId + " ready");
         await PlayerReady(playerId);
@@ -348,17 +348,20 @@ function GetDraftFromShuffledList(fullList, draftSize, minSpecials){
 //ha med card id och player id
 app.post("/CreateDeckCard", async (req, res) => {
     try {
-        const data = req.body;
+    const data = req.body;
     console.log ("sent in player id: " + data.playerId);
-    const player = await GetPlayer(data.playerId);
-    const count = await GetDeckCount(player.id)
-    const draft = await GetDraft(player.draft_id);
+    const draft = await GetDraft(data.draftId);
+    const count = await GetDeckCount(data.playerId)
     const players = await GetPlayersInDraft(draft.id)
     let playerInDraftId = 0;
-    if (player.id == players[0].id){
+    if (data.playerId == players[0].id){
         playerInDraftId = 1;
-    } else if (player.id = players[1].id){
+    } else if (data.playerId == players[1].id){
         playerInDraftId = 2;
+    } else {
+        console.log("player id and draft it not matching at CreateDeckCard, " + data.playerId);
+        res.status(599).send(data.card_id)
+        return;
     }
 
     if (count < 15 && (playerInDraftId == draft.player_turn) && draft.draft_phase == 1){
