@@ -23,18 +23,21 @@ server.listen(port, () => {
 const io = new Server (server);
 
 io.on("connection", socket => {
+    //join draft id as room
     socket.on('join', function(room){
         socket.join(room.toString());
         console.log("user joined " + room);
     });
 
+    //message: playerId, draftId
     socket.on('player ready', message => {
         console.log("socket sent player ready in room " + message[1]);
         socket.to(message[1].toString()).emit('player ready', message[0]);
     })
 
+    //message: currentUserId, cardId, draftId
     socket.on('add card', message => {
-        socket.to(message[2].toString()).emit('add card', message);
+        socket.to(message[2].toString()).emit('add card', [message[0], message[1]]);
     })
 });
 
@@ -43,7 +46,6 @@ const unreleasedAmountOfDifferentCards = 12;
 let draftProcessingList = [];
 
 app.use(express.static('public',{extensions:['html']}));
-//</public>app.use(express.static('public'))//,{index:false,extensions:['html']});
 app.use(express.urlencoded({extended: true}))
 app.use(express.json())
 
@@ -51,6 +53,8 @@ app.get("/draft", async (req, res) => {
     res.sendFile(join(__dirname, "draft.html"));
 })
 
+//fetch all draft info from draft
+//include draftId
 app.post("/GetDraftInfo", async (req, res) =>{
     try {
         const draftId = req.body.draftId;
@@ -82,6 +86,9 @@ app.post("/GetDraftInfo", async (req, res) =>{
     }
 })
 
+//when client thinks timer is below limit
+//include draftId
+//respond with unpicked cards ID
 app.post("/TimerBelowLimit", async (req, res) =>{
     try {
         const draftId = req.body.draftId;
@@ -91,10 +98,12 @@ app.post("/TimerBelowLimit", async (req, res) =>{
             res.sendStatus(599);
             return;
         }
+
         var now = new Date();
         let timeSinceLastUpdate = CreateDateFromTimestamp(draft.formatted_update);
+        //get time between now and draft timer depleted
         var t = (timeSinceLastUpdate.getTime() + (draft.timer * 1000)) - now.getTime();
-        //result = result / 1000;
+        //check if valid request
         if (t > -2000){
             res.sendStatus(250);
             return;
@@ -105,7 +114,7 @@ app.post("/TimerBelowLimit", async (req, res) =>{
         }
         draftProcessingList.push(draftId);
 
-        //genererar lista med oanvända draftkort
+        //generate list of the unpicked cards
         console.log("draft timer depleted");
         const players = await GetPlayersInDraft(draft.id);
         let draftCards = await GetDraftCards(draft.id);
@@ -135,6 +144,7 @@ app.post("/TimerBelowLimit", async (req, res) =>{
             }
         }
 
+        //choose random card for the player
         let r = Math.floor(Math.random() * unpickedCards.length);
         let currentPlayerId;
         let count;
@@ -147,13 +157,13 @@ app.post("/TimerBelowLimit", async (req, res) =>{
         }
         await CreateDeckCard(currentPlayerId, count + 1, unpickedCards[r]);
 
-        //ändrar draft data
+        //update draft data
         let picksUntilChangeTurn = draft.picks_until_change_turn
         let playerTurn = draft.player_turn
         let draftPhase = 1
         picksUntilChangeTurn--
 
-        //kollar om det är slutet, player och count är från före update
+        //check if it's the end, player and count from before update
         if (playerTurn == 2 && count == 14){
             draftPhase = 2
         }
@@ -184,13 +194,15 @@ app.post("/TimerBelowLimit", async (req, res) =>{
     }
 });
 
+//creates js date from sql timestamp
 function CreateDateFromTimestamp(timestamp){
-    console.log("timestamp: " + timestamp);
     var t = timestamp.split(/[- :.]/);
     let result = new Date(t[0], t[1] -1, t[2], t[3], t[4], t[5]);
     return result;
 }
 
+//generates new draft
+//include player1Name, player2Name, draftSize, minSpecials, includeUnrelasedCards
 app.post("/GenerateNewDraft", async (req, res) => {
     try {
         const data = req.body
@@ -199,13 +211,15 @@ app.post("/GenerateNewDraft", async (req, res) => {
 
     let player1 = data.player1Name;
     let player2 = data.player2Name;
+    
     if (player1 == null || player1 == ''){
         player1 = 'Player 1';
     }
     if (player2 == null || player2 == ''){
         player2 = 'Player 2';
     }
-    
+
+    //random positioner of players
     let r = Math.floor(Math.random() * 2);
     if (r == 1){
         let tempName = player1;
@@ -226,12 +240,12 @@ app.post("/GenerateNewDraft", async (req, res) => {
         draftList = CreateSortedList(amountOfDifferentCards, 0);
     }
     
+    //generates random list of cards for draft
     Shuffle(draftList);
     draftList = GetDraftFromShuffledList(draftList, draftSize, minSpecials);
     console.log(draftList + " after shenanigans");
 
-    //lägger in utan sort på databas
-
+    //updates database
     await CreateDraftCards(result, draftList);
 
     res.status(201).send(result)
@@ -240,6 +254,8 @@ app.post("/GenerateNewDraft", async (req, res) => {
     }
 })
 
+//When player sends player ready
+//include player id and draft id
 app.post("/PlayerReady", async (req, res) =>{
     try {
         const playerId = req.body.playerId;
@@ -250,6 +266,7 @@ app.post("/PlayerReady", async (req, res) =>{
         console.log(playerId + " ready");
         await PlayerReady(playerId);
         let otherPlayer;
+        //checks which player sent request
         if (playerId == players[0].id){
             otherPlayer = players[1];
         } else if (playerId == players[1].id){
@@ -270,6 +287,7 @@ app.post("/PlayerReady", async (req, res) =>{
     }
 })
 
+//create sorted list of all availible cards. Unreleased cards have negative values
 function CreateSortedList(amountOfDifferentCards, unreleasedCards) {
     let tempList = [];
     for (let i = -unreleasedCards; i < 0; i++){
@@ -286,6 +304,7 @@ function CreateSortedSpecialAttackList(){
     return array;
 }
 
+//shuffles an array
 function Shuffle(array) {
     let currentIndex = array.length,  randomIndex;
   
@@ -294,7 +313,7 @@ function Shuffle(array) {
       randomIndex = Math.floor(Math.random() * currentIndex);
       currentIndex--;
   
-      // Byt elementet med sista platsen av arrayen
+      // switch element with last place of array
       [array[currentIndex], array[randomIndex]] = [
         array[randomIndex], array[currentIndex]];
     }
@@ -302,12 +321,13 @@ function Shuffle(array) {
     return array;
 }
 
+//get a real draft from a sorted list
 function GetDraftFromShuffledList(fullList, draftSize, minSpecials){
     let unusedSpecials = CreateSortedSpecialAttackList();
     let currentSpecials = 0;
     let draftList = [];
     for (let i = 0; i < draftSize; i++){
-        //kollar om den har specialattack
+        //checks if it has a special attack card
         var index = unusedSpecials.indexOf(fullList[i]);
         if (index !== -1) {
             unusedSpecials.splice(index, 1);
@@ -316,10 +336,10 @@ function GetDraftFromShuffledList(fullList, draftSize, minSpecials){
         draftList[i] = fullList[i];
     }
 
-    //sätter dit specials
+    //puts more specials while until min amount of specials reached
     while (currentSpecials < minSpecials){
         for (let i = 0; i < draftList.length; i++){
-            //kollar om det inte är en specialattack
+            //checks if its not a special attack card
             if (CreateSortedSpecialAttackList().includes(draftList[i]) == false){
                 let randomIndex = Math.floor(Math.random() * unusedSpecials.length);
                 draftList[i] = unusedSpecials[randomIndex];
@@ -333,7 +353,8 @@ function GetDraftFromShuffledList(fullList, draftSize, minSpecials){
     return draftList;
 }
 
-//ha med card id och player id
+//puts deck card into players deck
+//include playerId, cardId, draftId
 app.post("/CreateDeckCard", async (req, res) => {
     try {
     const data = req.body;
@@ -342,16 +363,19 @@ app.post("/CreateDeckCard", async (req, res) => {
     const count = await GetDeckCount(data.playerId)
     const players = await GetPlayersInDraft(draft.id)
     let playerInDraftId = 0;
+
+    //checks if player id matches
     if (data.playerId == players[0].id){
         playerInDraftId = 1;
     } else if (data.playerId == players[1].id){
         playerInDraftId = 2;
     } else {
-        console.log("player id and draft it not matching at CreateDeckCard, " + data.playerId);
+        console.log("player id and draft id not matching at CreateDeckCard, " + data.playerId);
         res.status(599).send(data.card_id)
         return;
     }
 
+    //cecks if everything is correct and updates database
     if (count < 15 && (playerInDraftId == draft.player_turn) && draft.draft_phase == 1){
         await CreateDeckCard(data.playerId, count + 1, data.cardId);
     } else{
@@ -360,13 +384,13 @@ app.post("/CreateDeckCard", async (req, res) => {
         return;
     }
 
-    //ändrar draft data
+    //change draft data
     let picksUntilChangeTurn = draft.picks_until_change_turn
     let playerTurn = draft.player_turn
     let draftPhase = 1
     picksUntilChangeTurn--
 
-    //kollar om det är slutet, player och count är från före update
+    //check if draft ended,  player turn and count from before update
     if (playerTurn == 2 && count == 14){
         draftPhase = 2
     }

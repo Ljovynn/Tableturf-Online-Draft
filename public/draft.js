@@ -85,9 +85,19 @@ optionsButton.addEventListener("click", () => {
 });
 
 closeOptionsButton.addEventListener("click", () => {
-    UpdateSort();
+    //updates deck sorting
+    localStorage['sort'] = sortOrderForm.value;
+    localStorage['312Order'] = specialCardSortForm.value;
+    if (player1Deck.sorted == true){
+        SortDeck(player1Deck, false);
+    }
+    if (player2Deck.sorted == true){
+        SortDeck(player2Deck, false)
+    }
+
     optionsPopup.classList.add("hidePopup");
     optionsButton.disabled = false;
+    //only export decks when draft finished
     if (draftPhase == 2){
         exportDeck1Button.disabled = false;
         exportDeck2Button.disabled = false;
@@ -111,11 +121,13 @@ closeOptionsButton.addEventListener("click", () => {
     ChangeLang()
 });
 
+//change language of the page
 function ChangeLang(){
     localStorage['language'] = langForm.value;
     storedLang = langForm.value;
     applyStrings();
 
+    //updates currentTurnMessage and size text
     if (draftPhase == 1){
         if (currentPlayer == 1){
             currentTurnMessage.innerHTML = player1Name + langData.languages[storedLang].strings["sTurnToChoose"];
@@ -150,18 +162,18 @@ let playerId;
 
 let player1Name;
 let player2Name;
-//player2DeckSizeText = document.getElementById("player2DeckSize");
 
 let currentPlayer = 1;
 let picksUntilChangeTurn = 1;
 let draftPhase = 0;
 let draftTimer = 0; //maximum
-let timerInterval = 0; //det som tickar ner
+let timerInterval = 0; //it ticks down
 let playerIsInTime = true;
 let timeSinceUpdate;
 
 let draftData;
 
+//check local storage
 var storedSort = localStorage['sort'] || '1';
 var stored312Order = localStorage['312Order'] || '1';
 var mute = localStorage['mute' || '0'];
@@ -185,8 +197,8 @@ player1Button.addEventListener('click',(evt) => PlayerClick(1));
 player2Button.addEventListener('click',(evt) => PlayerClick(2));
 spectatorButton.addEventListener('click',(evt) => PlayerClick(0));
 
-player1ReadyButton.addEventListener('click',(evt) => ReadyClick(1));
-player2ReadyButton.addEventListener('click',(evt) => ReadyClick(2));
+player1ReadyButton.addEventListener('click',(evt) => ReadyClick());
+player2ReadyButton.addEventListener('click',(evt) => ReadyClick());
 
 class Card{
     id;
@@ -205,7 +217,7 @@ class DraftCard{
     inDraft = true;
     pickOrder;
     constructor(id){
-        //hantera outgivna kort
+        //handle unreleased cards with negative id
         let index;
         if (id < 0){
             index = amountOfDifferentCards - id - 1;
@@ -232,9 +244,11 @@ class PlayerDeck{
 }
 
 const socket = io();
-//const socket = io.connect();
+//join socket room as draft id
 socket.emit('join', draftId.toString());
 
+//when other player sends ready
+//data = playerId
 socket.on('player ready', data =>{
     if (player1Id == data){
         player1Ready = true;
@@ -246,28 +260,27 @@ socket.on('player ready', data =>{
     CheckIfBothPlayersReady();
 });
 
-/*socket.on('start draft', data =>{
-    if (+data == draftId){
-        StartDraftPhase();
-    }
-})*/
-
+//when other player picks a card
+//data = currentUserId, cardId
 socket.on('add card', data =>{
+    //finds card in the draft
     var index = draftCards.findIndex(e => e.card.id === data[1]);
     draftCards[index].inDraft = false;
     draftCards[index].documentImg.setAttribute('class', 'lockedCard');
     timeSinceUpdate = new Date();
+    //checks which player it is
     if (+data[0] == player1Id){
-        AddCardToPlayer(player1Deck, data[1], "deck1Figures", player1DeckSizeBox);
+        AddCardToPlayer(player1Deck, data[1], player1DeckBox, player1DeckSizeBox);
     } else if (+data[0] == player2Id){
         
-        AddCardToPlayer(player2Deck, data[1], "deck2Figures", player2DeckSizeBox);
+        AddCardToPlayer(player2Deck, data[1], player2DeckBox, player2DeckSizeBox);
     }
     ChangeDraftTurnData();
 })
 
 Startup();
 
+//at start of page
 async function Startup(){
     player1Deck = new PlayerDeck();
     player2Deck = new PlayerDeck();
@@ -275,6 +288,7 @@ async function Startup(){
     FetchDraftInfo(draftId);
 }
 
+//fetch all info from draft
 function FetchDraftInfo (id) {
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "GetDraftInfo", true);
@@ -284,6 +298,7 @@ function FetchDraftInfo (id) {
     }));
     xhr.onload = function() {
         draftData = JSON.parse(this.response);
+        //checks if status is ok
         if (xhr.status != 200){
             beginningPopup.classList.add("hidePopup");
             backToHomepageButton.classList.remove("hidePopup");
@@ -294,12 +309,15 @@ function FetchDraftInfo (id) {
     }
 }
 
+//get all card data from cards.json
+//returns list
 async function GetCardsJson(){
     let tempList = [];
     const response = await fetch("cards.json");
     const data = await response.json();
     let cardsJson = data;
     let path;
+    //change path of card images depending on language
     switch (storedLang){
         case 'ja':
             path = "images/cards/ja/";
@@ -309,6 +327,7 @@ async function GetCardsJson(){
             break;
     }
 
+    //for each card
     for (let i = 0; i < cardsJson.length; i++){
         let card = cardsJson[i];
         const id = card.id;
@@ -319,23 +338,25 @@ async function GetCardsJson(){
     return tempList;
 }
 
+//when content is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    //skip the lang value in the HTML tag for this example
-    //langData = GetLangsJson();
     applyStrings();
     body.classList.remove("hidePopup");
 });
 
+//apply selected language to all availible strings with data-key element
 function applyStrings() {
-    //console.log(langData);
+    //checks all elements with data-key
     body.querySelectorAll(`[data-key]`).forEach(element => {
         let key = element.getAttribute('data-key');
         if (key) {
+            //updates text with the key from langdata
             element.textContent = langData.languages[storedLang].strings[key];
         }
     });
 }
 
+//handle the recieved draft data
 function ParseDraftData(){
     //draft
     const draftManagerData = draftData[0];
@@ -345,6 +366,7 @@ function ParseDraftData(){
     draftTimer = draftManagerData.timer;
     timeSinceUpdate = CreateDateFromTimestamp(draftManagerData.formatted_update)
 
+    //stage
     switch (draftManagerData.stage){
         case 1:
             stageImage.src = "images/stages/Main Street.png";
@@ -375,7 +397,7 @@ function ParseDraftData(){
             break;
     }
     
-    //draftkort
+    //draft cards
     const draftCardList = draftData[1];
     for (let i = 0; i < draftCardList.length; i++){
         draftCards[i] = new DraftCard(draftCardList[i].card_id);
@@ -403,18 +425,19 @@ function ParseDraftData(){
     //decks
     const deckData = draftData[3];
     for (let i = 0; i < deckData[0].length; i++){
-        AddCardToPlayer(player1Deck, deckData[0][i].card_id, "deck1Figures", player1DeckSizeBox);
+        AddCardToPlayer(player1Deck, deckData[0][i].card_id, player1DeckBox, player1DeckSizeBox);
         var index = draftCards.findIndex(e => e.card.id === deckData[0][i].card_id);
         draftCards[index].inDraft = false;
     }
     for (let i = 0; i < deckData[1].length; i++){
-        AddCardToPlayer(player2Deck, deckData[1][i].card_id, "deck2Figures", player2DeckSizeBox);
+        AddCardToPlayer(player2Deck, deckData[1][i].card_id, player2DeckBox, player2DeckSizeBox);
         var index = draftCards.findIndex(e => e.card.id === deckData[1][i].card_id);
         draftCards[index].inDraft = false;
     }
 
     DisplayDraftCards();
 
+    //handle different draft phases
     if (draftPhase == 1){
         if (currentPlayer == 1){
             currentTurnMessage.innerHTML = player1Name + langData.languages[storedLang].strings["sTurnToChoose"];
@@ -437,15 +460,18 @@ function ParseDraftData(){
     }
 }
 
+//create js Date from sql timestamp
 function CreateDateFromTimestamp(timestamp){
     var t = timestamp.split(/[- :.]/);
     let result = new Date(t[0], t[1] -1, t[2], t[3], t[4], t[5], t[6]);
-    //console.log ("resulting date: " + result);
     return result;
 }
 
+//update timer
 function SetTimer(){
     var now = new Date();
+
+    //ms until post varies depending on userRole
     let timeUntilPost = -5000;
     if (currentPlayer == userRole){
         timeUntilPost = -2000;
@@ -454,8 +480,9 @@ function SetTimer(){
         timeUntilPost = -8000;
     }
 
+    //get time between now and when draft timer depleted
     var result = (timeSinceUpdate.getTime() + (draftTimer * 1000)) - now.getTime();
-    //result = result / 1000;
+    //if under 5 seconds left
     if (result < 5000){
         if (result <= timeUntilPost){
             TimerBelowLimit();
@@ -463,16 +490,18 @@ function SetTimer(){
             PlayAudio(tickSfx);
             timerMessage.style.color = '#F90100';
         } else{
+            //player cant pick cards below timer 0
             playerIsInTime = false;
         }
     }
+
+    //update timer text
     var secondsTimer = Math.floor((result % (1000 * 60)) / 1000)
     let message = Math.max(secondsTimer, 0).toString();
     timerMessage.innerHTML = message;
-    //timerMessage.innerHTML = result / 1000;
-    return result;
 }
 
+//when timer is below limit, post to server
 function TimerBelowLimit(){
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "TimerBelowLimit", true);
@@ -481,20 +510,29 @@ function TimerBelowLimit(){
         draftId: +draftId
     }));
     xhr.onload = function() {
+        //check if status is ok
         if (xhr.status != 200){
             console.log("status not 200, " + xhr.status);
             return;
         }
+        //response is cardId
         const cardData = JSON.parse(this.response);
         let cardToPick = +cardData;
+
+        //finds card in draft
         var index = draftCards.findIndex(e => e.card.id === cardToPick);
+
+        //checks which player should get card
         let currentUserId;
         if (currentPlayer == 1){
             currentUserId = player1Id;
         } else{
             currentUserId = player2Id;
         }
+
         PickCard(draftCards[index]);
+
+        //send socket message
         let message = [currentUserId, draftCards[index].card.id, draftId];
         socket.emit('add card', message);
     }
@@ -505,7 +543,10 @@ function CreateSortedSpecialAttackList(){
     return array;
 }
 
+//sort array of cards by size
+//returns sorted array
 function SortBySize(array, reverseValue, specialAttackValue){
+    //if special cards have no uniqe sorting
     if (specialAttackValue == 3){
         if (reverseValue == 2){
             array.sort((a, b) => a.card.size - b.card.size || a.card.id - b.card.id);
@@ -518,6 +559,8 @@ function SortBySize(array, reverseValue, specialAttackValue){
         let tempNormalCardList = [];
         let temp312List = []
         let all312List = CreateSortedSpecialAttackList();
+
+        //splits array into special cards and normal cards
         for (let i = 0; i < array.length; i++){
             var index = all312List.indexOf(array[i].card.id);
             if (index !== -1) {
@@ -527,14 +570,15 @@ function SortBySize(array, reverseValue, specialAttackValue){
             }
         }
 
+        //sort the seperated cards
         if (reverseValue == 2){
             tempNormalCardList.sort((a, b) => a.card.size - b.card.size || a.card.id - b.card.id);
         } else{
             tempNormalCardList.sort((a, b) => b.card.size - a.card.size || b.card.id - a.card.id);
         }
-
         temp312List.sort((a, b) => a.card.id - b.card.id);
 
+        //checks which order the arrays should be put in, and adds them to one array again
         if (specialAttackValue == 1){
             for (let i = 0; i < temp312List.length; i++){
                 tempFullList.push(temp312List[i]);
@@ -554,14 +598,18 @@ function SortBySize(array, reverseValue, specialAttackValue){
     }
 }
 
+//returns array of cards sorted by pickorder
 function SortByPickOrder(array){
     array.sort((a, b) => a.pickOrder - b.pickOrder);
 
     return array;
 }
 
+//display the draft cards in the document
 function DisplayDraftCards(){
+    //for each card
     for (let i = 0; i < draftCards.length; i++){
+        //create the img element and add it to the draftCard
         var img = document.createElement('img');
         document.getElementById('draftFigures').appendChild(img);
         img.src = draftCards[i].card.image;
@@ -575,14 +623,18 @@ function DisplayDraftCards(){
     }
 }
 
+//display a deck
 function DisplayDeck(playerDeck, deckFigures){
+    //for each card
     for (let i = 0; i < playerDeck.deck.length; i++){
+        //create the img element with source from card's image
         var img = document.createElement('img');
         deckFigures.appendChild(img);
         img.src = playerDeck.deck[i].card.image;
     }
 }
 
+//makes all draft information visible
 function MakeDraftVisible(){
     draftFiguresBox.classList.remove("hidePopup");
     player1DeckBox.classList.remove("hidePopup");
@@ -592,15 +644,20 @@ function MakeDraftVisible(){
     sortDeck1Button.disabled = false;
     sortDeck2Button.disabled = false;
     optionsButton.disabled = false;
-    sortDeck1Button.onclick = (evt) => SortDeck(player1Deck);
-    sortDeck2Button.onclick = (evt) => SortDeck(player2Deck);
+
+    //adds click functionality to sort and export buttons
+    sortDeck1Button.onclick = (evt) => SortDeck(player1Deck, true);
+    sortDeck2Button.onclick = (evt) => SortDeck(player2Deck, true);
     exportDeck1Button.onclick = (evt) => ExportDeck(player1Deck);
     exportDeck2Button.onclick = (evt) => ExportDeck(player2Deck);
 }
 
+//opens the ready popup
 function OpenReadyPopup(){
     beginningPopup.classList.add("hidePopup");
     readyPopup.classList.remove("hidePopup");
+
+    //checks if players are ready
     if (player1Ready){
         player1ReadyButton.disabled = true;
         player1ReadyImage.src = "images/UI/Checkmark.png";
@@ -611,23 +668,27 @@ function OpenReadyPopup(){
     }
 }
 
+//picks a card for current player
 function PickCard(draftCard){
     draftCard.inDraft = false;
     draftCard.documentImg.setAttribute('class', 'lockedCard');
     timeSinceUpdate = new Date();
+
+    //checks which player
     if (currentPlayer == 1){
-        let deckId = "deck1Figures";
-        AddCardToPlayer(player1Deck, draftCard.card.id, deckId, player1DeckSizeBox);
+        AddCardToPlayer(player1Deck, draftCard.card.id, player1DeckBox, player1DeckSizeBox);
         
     } else{
-        let deckId = "deck2Figures";
-        AddCardToPlayer(player2Deck, draftCard.card.id, deckId, player2DeckSizeBox);
+        AddCardToPlayer(player2Deck, draftCard.card.id, player2DeckBox, player2DeckSizeBox);
     }
     ChangeDraftTurnData();
 }
 
+//changes draft turn data. Does not need a post or socket message
 function ChangeDraftTurnData(){
     picksUntilChangeTurn--;
+
+    //if player turn should change
     if (picksUntilChangeTurn == 0){
         if (currentPlayer == 1){
             currentPlayer = 2;
@@ -642,6 +703,7 @@ function ChangeDraftTurnData(){
         }
         picksUntilChangeTurn = 2;
 
+        //if client is the current player
         if (userRole == currentPlayer){
             currentTurnMessage.style.color = '#2a7321';
         } else if (userRole != 0){
@@ -650,87 +712,94 @@ function ChangeDraftTurnData(){
     }
 }
 
-function AddCardToPlayer(playerDeck, id, deckId, deckSizeBox){
+//add card to a player's deck
+function AddCardToPlayer(playerDeck, id, deckDocument, deckSizeBox){
     PlayAudio(drawCardSfx);
     playerIsInTime = true;
+
+
     let newDraftCard = new DraftCard(id);
+
+    //update size
     playerDeck.size += newDraftCard.card.size;
     deckSizeBox.innerHTML = langData.languages[storedLang].strings["size"] + playerDeck.size;
 
+    //create img element
     var img = document.createElement('img');
-    document.getElementById(deckId).appendChild(img);
+    deckDocument.appendChild(img);
     img.src = newDraftCard.card.image;
 
+    //set draftCard info
     newDraftCard.documentImg = img;
     newDraftCard.inDraft = false;
     newDraftCard.pickOrder = playerDeck.deck.length + 1;
 
     playerDeck.deck.push(newDraftCard);
+
+    //sort deck if needed
     if(playerDeck.sorted){
-        playerDeck.sorted= !playerDeck.sorted;
-        SortDeck(playerDeck)
+        SortDeck(playerDeck, false)
     }
 
+    //check if draft should end
     if (player2Deck.deck.length == 15){
         EndDraft();
         return;
     }
     
-    if (draftPhase == 1){
-        if (draftTimer != 0){
-            timerMessage.style.color = GetDefaultColour();
-            SetTimer();
-        }
+    //check if timer should be updated
+    if (draftPhase == 1 && draftTimer != 0){
+        timerMessage.style.color = GetDefaultColour();
+        SetTimer();
     }
-    
 }
 
-function SortDeck(playerDeck){
+//sorts a player's deck
+function SortDeck(playerDeck, changeSortedStatus){
     let deckFigures;
     let sortButton;
+
+    //check player
     if (playerDeck == player1Deck){
-        deckFigures = document.getElementById("deck1Figures");
-        sortButton = document.getElementById("player1SortDeck");
+        deckFigures = player1DeckBox;
+        sortButton = sortDeck1Button;
     } else{
-        deckFigures = document.getElementById("deck2Figures");
-        sortButton = document.getElementById("player2SortDeck");
+        deckFigures = player2DeckBox;
+        sortButton = sortDeck2Button;
     }
 
-    //ta bort display
+    //remove display of deck cards
     while (deckFigures.firstChild) {
         deckFigures.removeChild(deckFigures.lastChild);
     }
 
-    //sortera
+    //if sorting type should change
+    if (changeSortedStatus){
+        playerDeck.sorted= !playerDeck.sorted;
+    }
+
+    //sort deck's cards
     if (playerDeck.sorted){
-        playerDeck.deck = SortByPickOrder(playerDeck.deck);
-        sortButton.textContent = langData.languages[storedLang].strings["sortBySize"];
-    }else{
         playerDeck.deck = SortBySize(playerDeck.deck, +sortOrderForm.value, +specialCardSortForm.value);
         sortButton.textContent = langData.languages[storedLang].strings["sortByPickOrder"];
+    }else{
+        playerDeck.deck = SortByPickOrder(playerDeck.deck);
+        sortButton.textContent = langData.languages[storedLang].strings["sortBySize"];
+        
     }
-    playerDeck.sorted= !playerDeck.sorted;
 
     DisplayDeck(playerDeck, deckFigures);
 }
 
-function UpdateSort(){
-    localStorage['sort'] = sortOrderForm.value;
-    localStorage['312Order'] = specialCardSortForm.value;
-
-    if (player1Deck.sorted == true){
-        player1Deck.deck = SortBySize(player1Deck.deck, +sortOrderForm.value, +specialCardSortForm.value);
-    }
-    if (player2Deck.sorted == true){
-        player2Deck.deck = SortBySize(player2Deck.deck, +sortOrderForm.value, +specialCardSortForm.value);
-    }
-}
-
+//open export popup and set codeId text to the deck's code for exporting to simulator
 function ExportDeck(playerDeck){
     exportDeckPopup.classList.remove("hidePopup");
     optionsButton.disabled = true;
 
+    //sort the deck
     playerDeck.deck = SortBySize(playerDeck.deck, +sortOrderForm.value, +specialCardSortForm.value);
+
+    //export deck
     let name = "Draft"
     let cards = [];
     for (let i = 0; i < playerDeck.deck.length; i++){
@@ -740,12 +809,14 @@ function ExportDeck(playerDeck){
     codeId.innerText = jsonString;
 }
 
+//check if both players are ready for draft start
 function CheckIfBothPlayersReady(){
     if (draftPhase == 0 && player1Ready && player2Ready){
         StartDraftPhase();
     }
 }
 
+//start the draft
 function StartDraftPhase(){
     timeSinceUpdate = new Date();
     PlayAudio(tickSfx);
@@ -756,6 +827,7 @@ function StartDraftPhase(){
         currentTurnMessage.innerHTML = player1Name + langData.languages[storedLang].strings["sTurnToChoose"];
         player1Title.style.color = '#2a7321';
         CheckTextColour();
+        //set update timer on interval 1 second
         if (draftTimer != 0){
             SetTimer();
             timerInterval = setInterval(SetTimer, 1000);
@@ -763,6 +835,7 @@ function StartDraftPhase(){
     }
 }
 
+//finish draft
 function EndDraft(){
     PlayAudio(draftFinishedSfx);
     clearInterval(timerInterval);
@@ -777,8 +850,9 @@ function EndDraft(){
     exportDeck2Button.disabled = false;
 }
 
+//click on card in draft
 function DraftClick(i){
-    //window.alert(evt.currentTarget.src);
+    //check if card eligible to be picked by user
     if (draftCards[i].inDraft && draftPhase == 1 && currentPlayer == userRole && playerIsInTime){
         PickCard(draftCards[i]);
         var xhr = new XMLHttpRequest();
@@ -790,16 +864,20 @@ function DraftClick(i){
             draftId: draftId
         }));
         xhr.onload = function() {
+            //check if status ok
             if (xhr.status != 201){
                 alert("Something went wrong. Please refresh the page.")
                 return;
             }
+
+            //send socket message
             let message = [playerId, draftCards[i].card.id, draftId];
             socket.emit('add card', message);
         }
     }
 }
 
+//change text colour of current turn message
 function CheckTextColour(){
     if (userRole == currentPlayer){
         currentTurnMessage.style.color = '#2a7321';
@@ -808,12 +886,14 @@ function CheckTextColour(){
     }
 }
 
+//play audio file
 function PlayAudio(audio){
     if (!muteAudio){
         audio.play();
     }
 }
 
+//get default colour of current mode
 function GetDefaultColour(){
     if (darkModeCheckbox.checked){
         return '#ffffff';
@@ -822,6 +902,7 @@ function GetDefaultColour(){
     }
 }
 
+//when user selects which player they are
 function PlayerClick(i){
     userRole = i;
     if (userRole == 1){
@@ -832,6 +913,7 @@ function PlayerClick(i){
         player2ReadyButton.disabled = false;
     }
 
+    //check draft phase
     if (draftPhase != 0){
         MakeDraftVisible();
         CheckTextColour();
@@ -840,7 +922,9 @@ function PlayerClick(i){
     }
 }
 
-function ReadyClick(i){
+//when user clicks ready for draft start
+function ReadyClick(){
+    //check user
     if (userRole == 1){
         player1ReadyButton.disabled = true;
         player1Ready = true;
@@ -860,16 +944,21 @@ function ReadyClick(i){
         draftId: draftId
     }));
     xhr.onload = function() {
+        //check if status ok
         if (xhr.status != 201){
             alert("Something went wrong. Please refresh the page.");
             return;
         }
+
+        //send socket message
         let message = [playerId, draftId];
         socket.emit('player ready', message);
+
         CheckIfBothPlayersReady();
     }
 }
 
+//get all language data
 function GetLang(){
     let result = {
         "languages": {

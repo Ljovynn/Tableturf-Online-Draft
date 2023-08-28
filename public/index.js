@@ -33,6 +33,7 @@ let body = document.querySelector(".body");
 
 let langData = GetLang();
 
+//get localstorage data
 var storedSort = localStorage['sort'] || '1';
 var stored312Order = localStorage['312Order'] || '1';
 var storedLang = localStorage['language'] || 'en';
@@ -59,6 +60,8 @@ optionsButton.addEventListener("click", () => {
 closeOptionsButton.addEventListener("click", () => {
     optionsButton.disabled = false;
     optionsPopup.classList.remove("openPopup");
+    
+    //set localstorage
     if (muteAudioCheckbox.checked){
         localStorage['mute'] = '1';
     } else{
@@ -73,11 +76,13 @@ closeOptionsButton.addEventListener("click", () => {
         body.classList.add("lightMode");
         body.classList.remove("darkMode");
     }
+
     localStorage['sort'] = sortOrderForm.value;
     localStorage['312Order'] = specialCardSortForm.value;
 });
 
-async function GetLangsJson(){
+
+/*async function GetLangsJson(){
     let tempList = [];
     const response = await fetch("languages.json");
     const data = await response.json();
@@ -87,27 +92,31 @@ async function GetLangsJson(){
     }
     //console.log(tempList);
     return tempList;
-}
+}*/
 
+//change language
 function ChangeLang(){
+    //remove options popup
     optionsButton.disabled = false;
     optionsPopup.classList.remove("openPopup");
+
     localStorage['language'] = langForm.value;
     storedLang = langForm.value;
     applyStrings();
 }
 
+//when document contents are loaded
 document.addEventListener('DOMContentLoaded', () => {
-    //skip the lang value in the HTML tag for this example
-    //langData = GetLangsJson();
     applyStrings();
     mainDiv.classList.add("openPopup");
 });
 
+//apply selected language to all availible strings with data-key element
 function applyStrings() {
-    console.log(langData);
+    //checks all elements with data-key
     mainDiv.querySelectorAll(`[data-key]`).forEach(element => {
         let key = element.getAttribute('data-key');
+        //updates text with the key from langdata
         if (key) {
             element.textContent = langData.languages[storedLang].strings[key];
         }
@@ -116,6 +125,8 @@ function applyStrings() {
 
 generateDraftBtn.addEventListener("click", () => {
     generateDraftBtn.disabled = true;
+
+    //set data for the post
     let player1 = player1NameDoc.value;
     let player2 = player2NameDoc.value;
     let draftSize = draftSizeDoc.value;
@@ -140,14 +151,16 @@ generateDraftBtn.addEventListener("click", () => {
         includeUnreleasedCards: includeUnreleasedCards
     }));
     xhr.onload = function() {
+        //check if status ok
         if (xhr.status != 201){
             linkBox.innerText = langData.languages[storedLang].strings["somethingWentWrong"];
             return;
         }
+        //data = draft id
         var data = JSON.parse(this.responseText);
         linkBox.innerText = site + "/draft?id=" + data;
 
-        //aktivera SSL först
+        //get SLL first
         //copyBtn.disabled = false;
         openBtn.disabled = false;
     }
@@ -162,6 +175,7 @@ openBtn.addEventListener("click", () => {
     window.location.href = linkBox.innerText;
 });
 
+//get all language data
 function GetLang(){
     let result = {
         "languages": {
@@ -186,7 +200,7 @@ function GetLang(){
                     "50": "50 seconds",
                     "60": "1 minute",
                     "120": "2 minutes",
-                    "stage": "stage:",
+                    "stage": "Stage:",
                     "undefined": "Undefined",
                     "mainStreet": "Main Street",
                     "thunderPoint": "Thunder Point",
