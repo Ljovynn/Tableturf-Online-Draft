@@ -10,11 +10,6 @@ const pool = mysql.createPool({
     database: process.env.MYSQL_DATABASE
 }).promise()
 
-export async function GetDrafts(){
-    const [rows] = await pool.query("SELECT * FROM drafts")
-    return rows;
-}
-
 export async function GetDraft(id){
     const [rows] = await pool.query(`SELECT *, SUBSTRING(DATE_FORMAT(\`last_update\`, '%Y-%m-%d %T.%f'),1,21) as formatted_update FROM drafts WHERE id = ?`, [id])
     return rows[0];
@@ -23,11 +18,6 @@ export async function GetDraft(id){
 export async function GetPlayersInDraft(draftId){
     const [rows] = await pool.query(`SELECT * FROM players WHERE draft_id = ? ORDER BY id`, [draftId])
     return rows;
-}
-
-export async function GetPlayer(playerId){
-    const [rows] = await pool.query(`SELECT * FROM players WHERE id = ?`, [playerId])
-    return rows[0];
 }
 
 export async function GetDeckCards(playerId){
@@ -50,16 +40,8 @@ export async function CreateDraft(timer, stage){
     return JSON.stringify(result[0].insertId);
 }
 
-export async function CreatePlayer(draft_id, player_name){
-    await pool.query(`INSERT INTO players (draft_id, player_name) VALUES (?, ?)`, [draft_id, player_name])
-}
-
 export async function CreatePlayers(draft_id, playerNames){
     await pool.query(`INSERT INTO players (draft_id, player_name) VALUES (?, ?), (?, ?)`, [draft_id, playerNames[0], draft_id, playerNames[1]]);
-}
-
-export async function CreateDraftCard(draft_id, card_id){
-    await pool.query(`INSERT INTO draft_cards (draft_id, card_id) VALUES (?, ?)`, [draft_id, card_id])
 }
 
 export async function CreateDraftCards(draft_id, cards){

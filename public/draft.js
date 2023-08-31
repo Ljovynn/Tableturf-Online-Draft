@@ -62,7 +62,7 @@ let player2DeckSizeBox = document.getElementById("player2DeckSize");
 
 let muteAudio = false;
 
-let langData = GetLang();
+let langData;
 
 /*copyExportButton.addEventListener("click", () => {
     navigator.clipboard.writeText(codeId.innerText);
@@ -130,20 +130,20 @@ function ChangeLang(){
     //updates currentTurnMessage and size text
     if (draftPhase == 1){
         if (currentPlayer == 1){
-            currentTurnMessage.innerHTML = player1Name + langData.languages[storedLang].strings["sTurnToChoose"];
+            currentTurnMessage.innerHTML = player1Name + langData[storedLang]["sTurnToChoose"];
         } else{
-            currentTurnMessage.innerHTML = player2Name + langData.languages[storedLang].strings["sTurnToChoose"];
+            currentTurnMessage.innerHTML = player2Name + langData[storedLang]["sTurnToChoose"];
         }
     } else{
-        currentTurnMessage.innerHTML = langData.languages[storedLang].strings["draftHasFinished"]
+        currentTurnMessage.innerHTML = langData[storedLang]["draftHasFinished"]
     }
-    player1DeckSizeBox.innerHTML = langData.languages[storedLang].strings["size"] + player1Deck.size
-    player2DeckSizeBox.innerHTML = langData.languages[storedLang].strings["size"] + player2Deck.size
+    player1DeckSizeBox.innerHTML = langData[storedLang]["size"] + player1Deck.size
+    player2DeckSizeBox.innerHTML = langData[storedLang]["size"] + player2Deck.size
 }
 
 let allCards = [];
 
-const amountOfDifferentCards = 209;
+const amountOfDifferentCards = 221;
 let size;
     
 let draftCards  = [];
@@ -285,6 +285,9 @@ async function Startup(){
     player1Deck = new PlayerDeck();
     player2Deck = new PlayerDeck();
     allCards = await GetCardsJson();
+    langData = await GetLangJson();
+    applyStrings();
+    body.classList.remove("hidePopup");
     FetchDraftInfo(draftId);
 }
 
@@ -302,7 +305,7 @@ function FetchDraftInfo (id) {
         if (xhr.status != 200){
             beginningPopup.classList.add("hidePopup");
             backToHomepageButton.classList.remove("hidePopup");
-            alert("Invalid draft ID");
+            alert(langData[storedLang]["somethingWentWrong"])
             return;
         }
         ParseDraftData();
@@ -338,11 +341,16 @@ async function GetCardsJson(){
     return tempList;
 }
 
-//when content is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    applyStrings();
-    body.classList.remove("hidePopup");
-});
+//get language data from langdata.json
+//returns list
+async function GetLangJson(){
+    const response = await fetch("langdata.json");
+    const data = await response.json();
+
+    let langList = data[0].languages;
+
+    return langList;
+}
 
 //apply selected language to all availible strings with data-key element
 function applyStrings() {
@@ -351,7 +359,7 @@ function applyStrings() {
         let key = element.getAttribute('data-key');
         if (key) {
             //updates text with the key from langdata
-            element.textContent = langData.languages[storedLang].strings[key];
+            element.textContent = langData[storedLang][key];
         }
     });
 }
@@ -415,35 +423,36 @@ function ParseDraftData(){
     player2Button.innerText = player2Name;
     player1Title.innerText = player1Name;
     player2Title.innerText = player2Name;
-    player1ReadyButton.innerText = player1Name + langData.languages[storedLang].strings["ready"];
-    player2ReadyButton.innerText = player2Name + langData.languages[storedLang].strings["ready"];
+    player1ReadyButton.innerText = player1Name + langData[storedLang]["ready"];
+    player2ReadyButton.innerText = player2Name + langData[storedLang]["ready"];
     player1Ready = player1Data.ready;
     player2Ready = player2Data.ready;
     player1Id = player1Data.id;
     player2Id = player2Data.id;
 
     //decks
+    let deckCardList = [];
     const deckData = draftData[3];
     for (let i = 0; i < deckData[0].length; i++){
         AddCardToPlayer(player1Deck, deckData[0][i].card_id, player1DeckBox, player1DeckSizeBox);
-        var index = draftCards.findIndex(e => e.card.id === deckData[0][i].card_id);
-        draftCards[index].inDraft = false;
+        deckCardList.push(deckData[0][i].card_id);
     }
     for (let i = 0; i < deckData[1].length; i++){
         AddCardToPlayer(player2Deck, deckData[1][i].card_id, player2DeckBox, player2DeckSizeBox);
-        var index = draftCards.findIndex(e => e.card.id === deckData[1][i].card_id);
-        draftCards[index].inDraft = false;
+        deckCardList.push(deckData[1][i].card_id);
     }
+
+    MakeDraftCardsUnpickable(deckCardList);
 
     DisplayDraftCards();
 
     //handle different draft phases
     if (draftPhase == 1){
         if (currentPlayer == 1){
-            currentTurnMessage.innerHTML = player1Name + langData.languages[storedLang].strings["sTurnToChoose"];
+            currentTurnMessage.innerHTML = player1Name + langData[storedLang]["sTurnToChoose"];
             player1Title.style.color = '#2a7321';
         } else{
-            currentTurnMessage.innerHTML = player2Name + langData.languages[storedLang].strings["sTurnToChoose"];
+            currentTurnMessage.innerHTML = player2Name + langData[storedLang]["sTurnToChoose"];
             player2Title.style.color = '#2a7321';
         }
         if (draftTimer != 0){
@@ -455,8 +464,21 @@ function ParseDraftData(){
         MakeDraftVisible();
         exportDeck1Button.disabled = false;
         exportDeck2Button.disabled = false;
-        currentTurnMessage.innerHTML = langData.languages[storedLang].strings["draftHasFinished"];
+        currentTurnMessage.innerHTML = langData[storedLang]["draftHasFinished"];
         backToHomepageButton.classList.remove("hidePopup");
+    }
+}
+
+//takes a list of cardId, makes all those cards in the draft unpickable
+function MakeDraftCardsUnpickable(cardList){
+    //for each draft card
+    for (let i = 0; i < draftCards.length; i++){
+        //check if list contains card
+        var index = cardList.indexOf(draftCards[i].card.id);
+        if (index !== -1){
+            draftCards[i].inDraft = false;
+            cardList.splice(index, 1);
+        }
     }
 }
 
@@ -521,6 +543,10 @@ function TimerBelowLimit(){
 
         //finds card in draft
         var index = draftCards.findIndex(e => e.card.id === cardToPick);
+        if (index === -1){
+            alert(langData[storedLang]["somethingWentWrong"])
+            return;
+        }
 
         //checks which player should get card
         let currentUserId;
@@ -692,12 +718,12 @@ function ChangeDraftTurnData(){
     if (picksUntilChangeTurn == 0){
         if (currentPlayer == 1){
             currentPlayer = 2;
-            currentTurnMessage.innerHTML = player2Name + langData.languages[storedLang].strings["sTurnToChoose"];
+            currentTurnMessage.innerHTML = player2Name + langData[storedLang]["sTurnToChoose"];
             player2Title.style.color = '#2a7321';
             player1Title.style.color = GetDefaultColour();
         } else{
             currentPlayer = 1;
-            currentTurnMessage.innerHTML = player1Name + langData.languages[storedLang].strings["sTurnToChoose"];
+            currentTurnMessage.innerHTML = player1Name + langData[storedLang]["sTurnToChoose"];
             player1Title.style.color = '#2a7321';
             player2Title.style.color = GetDefaultColour();
         }
@@ -722,7 +748,7 @@ function AddCardToPlayer(playerDeck, id, deckDocument, deckSizeBox){
 
     //update size
     playerDeck.size += newDraftCard.card.size;
-    deckSizeBox.innerHTML = langData.languages[storedLang].strings["size"] + playerDeck.size;
+    deckSizeBox.innerHTML = langData[storedLang]["size"] + playerDeck.size;
 
     //create img element
     var img = document.createElement('img');
@@ -781,10 +807,10 @@ function SortDeck(playerDeck, changeSortedStatus){
     //sort deck's cards
     if (playerDeck.sorted){
         playerDeck.deck = SortBySize(playerDeck.deck, +sortOrderForm.value, +specialCardSortForm.value);
-        sortButton.textContent = langData.languages[storedLang].strings["sortByPickOrder"];
+        sortButton.textContent = langData[storedLang]["sortByPickOrder"];
     }else{
         playerDeck.deck = SortByPickOrder(playerDeck.deck);
-        sortButton.textContent = langData.languages[storedLang].strings["sortBySize"];
+        sortButton.textContent = langData[storedLang]["sortBySize"];
         
     }
 
@@ -824,7 +850,7 @@ function StartDraftPhase(){
     } else{
         draftPhase = 1;
         MakeDraftVisible();
-        currentTurnMessage.innerHTML = player1Name + langData.languages[storedLang].strings["sTurnToChoose"];
+        currentTurnMessage.innerHTML = player1Name + langData[storedLang]["sTurnToChoose"];
         player1Title.style.color = '#2a7321';
         CheckTextColour();
         //set update timer on interval 1 second
@@ -841,7 +867,7 @@ function EndDraft(){
     clearInterval(timerInterval);
     draftPhase = 2;
     backToHomepageButton.classList.remove("hidePopup");
-    currentTurnMessage.innerHTML = langData.languages[storedLang].strings["draftHasFinished"];
+    currentTurnMessage.innerHTML = langData[storedLang]["draftHasFinished"];
     currentTurnMessage.style.color = GetDefaultColour();
     player1Title.style.color = GetDefaultColour();
     player2Title.style.color = GetDefaultColour();
@@ -855,6 +881,7 @@ function DraftClick(i){
     //check if card eligible to be picked by user
     if (draftCards[i].inDraft && draftPhase == 1 && currentPlayer == userRole && playerIsInTime){
         PickCard(draftCards[i]);
+
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "CreateDeckCard", true);
         xhr.setRequestHeader('Content-Type', 'application/json');
@@ -866,7 +893,7 @@ function DraftClick(i){
         xhr.onload = function() {
             //check if status ok
             if (xhr.status != 201){
-                alert("Something went wrong. Please refresh the page.")
+                alert(langData[storedLang]["somethingWentWrong"])
                 return;
             }
 
@@ -893,7 +920,7 @@ function PlayAudio(audio){
     }
 }
 
-//get default colour of current mode
+//get default test colour of current mode
 function GetDefaultColour(){
     if (darkModeCheckbox.checked){
         return '#ffffff';
@@ -946,7 +973,7 @@ function ReadyClick(){
     xhr.onload = function() {
         //check if status ok
         if (xhr.status != 201){
-            alert("Something went wrong. Please refresh the page.");
+            alert(langData[storedLang]["somethingWentWrong"]);
             return;
         }
 
@@ -956,100 +983,4 @@ function ReadyClick(){
 
         CheckIfBothPlayersReady();
     }
-}
-
-//get all language data
-function GetLang(){
-    let result = {
-        "languages": {
-            "en": {
-                "strings": {
-                    "whoAreYou": "Who are you?",
-                    "spectator": "Spectator",
-                    "ready": " Ready",
-                    "waitingForPlayers": "Waiting for players to get ready",
-                    "draftHasFinished": "Draft has finished",
-                    "sTurnToChoose": "'s turn to choose",
-                    "sortBySize": "Sort by size",
-                    "sortByPickOrder": "Sort by pick order",
-                    "exportDeck": "Export deck",
-                    "exportDeckText": "Export deck to Andrio Celos' Tableturf Simulator",
-                    "size": "Size: ",
-                    "copy": "Copy",
-                    "options": "Options",
-                    "muteAudio": "Mute audio",
-                    "deckSortingOrder": "Deck sorting order:",
-                    "largeToSmall": "Large to small",
-                    "smallToLarge": "Small to large",
-                    "312Sorting": "Special attack card sorting:",
-                    "start": "Start",
-                    "end": "End",
-                    "inSort": "In sort",
-                    "language": "Language:",
-                    "darkMode": "Dark mode",
-                    "close": "Close",
-                    "back": "Back"
-                }
-            },
-            "sv": {
-                "strings": {
-                    "whoAreYou": "Vem är du?",
-                    "spectator": "Åskådare",
-                    "ready": " Redo",
-                    "waitingForPlayers": "Väntar på spelare att bli redo",
-                    "draftHasFinished": "Draften har avslutats",
-                    "sTurnToChoose": "s tur att välja",
-                    "sortBySize": "Sortera efter storlek",
-                    "sortByPickOrder": "Sortera efter väljordning",
-                    "exportDeck": "Exportera kortlek",
-                    "exportDeckText": "Exportera kortlek till Andrio Celos Tableturfsimulator",
-                    "size": "Storlek: ",
-                    "copy": "Kopiera",
-                    "options": "Inställningar",
-                    "muteAudio": "Stäng av ljud",
-                    "deckSortingOrder": "Sorteringsordning:",
-                    "largeToSmall": "Stor till liten",
-                    "smallToLarge": "Liten till stor",
-                    "312Sorting": "Specialkortsortering:",
-                    "start": "Början",
-                    "end": "Slutet",
-                    "inSort": "Inom sorteringen",
-                    "language": "Språk:",
-                    "darkMode": "Mörkt läge",
-                    "close": "Stäng",
-                    "back": "Tillbaka"
-                }
-            },
-            "ja": {
-                "strings": {
-                    "whoAreYou": "プレイヤーを選択してください",
-                    "spectator": "観戦",
-                    "ready": " Ready",
-                    "waitingForPlayers": "対戦相手を待っています...",
-                    "draftHasFinished": "ドラフト終了！",
-                    "sTurnToChoose": "が選択中",
-                    "sortBySize": "マス数順",
-                    "sortByPickOrder": "選択順",
-                    "exportDeck": "シミュレーターで実行",
-                    "exportDeckText": "シミュレーターで実行（下のコードをコピー",
-                    "size": "合計マス数: ",
-                    "copy": "コピー",
-                    "options": "オプション",
-                    "muteAudio": "効果音オフ",
-                    "deckSortingOrder": "並べ方:",
-                    "largeToSmall": "降順",
-                    "smallToLarge": "昇順",
-                    "312Sorting": "スペシャルカードの位置:",
-                    "start": "上",
-                    "end": "下",
-                    "inSort": "変更なし",
-                    "language": "言語:",
-                    "darkMode": "ダークモード",
-                    "close": "閉じる",
-                    "back": "バック"
-                }
-            }
-        }
-    }
-    return result;
 }

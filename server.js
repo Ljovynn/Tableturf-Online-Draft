@@ -5,7 +5,7 @@ dotenv.config()
 
 import {createServer } from 'http';
 
-import {GetDraft, GetPlayersInDraft, GetPlayer, GetDeckCards, GetDraftCards, CreateDraft,
+import {GetDraft, GetPlayersInDraft, GetDeckCards, GetDraftCards, CreateDraft,
     CreatePlayers, CreateDraftCards, CreateDeckCard, UpdateDraft, PlayerReady, StartDraft,
     GetDeckCount} from './database.js'
 
@@ -41,8 +41,8 @@ io.on("connection", socket => {
     })
 });
 
-const amountOfDifferentCards = 209;
-const unreleasedAmountOfDifferentCards = 12;
+const amountOfDifferentCards = 221;
+const unreleasedAmountOfDifferentCards = 0;
 let draftProcessingList = [];
 
 app.use(express.static('public',{extensions:['html']}));
@@ -158,22 +158,22 @@ app.post("/TimerBelowLimit", async (req, res) =>{
         await CreateDeckCard(currentPlayerId, count + 1, unpickedCards[r]);
 
         //update draft data
-        let picksUntilChangeTurn = draft.picks_until_change_turn
-        let playerTurn = draft.player_turn
-        let draftPhase = 1
-        picksUntilChangeTurn--
+        let picksUntilChangeTurn = draft.picks_until_change_turn;
+        let playerTurn = draft.player_turn;
+        let draftPhase = 1;
+        picksUntilChangeTurn--;
 
         //check if it's the end, player and count from before update
         if (playerTurn == 2 && count == 14){
-            draftPhase = 2
+            draftPhase = 2;
         }
 
         if (picksUntilChangeTurn == 0){
-            picksUntilChangeTurn = 2
+            picksUntilChangeTurn = 2;
             if (playerTurn == 1){
-                playerTurn = 2
+                playerTurn = 2;
             } else{
-                playerTurn = 1
+                playerTurn = 1;
             }
         }
 
@@ -205,9 +205,9 @@ function CreateDateFromTimestamp(timestamp){
 //include player1Name, player2Name, draftSize, minSpecials, includeUnrelasedCards
 app.post("/GenerateNewDraft", async (req, res) => {
     try {
-        const data = req.body
+        const data = req.body;
 
-    const result = await CreateDraft(data.timer, data.stage)
+    const result = await CreateDraft(data.timer, data.stage);
 
     let player1 = data.player1Name;
     let player2 = data.player2Name;
@@ -248,7 +248,7 @@ app.post("/GenerateNewDraft", async (req, res) => {
     //updates database
     await CreateDraftCards(result, draftList);
 
-    res.status(201).send(result)
+    res.status(201).send(result);
     } catch (err){
         res.sendStatus(599);
     }
@@ -260,7 +260,7 @@ app.post("/PlayerReady", async (req, res) =>{
     try {
         const playerId = req.body.playerId;
         const draftId = req.body.draftId;
-        const players = await GetPlayersInDraft(draftId)
+        const players = await GetPlayersInDraft(draftId);
         const draft = await GetDraft(draftId);
     
         console.log(playerId + " ready");
@@ -300,7 +300,7 @@ function CreateSortedList(amountOfDifferentCards, unreleasedCards) {
 }
 
 function CreateSortedSpecialAttackList(){
-    let array = [70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 188, 189]
+    let array = [70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 188, 189];
     return array;
 }
 

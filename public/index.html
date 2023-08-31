@@ -97,6 +97,11 @@
             .darkMode .secondaryBackgroundColor{
                 background-color: rgb(74, 74, 74);
             }
+
+            .unreleasedCards{
+                visibility: hidden;
+                position: absolute;
+            } 
         </style>
     </head>
     <body class="body lightMode">
@@ -120,13 +125,13 @@
             <p data-key="share"><br/></p>
             <h3 data-key="draftSettings">Draft settings</h2>
             <div>
-                <label for="draftSize" data-key="numberOfCardsInDraft">Number of cards in draft (0-209):</label>
-                <input type="number" id="draftSize" name="draftSize" min="30" max="209" value="60">  
+                <label for="draftSize" data-key="numberOfCardsInDraft">Number of cards in draft (0-221):</label>
+                <input type="number" id="draftSize" name="draftSize" min="30" max="221" value="60">  
             </div>
             <div>
-                <label for="Player1Name" data-key="player1Name">Player 1 name:</label>
+                <label for="player1" data-key="player1Name">Player 1 name:</label>
                 <input type="text" id="player1" name="Player1Name " value="Player 1"><br><br>
-                <label for="Player2Name" data-key="player2Name">Player 2 name:</label>
+                <label for="player2" data-key="player2Name">Player 2 name:</label>
                 <input type="text" id="player2" name="Player2Name" value="Player 2">
                 <p style="font-size: 13px" data-key="playerPositionsRandomized">Player positions will be randomized</p>
             </div>
@@ -135,7 +140,7 @@
                 <input type="number" id="312Size" name="312Size" min="0" max="17" value="4">  
             </div>
             <div>
-                <label for="timer" data-key="timer">Timer:</label>
+                <label for="timerList" data-key="timer">Timer:</label>
                     <select name="timer" id="timerList">
                     <option value="0" data-key="none">None</option>
                     <option value="10" data-key="10">10 seconds</option>
@@ -161,13 +166,13 @@
                 <option value="8" data-key="boxSeats">Box Seats</option>
                 </select>
             </div>
-            <!-- Kommentera in / ut denna css för att tillåta användning av outgivna kort:
+            <!-- Comment in / out this patch of code in CSS to toggle allowing unreleased cards
             .unreleasedCards{
                 visibility: hidden;
                 position: absolute;
             } -->
             <div class="unreleasedCards">
-                <label for="includeUnreleasedCards" data-key="includeUnreleasedCards">Include unreleased cards</label>
+                <label for="includeUnreleasedCardsCheckbox" data-key="includeUnreleasedCards">Include unreleased cards</label>
                 <input type="checkbox" id="includeUnreleasedCardsCheckbox" name="includeUnreleasedCards">
             </div>
             <p><button id="generateDraft" data-key="generateDraft" style="font-weight: bold;">Generate draft</button></p>
@@ -188,7 +193,7 @@
             <div class="optionsPopup secondaryBackgroundColor" id="optionsPopup">
                 <h3 data-key="options">Options<br></h3>
                 <div>
-                    <label for="muteAudio" data-key="muteAudio">Mute audio</label>
+                    <label for="muteAudioCheckbox" data-key="muteAudio">Mute audio</label>
                     <input type="checkbox" id="muteAudioCheckbox" name="muteAudio"><br><br>
                     <label for="setSizeOrder" data-key="deckSortingOrder">Deck sorting order:</label>
                     <select class="form-select" id="setSizeOrder" name="setSizeOrder">
@@ -201,7 +206,7 @@
                         <option value="2" data-key="end">End</option>
                         <option value="3" data-key="inSort">In sort</option>
                     </select><br><br>
-                    <label for="darkMode" data-key="darkMode">Dark mode</label>
+                    <label for="darkModeCheckbox" data-key="darkMode">Dark mode</label>
                     <input type="checkbox" id="darkModeCheckbox" name="darkMode"><br>
                     <br>
                 </div>
