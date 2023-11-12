@@ -42,7 +42,9 @@ io.on("connection", socket => {
 });
 
 const amountOfDifferentCards = 221;
+const amountOfSpecialCards = 17;
 const unreleasedAmountOfDifferentCards = 0;
+
 let draftProcessingList = [];
 
 app.use(express.static('public',{extensions:['html']}));
@@ -209,6 +211,16 @@ app.post("/GenerateNewDraft", async (req, res) => {
 
     const result = await CreateDraft(data.timer, data.stage);
 
+    //checks so draft size and min specials are viable options
+    if (data.minSpecials < 0 || data.minSpecials > amountOfSpecialCards){
+        res.sendStatus(599);
+        return;
+    }
+    if (data.draftSize < 30 || data.draftSize > amountOfDifferentCards){
+        res.sendStatus(599);
+        return;
+    }
+
     let player1 = data.player1Name;
     let player2 = data.player2Name;
     
@@ -243,7 +255,8 @@ app.post("/GenerateNewDraft", async (req, res) => {
     //generates random list of cards for draft
     Shuffle(draftList);
     draftList = GetDraftFromShuffledList(draftList, draftSize, minSpecials);
-    console.log(draftList + " after shenanigans");
+
+    console.log("Created draft " + result + ", min 3-12s: " + minSpecials);
 
     //updates database
     await CreateDraftCards(result, draftList);
