@@ -143,7 +143,7 @@ function ChangeLang(){
 
 let allCards = [];
 
-const amountOfDifferentCards = 221;
+const amountOfDifferentCards = 232;
 let size;
     
 let draftCards  = [];
@@ -565,7 +565,7 @@ function TimerBelowLimit(){
 }
 
 function CreateSortedSpecialAttackList(){
-    let array = [70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 188, 189]
+    let array = [70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 188, 189, 231, 232]
     return array;
 }
 

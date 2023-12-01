@@ -41,8 +41,8 @@ io.on("connection", socket => {
     })
 });
 
-const amountOfDifferentCards = 221;
-const amountOfSpecialCards = 17;
+const amountOfDifferentCards = 232;
+const amountOfSpecialCards = 19;
 const unreleasedAmountOfDifferentCards = 0;
 
 let draftProcessingList = [];
@@ -209,59 +209,59 @@ app.post("/GenerateNewDraft", async (req, res) => {
     try {
         const data = req.body;
 
-    const result = await CreateDraft(data.timer, data.stage);
+        const draftSize = +JSON.stringify(data.draftSize);
+        const minSpecials = +JSON.stringify(data.minSpecials);
 
-    //checks so draft size and min specials are viable options
-    if (data.minSpecials < 0 || data.minSpecials > amountOfSpecialCards){
-        res.sendStatus(599);
-        return;
-    }
-    if (data.draftSize < 30 || data.draftSize > amountOfDifferentCards){
-        res.sendStatus(599);
-        return;
-    }
+        //checks so draft size and min specials are viable options
+        if (minSpecials < 0 || minSpecials > amountOfSpecialCards){
+            res.sendStatus(599);
+            return;
+        }
+        if (draftSize < 30 || draftSize > amountOfDifferentCards){
+            res.sendStatus(599);
+            return;
+        }
 
-    let player1 = data.player1Name;
-    let player2 = data.player2Name;
-    
-    if (player1 == null || player1 == ''){
-        player1 = 'Player 1';
-    }
-    if (player2 == null || player2 == ''){
-        player2 = 'Player 2';
-    }
+        const result = await CreateDraft(data.timer, data.stage);
 
-    //random positioner of players
-    let r = Math.floor(Math.random() * 2);
-    if (r == 1){
-        let tempName = player1;
-        player1 = player2;
-        player2 = tempName;
-    }
+        let player1 = data.player1Name;
+        let player2 = data.player2Name;
+        
+        if (player1 == null || player1 == ''){
+            player1 = 'Player 1';
+        }
+        if (player2 == null || player2 == ''){
+            player2 = 'Player 2';
+        }
 
-    let names = [player1, player2];
-    await CreatePlayers(result, names);
+        //random positioner of players
+        let r = Math.floor(Math.random() * 2);
+        if (r == 1){
+            let tempName = player1;
+            player1 = player2;
+            player2 = tempName;
+        }
 
-    const draftSize = +JSON.stringify(data.draftSize);
-    const minSpecials = +JSON.stringify(data.minSpecials);
-    
-    let draftList;
-    if (data.includeUnreleasedCards == true){
-        draftList = CreateSortedList(amountOfDifferentCards, unreleasedAmountOfDifferentCards);
-    } else{
-        draftList = CreateSortedList(amountOfDifferentCards, 0);
-    }
-    
-    //generates random list of cards for draft
-    Shuffle(draftList);
-    draftList = GetDraftFromShuffledList(draftList, draftSize, minSpecials);
+        let names = [player1, player2];
+        await CreatePlayers(result, names);
+        
+        let draftList;
+        if (data.includeUnreleasedCards == true){
+            draftList = CreateSortedList(amountOfDifferentCards, unreleasedAmountOfDifferentCards);
+        } else{
+            draftList = CreateSortedList(amountOfDifferentCards, 0);
+        }
+        
+        //generates random list of cards for draft
+        Shuffle(draftList);
+        draftList = GetDraftFromShuffledList(draftList, draftSize, minSpecials);
 
-    console.log("Created draft " + result + ", min 3-12s: " + minSpecials);
+        console.log("Created draft " + result + ", min 3-12s: " + minSpecials);
 
-    //updates database
-    await CreateDraftCards(result, draftList);
+        //updates database
+        await CreateDraftCards(result, draftList);
 
-    res.status(201).send(result);
+        res.status(201).send(result);
     } catch (err){
         res.sendStatus(599);
     }
@@ -313,7 +313,7 @@ function CreateSortedList(amountOfDifferentCards, unreleasedCards) {
 }
 
 function CreateSortedSpecialAttackList(){
-    let array = [70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 188, 189];
+    let array = [70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 188, 189, 231, 232];
     return array;
 }
 
@@ -371,7 +371,7 @@ function GetDraftFromShuffledList(fullList, draftSize, minSpecials){
 app.post("/CreateDeckCard", async (req, res) => {
     try {
     const data = req.body;
-    console.log ("sent in player id: " + data.playerId);
+    console.log ("created new card for player id: " + data.playerId);
     const draft = await GetDraft(data.draftId);
     const count = await GetDeckCount(data.playerId)
     const players = await GetPlayersInDraft(draft.id)
