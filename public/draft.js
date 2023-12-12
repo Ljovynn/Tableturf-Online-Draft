@@ -204,10 +204,12 @@ class Card{
     id;
     size;
     image;
-    constructor(id, size, image){
+    order;
+    constructor(id, size, image, order){
         this.id = id;
         this.size = size;
         this.image = image;
+        this.order = order;
     }
 }
 
@@ -227,7 +229,8 @@ class DraftCard{
         let tempCard = allCards[index];
         let size = +tempCard.size;
         let image = tempCard.image;
-        this.card = new Card(id, size, image);
+        let order = +tempCard.order;
+        this.card = new Card(id, size, image, order);
     }
 }
 
@@ -336,7 +339,8 @@ async function GetCardsJson(){
         const id = card.id;
         const size = card.size;
         const image = path + card.id + ".png";
-        tempList[i] = new Card(id, size, image);
+        const order = card.order;
+        tempList[i] = new Card(id, size, image, order);
     }
     return tempList;
 }
@@ -411,7 +415,7 @@ function ParseDraftData(){
         draftCards[i] = new DraftCard(draftCardList[i].card_id);
     }
 
-    draftCards = SortBySize(draftCards, 1, 3);
+    draftCards = SortByOrder(draftCards, 1);
 
     //players
     const playerData = draftData[2];
@@ -566,6 +570,15 @@ function TimerBelowLimit(){
 
 function CreateSortedSpecialAttackList(){
     let array = [70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 188, 189, 231, 232]
+    return array;
+}
+
+function SortByOrder(array, reverseValue){
+    if (reverseValue == 2){
+        array.sort((a, b) => a.card.order - b.card.order);
+    } else{
+        array.sort((a, b) => b.card.order - a.card.order);
+    }
     return array;
 }
 
