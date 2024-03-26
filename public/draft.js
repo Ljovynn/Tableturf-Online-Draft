@@ -404,6 +404,27 @@ function ParseDraftData(){
         case 8:
             stageImage.src = "images/stages/Box Seats.png";
             break;
+        case 9:
+            stageImage.src = "images/stages/Girder for Battle.png";
+            break;
+        case 10:
+            stageImage.src = "images/stages/Mask Mansion.png";
+            break;
+        case 11:
+            stageImage.src = "images/stages/Sticky Thicket.png";
+            break;
+        case 12:
+            stageImage.src = "images/stages/Cracker Snap.png";
+            break;
+        case 13:
+            stageImage.src = "images/stages/Two-Lane Splattop.png";
+            break;
+        case 14:
+            stageImage.src = "images/stages/Pedal to the Metal.png";
+            break;
+        case 15:
+            stageImage.src = "images/stages/Over the Line.png";
+            break;
         default:
             stageImage.src = "images/stages/Undefined.png";
             break;

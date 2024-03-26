@@ -17,7 +17,7 @@ const server = createServer(app);
 
 const port = process.env.PORT;
 server.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`);
+    console.log(`Draft website up at port ${port}`);
 });
 
 const io = new Server (server);
@@ -41,7 +41,7 @@ io.on("connection", socket => {
     })
 });
 
-const amountOfDifferentCards = 232;
+const amountOfDifferentCards = 252;
 const amountOfSpecialCards = 19;
 const unreleasedAmountOfDifferentCards = 0;
 
