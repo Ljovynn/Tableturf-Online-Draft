@@ -266,19 +266,37 @@ socket.on('player ready', data =>{
 //when other player picks a card
 //data = currentUserId, cardId
 socket.on('add card', data =>{
-    //finds card in the draft
+    //finds cards in the draft
     var index = draftCards.findIndex(e => e.card.id === data[1]);
-    draftCards[index].inDraft = false;
-    draftCards[index].documentImg.setAttribute('class', 'lockedCard');
-    timeSinceUpdate = new Date();
-    //checks which player it is
-    if (+data[0] == player1Id){
-        AddCardToPlayer(player1Deck, data[1], player1DeckBox, player1DeckSizeBox);
-    } else if (+data[0] == player2Id){
-        
-        AddCardToPlayer(player2Deck, data[1], player2DeckBox, player2DeckSizeBox);
+        draftCards[index].inDraft = false;
+        draftCards[index].documentImg.setAttribute('class', 'lockedCard');
+        //checks which player it
+        if (+data[0] == player1Id){
+            AddCardToPlayer(player1Deck, data[1], player1DeckBox, player1DeckSizeBox);
+        } else if (+data[0] == player2Id){
+            AddCardToPlayer(player2Deck, data[1], player2DeckBox, player2DeckSizeBox);
+        }
+        ChangeDraftTurnData();
+    
+})
+
+//when adding 2 cards
+socket.on('add cards', data =>{
+    //finds cards in the draft
+    console.log("add cards recieved");
+    console.log("data: " + data);
+    for (let i = 0; i < 2; i++){
+        var index = draftCards.findIndex(e => e.card.id === data[i + 1]);
+        draftCards[index].inDraft = false;
+        draftCards[index].documentImg.setAttribute('class', 'lockedCard');
+        //checks which player it
+        if (+data[0] == player1Id){
+            AddCardToPlayer(player1Deck, data[i + 1], player1DeckBox, player1DeckSizeBox);
+        } else if (+data[0] == player2Id){
+            AddCardToPlayer(player2Deck, data[i + 1], player2DeckBox, player2DeckSizeBox);
+        }
+        ChangeDraftTurnData();
     }
-    ChangeDraftTurnData();
 })
 
 Startup();
@@ -564,14 +582,7 @@ function TimerBelowLimit(){
         }
         //response is cardId
         const cardData = JSON.parse(this.response);
-        let cardToPick = +cardData;
-
-        //finds card in draft
-        var index = draftCards.findIndex(e => e.card.id === cardToPick);
-        if (index === -1){
-            alert(langData[storedLang]["somethingWentWrong"])
-            return;
-        }
+        let cardArr = cardData;
 
         //checks which player should get card
         let currentUserId;
@@ -581,11 +592,30 @@ function TimerBelowLimit(){
             currentUserId = player2Id;
         }
 
-        PickCard(draftCards[index]);
+        //finds card in draft
+        let cardIndexes = [];
+        for (let i = 0; i < cardArr.length; i++){
+            var index = draftCards.findIndex(e => e.card.id === cardArr[i]);
+            if (index === -1){
+                alert(langData[storedLang]["somethingWentWrong"])
+                return;
+            }
 
-        //send socket message
-        let message = [currentUserId, draftCards[index].card.id, draftId];
-        socket.emit('add card', message);
+            cardIndexes.push(index);
+            PickCard(draftCards[index]);
+        }
+
+        console.log("cardarr length: " + cardArr.length);
+        if (cardArr.length == 1){
+            //send socket message
+            let message = [currentUserId, draftCards[cardIndexes[0]].card.id, draftId];
+            socket.emit('add card', message);
+        } else{
+            let message = [currentUserId, draftCards[cardIndexes[0]].card.id, draftCards[cardIndexes[1]].card.id, draftId];
+            console.log("message: " + message);
+            socket.emit('add cards', message);
+        }
+
     }
 }
 
@@ -732,7 +762,6 @@ function OpenReadyPopup(){
 function PickCard(draftCard){
     draftCard.inDraft = false;
     draftCard.documentImg.setAttribute('class', 'lockedCard');
-    timeSinceUpdate = new Date();
 
     //checks which player
     if (currentPlayer == 1){
@@ -750,6 +779,7 @@ function ChangeDraftTurnData(){
 
     //if player turn should change
     if (picksUntilChangeTurn == 0){
+        timeSinceUpdate = new Date();
         if (currentPlayer == 1){
             currentPlayer = 2;
             currentTurnMessage.innerHTML = player2Name + langData[storedLang]["sTurnToChoose"];
@@ -769,6 +799,12 @@ function ChangeDraftTurnData(){
         } else if (userRole != 0){
             currentTurnMessage.style.color = '#4d2d3b';
         }
+    }
+
+    //check if timer should be updated
+    if (draftPhase == 1 && draftTimer != 0 && picksUntilChangeTurn == 2){
+        timerMessage.style.color = GetDefaultColour();
+        SetTimer();
     }
 }
 
@@ -807,11 +843,7 @@ function AddCardToPlayer(playerDeck, id, deckDocument, deckSizeBox){
         return;
     }
     
-    //check if timer should be updated
-    if (draftPhase == 1 && draftTimer != 0){
-        timerMessage.style.color = GetDefaultColour();
-        SetTimer();
-    }
+    
 }
 
 //sorts a player's deck
@@ -935,6 +967,8 @@ function DraftClick(i){
             let message = [playerId, draftCards[i].card.id, draftId];
             socket.emit('add card', message);
         }
+    } else{
+        console.log("draft lcick failed. " + draftCards[i].inDraft + ", " + draftPhase + ", " + currentPlayer + ", " + playerIsInTime);
     }
 }
 

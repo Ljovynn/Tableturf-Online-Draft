@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { json } from 'express'
 
 import dotenv from 'dotenv'
 dotenv.config()
@@ -38,6 +38,10 @@ io.on("connection", socket => {
     //message: currentUserId, cardId, draftId
     socket.on('add card', message => {
         socket.to(message[2].toString()).emit('add card', [message[0], message[1]]);
+    })
+
+    socket.on('add cards', message => {
+        socket.to(message[3].toString()).emit('add cards', [message[0], message[1], message[2]]);
     })
 });
 
@@ -157,6 +161,8 @@ app.post("/TimerBelowLimit", async (req, res) =>{
             currentPlayerId = players[1].id;
             count = player2Deck.length;
         }
+
+        let cardArray = [unpickedCards[r]];
         await CreateDeckCard(currentPlayerId, count + 1, unpickedCards[r]);
 
         //update draft data
@@ -177,14 +183,28 @@ app.post("/TimerBelowLimit", async (req, res) =>{
             } else{
                 playerTurn = 1;
             }
+        } else if (draftPhase != 2){
+            //add another card to be picked
+            unpickedCards.splice(r, 1);
+            r = Math.floor(Math.random() * unpickedCards.length);
+            cardArray.push(unpickedCards[r]);
+            await CreateDeckCard(currentPlayerId, count + 2, unpickedCards[r]);
+            picksUntilChangeTurn = 2;
+            if (playerTurn == 1){
+                playerTurn = 2;
+            } else{
+                playerTurn = 1;
+            }
         }
+        console.log("cardarray: " + cardArray);
 
-        await UpdateDraft(draft.id, draftPhase, playerTurn, picksUntilChangeTurn);
+        await UpdateDraft(draft.id, draftPhase, playerTurn, picksUntilChangeTurn, true);
         const index = draftProcessingList.indexOf(draftId);
         if (index !== -1){
             draftProcessingList.splice(index, 1);
         }
-        res.send(unpickedCards[r].toString());
+        //.tostring??
+        res.send(JSON.stringify(cardArray));
         return;
     } catch (err){
         console.log("error timerrequest " + req.body.draftId);
@@ -407,8 +427,10 @@ app.post("/CreateDeckCard", async (req, res) => {
     if (playerTurn == 2 && count == 14){
         draftPhase = 2
     }
+    let shouldUpdateTimer = false;
 
     if (picksUntilChangeTurn == 0){
+        shouldUpdateTimer = true;
         picksUntilChangeTurn = 2
         if (playerTurn == 1){
             playerTurn = 2
@@ -417,7 +439,7 @@ app.post("/CreateDeckCard", async (req, res) => {
         }
     }
 
-    await UpdateDraft(draft.id, draftPhase, playerTurn, picksUntilChangeTurn)
+    await UpdateDraft(draft.id, draftPhase, playerTurn, picksUntilChangeTurn, shouldUpdateTimer)
 
     res.sendStatus(201);
     } catch (err){

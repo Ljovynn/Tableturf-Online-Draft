@@ -61,9 +61,14 @@ export async function StartDraft(draft_id){
     [draft_id])
 }
 
-export async function UpdateDraft(draft_id, draft_phase, player_turn, picks_until_change_turn){
-    await pool.query(`UPDATE drafts SET draft_phase = ?, player_turn = ?, picks_until_change_turn = ?, last_update = NOW() WHERE id = ?`,
-    [draft_phase, player_turn, picks_until_change_turn, draft_id])
+export async function UpdateDraft(draft_id, draft_phase, player_turn, picks_until_change_turn, shouldUpdateTimer){
+    if (shouldUpdateTimer){
+        await pool.query(`UPDATE drafts SET draft_phase = ?, player_turn = ?, picks_until_change_turn = ?, last_update = NOW() WHERE id = ?`,
+        [draft_phase, player_turn, picks_until_change_turn, draft_id])
+    } else{
+        await pool.query(`UPDATE drafts SET draft_phase = ?, player_turn = ?, picks_until_change_turn = ? WHERE id = ?`,
+        [draft_phase, player_turn, picks_until_change_turn, draft_id])
+    }
 }
 
 export async function PlayerReady (player_id){
