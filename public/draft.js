@@ -143,7 +143,7 @@ function ChangeLang(){
 
 let allCards = [];
 
-const amountOfDifferentCards = 232;
+const amountOfDifferentCards = 266;
 let size;
     
 let draftCards  = [];

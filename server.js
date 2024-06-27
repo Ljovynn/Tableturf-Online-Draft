@@ -26,12 +26,12 @@ io.on("connection", socket => {
     //join draft id as room
     socket.on('join', function(room){
         socket.join(room.toString());
-        console.log("user joined " + room);
+        //console.log("user joined " + room);
     });
 
     //message: playerId, draftId
     socket.on('player ready', message => {
-        console.log("socket sent player ready in room " + message[1]);
+        //console.log("socket sent player ready in room " + message[1]);
         socket.to(message[1].toString()).emit('player ready', message[0]);
     })
 
@@ -45,7 +45,7 @@ io.on("connection", socket => {
     })
 });
 
-const amountOfDifferentCards = 252;
+const amountOfDifferentCards = 266;
 const amountOfSpecialCards = 19;
 const unreleasedAmountOfDifferentCards = 0;
 
@@ -100,7 +100,7 @@ app.post("/TimerBelowLimit", async (req, res) =>{
         const draftId = req.body.draftId;
         const draft = await GetDraft(draftId);
         if (draft.draft_phase != 1){
-            console.log("draft phase isnt 1");
+            //console.log("draft phase isnt 1");
             res.sendStatus(599);
             return;
         }
@@ -121,7 +121,7 @@ app.post("/TimerBelowLimit", async (req, res) =>{
         draftProcessingList.push(draftId);
 
         //generate list of the unpicked cards
-        console.log("draft timer depleted");
+        //console.log("draft timer depleted");
         const players = await GetPlayersInDraft(draft.id);
         let draftCards = await GetDraftCards(draft.id);
         let draftCardList = [];
@@ -196,7 +196,7 @@ app.post("/TimerBelowLimit", async (req, res) =>{
                 playerTurn = 1;
             }
         }
-        console.log("cardarray: " + cardArray);
+        //console.log("cardarray: " + cardArray);
 
         await UpdateDraft(draft.id, draftPhase, playerTurn, picksUntilChangeTurn, true);
         const index = draftProcessingList.indexOf(draftId);
@@ -207,7 +207,7 @@ app.post("/TimerBelowLimit", async (req, res) =>{
         res.send(JSON.stringify(cardArray));
         return;
     } catch (err){
-        console.log("error timerrequest " + req.body.draftId);
+        //console.log("error timerrequest " + req.body.draftId);
         const index = draftProcessingList.indexOf(draftId);
         if (index !== -1){
             draftProcessingList.splice(index, 1);
@@ -296,7 +296,7 @@ app.post("/PlayerReady", async (req, res) =>{
         const players = await GetPlayersInDraft(draftId);
         const draft = await GetDraft(draftId);
     
-        console.log(playerId + " ready");
+        //console.log(playerId + " ready");
         await PlayerReady(playerId);
         let otherPlayer;
         //checks which player sent request
@@ -305,13 +305,13 @@ app.post("/PlayerReady", async (req, res) =>{
         } else if (playerId == players[1].id){
             otherPlayer = players[0];
         } else{
-            console.log("player not in draft");
+            //console.log("player not in draft");
             res.sendStatus(599);
             return;
         }
     
         if (draft.draft_phase == 0 && otherPlayer.ready){
-            console.log("starting draft");
+            //console.log("starting draft");
             await StartDraft(draft.id);
         }
         res.sendStatus(201);
@@ -391,7 +391,7 @@ function GetDraftFromShuffledList(fullList, draftSize, minSpecials){
 app.post("/CreateDeckCard", async (req, res) => {
     try {
     const data = req.body;
-    console.log ("created new card for player id: " + data.playerId);
+    //console.log ("created new card for player id: " + data.playerId);
     const draft = await GetDraft(data.draftId);
     const count = await GetDeckCount(data.playerId)
     const players = await GetPlayersInDraft(draft.id)
@@ -403,7 +403,7 @@ app.post("/CreateDeckCard", async (req, res) => {
     } else if (data.playerId == players[1].id){
         playerInDraftId = 2;
     } else {
-        console.log("player id and draft id not matching at CreateDeckCard, " + data.playerId);
+        //console.log("player id and draft id not matching at CreateDeckCard, " + data.playerId);
         res.status(599).send(data.card_id)
         return;
     }
@@ -412,7 +412,7 @@ app.post("/CreateDeckCard", async (req, res) => {
     if (count < 15 && (playerInDraftId == draft.player_turn) && draft.draft_phase == 1){
         await CreateDeckCard(data.playerId, count + 1, data.cardId);
     } else{
-        console.log("Fraudulent attempt");
+        //console.log("Fraudulent attempt");
         res.status(599).send(data.card_id)
         return;
     }
